@@ -1,0 +1,33 @@
+@import "../tokens/scope";
+
+// VERIFY (Session 0): `.page-head`, `.page-title`, `.form-page` /
+// `.form-layout` container names in this build.
+
+#{$ph} .page-head {
+	background-color: var(--ph-surface);
+	border-bottom: 1px solid var(--ph-border);
+}
+
+#{$ph} .page-head .title-text {
+	color: var(--ph-text);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-heading);
+}
+
+// The form body reads as a sheet on the page background. This is the single
+// rule that makes a Sales Invoice look deliberate rather than stock.
+#{$ph} .form-page {
+	background-color: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border);
+	border-radius: var(--ph-radius-lg);
+}
+
+#{$ph} .form-section:not(:last-child) {
+	border-bottom: 1px solid var(--ph-border);
+}
+
+// Dashboards / connections at the foot of a form.
+// VERIFY: `.form-dashboard`, `.form-dashboard-section`.
+#{$ph} .form-dashboard-section {
+	border-top: 1px solid var(--ph-border);
+}

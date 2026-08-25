@@ -1,0 +1,68 @@
+@import "../tokens/scope";
+
+// Bootstrap button classes, which Frappe uses directly. These are the safest
+// component selectors in the app — they are Bootstrap's, not Frappe's, so they
+// do not move between Frappe releases.
+
+#{$ph} .btn {
+	border-radius: var(--ph-radius);
+	font-weight: var(--ph-weight-medium);
+	transition: background-color var(--ph-transition), border-color var(--ph-transition),
+		box-shadow var(--ph-transition);
+}
+
+#{$ph} .btn:focus-visible {
+	box-shadow: var(--ph-focus-ring);
+}
+
+#{$ph} .btn-primary {
+	background-color: var(--ph-primary);
+	border-color: var(--ph-primary);
+	color: var(--ph-on-primary);
+}
+
+#{$ph} .btn-primary:hover,
+#{$ph} .btn-primary:focus {
+	background-color: var(--ph-primary-hover);
+	border-color: var(--ph-primary-hover);
+	color: var(--ph-on-primary);
+}
+
+#{$ph} .btn-primary:active,
+#{$ph} .btn-primary.active {
+	background-color: var(--ph-primary-active);
+	border-color: var(--ph-primary-active);
+}
+
+#{$ph} .btn-default,
+#{$ph} .btn-secondary {
+	background-color: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border-strong);
+	color: var(--ph-text);
+}
+
+#{$ph} .btn-default:hover,
+#{$ph} .btn-secondary:hover {
+	background-color: var(--ph-surface-hover);
+	border-color: var(--ph-border-strong);
+	color: var(--ph-text);
+}
+
+#{$ph} .btn-danger {
+	background-color: var(--ph-danger);
+	border-color: var(--ph-danger);
+	color: var(--ph-text-inverse);
+}
+
+// Frappe's small icon-only buttons in list/form toolbars.
+// VERIFY (Session 0): `.btn-xs` is Bootstrap-era; confirm it is still emitted.
+#{$ph} .btn-xs,
+#{$ph} .btn-sm {
+	border-radius: var(--ph-radius-sm);
+}
+
+#{$ph} .btn:disabled,
+#{$ph} .btn.disabled {
+	opacity: 0.55;
+	box-shadow: none;
+}

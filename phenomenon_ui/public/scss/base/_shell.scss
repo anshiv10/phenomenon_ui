@@ -1,0 +1,65 @@
+@import "../tokens/scope";
+
+// ---------------------------------------------------------------------------
+// Shell — page-level surfaces that sit above the mapping layer.
+// ---------------------------------------------------------------------------
+
+#{$ph} body {
+	font-family: var(--ph-font-sans);
+	color: var(--ph-text);
+	background-color: var(--ph-surface);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+#{$ph} h1,
+#{$ph} h2,
+#{$ph} h3,
+#{$ph} h4,
+#{$ph} h5,
+#{$ph} h6 {
+	color: var(--ph-text);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-heading);
+	line-height: var(--ph-leading-tight);
+}
+
+#{$ph} a {
+	color: var(--ph-text-link);
+}
+
+#{$ph} code,
+#{$ph} pre {
+	font-family: var(--ph-font-mono);
+}
+
+// -- Tabular numerals --------------------------------------------------------
+// Misaligned money columns are a usability defect in an ERP, not a nicety:
+// with proportional digits a reader cannot compare magnitudes down a column
+// without reading every figure. Applied to the field types that hold numbers
+// and to every datatable cell.
+//
+// VERIFY (Session 0): the `[data-fieldtype]` attribute and the datatable cell
+// class names. These are the selectors most likely to differ across builds.
+#{$ph} [data-fieldtype="Currency"],
+#{$ph} [data-fieldtype="Float"],
+#{$ph} [data-fieldtype="Int"],
+#{$ph} [data-fieldtype="Percent"],
+#{$ph} .dt-cell,
+#{$ph} .dt-cell__content {
+	font-variant-numeric: tabular-nums;
+	font-feature-settings: "tnum" 1;
+}
+
+// -- Focus -------------------------------------------------------------------
+// One ring, defined once, used everywhere. :focus-visible only, so mouse users
+// do not get a ring on every click while keyboard users always do.
+#{$ph} :focus-visible {
+	outline: 2px solid var(--ph-border-focus);
+	outline-offset: 1px;
+}
+
+// -- Scrollbars --------------------------------------------------------------
+#{$ph} * {
+	scrollbar-color: var(--ph-border-strong) transparent;
+}

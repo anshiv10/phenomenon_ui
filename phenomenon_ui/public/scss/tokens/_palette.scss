@@ -1,0 +1,94 @@
+// ===========================================================================
+// The palette — every colour and font literal in Phenomenon UI, and the only
+// place any of them appear.
+// ===========================================================================
+//
+// These are SCSS variables, not custom properties: they emit nothing on their
+// own. `_colors.scss` and `_typography.scss` turn them into `--ph-*` under the
+// desk scope, `_web.scss` does the same under the portal scope. Two scopes,
+// one set of values — so the bundles cannot drift apart the way two
+// hand-copied palettes always do.
+//
+// Change a value here. Never anywhere else.
+
+// -- Accent ------------------------------------------------------------------
+// Deep teal, deliberately not blue: ERPNext already spends blue on
+// "informational link", and reusing it for primary actions collapses two
+// meanings into one hue.
+$teal-600: #0d7c74;
+$teal-700: #0a635d;
+$teal-800: #084d48;
+$teal-050: #e4f3f1;
+$teal-200: #b7dedb;
+
+// Dark-mode accent. Lifted from $teal-600, which falls under 4.5:1 against a
+// near-black surface.
+$teal-400: #2aa79c;
+$teal-300: #35bdb1;
+$teal-500: #1f8b82;
+$teal-950: #16302e;
+$teal-900: #24504c;
+$teal-ink: #06211f;
+
+// -- Neutrals, light ---------------------------------------------------------
+// Cool grey rather than pure white. On a 200-row list, white cards on a white
+// page give the eye no edge to rest on and raise glare; half a step of grey
+// does both jobs at once.
+$grey-050: #f5f7f8;
+$grey-100: #eef1f3;
+$grey-150: #eaeef0;
+$grey-200: #e2e7ea;
+$grey-300: #ccd4d9;
+$grey-400: #9aa8b2;
+$grey-500: #8b98a3;
+$grey-600: #5a6b78;
+$grey-700: #45535f;
+$grey-900: #17222c;
+$white: #ffffff;
+
+// -- Neutrals, dark ----------------------------------------------------------
+// Near-black, not black. True #000 behind white text halates on OLED and
+// destroys the elevation system — you cannot raise a surface above pure black
+// without inventing a lighter one anyway.
+$ink-900: #10151a;
+$ink-800: #14191d;
+$ink-700: #1b2126;
+$ink-600: #232a30;
+$ink-500: #2a323a;
+$ink-400: #3a444d;
+$ink-300: #7d8b95;
+$ink-200: #a4b1ba;
+$ink-100: #e6ebee;
+
+// -- Semantic ----------------------------------------------------------------
+// Kept close to Frappe's own hues so an indicator that read as "red" before
+// still reads as red. Colour carries meaning here; it is not decoration.
+$success: #148f5b;
+$success-soft: #e3f5ec;
+$warning: #b5760a;
+$warning-soft: #fdf3e2;
+$danger: #c5372c;
+$danger-soft: #fbeae8;
+$info: #1f6fb2;
+$info-soft: #e8f1f9;
+
+$success-dark: #3fbb7f;
+$success-soft-dark: #12271e;
+$warning-dark: #dda23c;
+$warning-soft-dark: #2b2114;
+$danger-dark: #e5695c;
+$danger-soft-dark: #2d1816;
+$info-dark: #5aa6df;
+$info-soft-dark: #14232f;
+
+// -- Type stacks -------------------------------------------------------------
+// No webfont. A theme that fetches a font file adds an outbound request to
+// every page load, blocks first paint on a third party, and fails outright on
+// an air-gapped install — a normal ERPNext deployment. The system stack is
+// already excellent everywhere Frappe runs; Inter is listed only so sites that
+// happen to have it installed pick it up.
+$font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter",
+	"Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji",
+	"Segoe UI Emoji";
+$font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+	"Liberation Mono", monospace;

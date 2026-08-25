@@ -1,0 +1,57 @@
+@import "../tokens/scope";
+
+// `.form-control` and `.control-label` are Frappe's own control markup
+// (frappe/public/js/frappe/form/controls/*). VERIFY both in Session 0.
+
+#{$ph} .form-control {
+	background-color: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border-strong);
+	border-radius: var(--ph-radius-sm);
+	color: var(--ph-text);
+	min-height: var(--ph-control-height);
+	transition: border-color var(--ph-transition), box-shadow var(--ph-transition);
+}
+
+#{$ph} .form-control:focus {
+	border-color: var(--ph-border-focus);
+	box-shadow: var(--ph-focus-ring);
+	outline: none;
+}
+
+#{$ph} .form-control:disabled,
+#{$ph} .form-control[readonly] {
+	background-color: var(--ph-surface-sunken);
+	color: var(--ph-text-muted);
+}
+
+#{$ph} .form-control::placeholder {
+	color: var(--ph-text-light);
+}
+
+#{$ph} .control-label {
+	color: var(--ph-text-muted);
+	font-size: var(--ph-text-sm);
+	font-weight: var(--ph-weight-medium);
+}
+
+// Section headings inside a form. VERIFY: `.section-head` / `.form-section`.
+#{$ph} .form-section {
+	background-color: var(--ph-surface-raised);
+	border-radius: var(--ph-radius);
+}
+
+#{$ph} .section-head {
+	color: var(--ph-text);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-heading);
+}
+
+// Form tabs. VERIFY: `.form-tabs-list` and the active-tab class Frappe sets.
+#{$ph} .form-tabs-list {
+	border-bottom: 1px solid var(--ph-border);
+}
+
+#{$ph} .form-tabs-list .nav-link.active {
+	color: var(--ph-primary);
+	border-bottom-color: var(--ph-primary);
+}

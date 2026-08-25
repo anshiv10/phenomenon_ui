@@ -1,0 +1,39 @@
+@import "scope";
+@import "palette";
+
+// ---------------------------------------------------------------------------
+// Typography.
+// ---------------------------------------------------------------------------
+//
+// The stacks themselves live in _palette.scss (and carry the reasoning for
+// shipping no webfont). This file only turns them into tokens, plus a size and
+// weight scale.
+//
+// Note what is NOT here: any remapping of Frappe's own type scale
+// (--text-xs … --text-4xl). Rescaling that globally reflows every list, grid
+// and report in ways no amount of spot-checking will catch.
+
+#{$ph} {
+	--ph-font-sans: #{$font-sans};
+	--ph-font-mono: #{$font-mono};
+
+	--ph-text-xs: 11px;
+	--ph-text-sm: 12px;
+	--ph-text-md: 13px;
+	--ph-text-base: 14px;
+	--ph-text-lg: 16px;
+	--ph-text-xl: 20px;
+	--ph-text-2xl: 24px;
+
+	--ph-weight-normal: 400;
+	--ph-weight-medium: 500;
+	--ph-weight-semibold: 600;
+	--ph-weight-bold: 700;
+
+	--ph-leading-tight: 1.25;
+	--ph-leading: 1.5;
+
+	// Negative tracking on headings only. Body text at 13–14px does not
+	// benefit, and tightening it there costs legibility.
+	--ph-tracking-heading: -0.01em;
+}

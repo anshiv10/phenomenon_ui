@@ -1,0 +1,19 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include phenomenon_ui *.css
+recursive-include phenomenon_ui *.csv
+recursive-include phenomenon_ui *.html
+recursive-include phenomenon_ui *.ico
+recursive-include phenomenon_ui *.js
+recursive-include phenomenon_ui *.json
+recursive-include phenomenon_ui *.md
+recursive-include phenomenon_ui *.png
+recursive-include phenomenon_ui *.py
+recursive-include phenomenon_ui *.scss
+recursive-include phenomenon_ui *.svg
+recursive-include phenomenon_ui *.txt
+recursive-exclude phenomenon_ui *.pyc

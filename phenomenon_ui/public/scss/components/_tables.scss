@@ -1,0 +1,36 @@
+@import "../tokens/scope";
+
+// Child-table grids inside forms, plus plain Bootstrap tables.
+// Full datatable / report styling is Milestone 3 — deliberately not here.
+// VERIFY (Session 0): `.grid-heading-row`, `.grid-row`, `.dt-row--header`,
+// `.dt-cell` against frappe-datatable in apps/frappe.
+
+#{$ph} .table {
+	color: var(--ph-text);
+}
+
+#{$ph} .table th {
+	color: var(--ph-text-muted);
+	font-weight: var(--ph-weight-medium);
+	font-size: var(--ph-text-sm);
+	border-bottom: 1px solid var(--ph-border);
+}
+
+#{$ph} .table td {
+	border-top: 1px solid var(--ph-border);
+}
+
+#{$ph} .grid-heading-row {
+	background-color: var(--ph-surface-sunken);
+	color: var(--ph-text-muted);
+	font-weight: var(--ph-weight-medium);
+	border-bottom: 1px solid var(--ph-border);
+}
+
+#{$ph} .grid-row {
+	border-bottom: 1px solid var(--ph-border);
+}
+
+#{$ph} .grid-row:hover {
+	background-color: var(--ph-surface-hover);
+}

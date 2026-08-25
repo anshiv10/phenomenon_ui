@@ -1,0 +1,21 @@
+@import "../tokens/scope";
+
+// ---------------------------------------------------------------------------
+// Dark mode — rules only.
+// ---------------------------------------------------------------------------
+//
+// The dark *palette* is not here. It lives in tokens/_colors.scss under
+// $ph-dark, because a dark theme is a token set rather than a pile of
+// overrides. The mapping layer reads --ph-* and never a literal, so
+// re-declaring those tokens re-themes every mapped Frappe variable at once.
+//
+// This file is therefore only for surfaces where a *rule* baked in a light
+// assumption that a token cannot reach. There should be almost nothing here.
+// If this file starts growing, the rule that forced each addition is the bug —
+// fix it there instead of compensating here.
+
+// A backdrop tuned for a light page is too weak over a near-black one: the
+// modal stops separating from the desk behind it.
+#{$ph-dark} .modal-backdrop.show {
+	opacity: 0.6;
+}

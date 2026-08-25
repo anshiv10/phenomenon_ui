@@ -1,0 +1,55 @@
+@import "../tokens/scope";
+
+// ---------------------------------------------------------------------------
+// Accessibility.
+// ---------------------------------------------------------------------------
+
+// Respect the OS motion preference. Transitions in this theme are all 120ms
+// cosmetic easing, so removing them costs nothing and prevents nausea for
+// users who asked not to see motion.
+@media (prefers-reduced-motion: reduce) {
+	#{$ph} *,
+	#{$ph} *::before,
+	#{$ph} *::after {
+		animation-duration: 0.01ms !important; // stylelint-disable-line
+		animation-iteration-count: 1 !important; // stylelint-disable-line
+		transition-duration: 0.01ms !important; // stylelint-disable-line
+		scroll-behavior: auto !important; // stylelint-disable-line
+	}
+}
+// NOTE ON !important: this block is the sole permitted exception in the app.
+// A reduced-motion override must beat any inline or third-party transition,
+// and the W3C-recommended implementation of this rule is defined with them.
+// Nowhere else.
+
+// Forced colours (Windows high contrast): step out of the way entirely rather
+// than fight the user's own palette.
+@media (forced-colors: active) {
+	#{$ph} .btn,
+	#{$ph} .form-control,
+	#{$ph} .widget {
+		border: 1px solid CanvasText;
+	}
+}
+
+// Users who ask for more contrast get the stronger border and darker muted
+// text, which is where this palette is closest to the AA floor.
+@media (prefers-contrast: more) {
+	#{$ph} {
+		--ph-border: var(--ph-border-hc);
+		--ph-border-strong: var(--ph-border-strong-hc);
+		--ph-text-muted: var(--ph-text-muted-hc);
+		--ph-text-light: var(--ph-text-light-hc);
+	}
+}
+
+// Keyboard skip target: visible only when focused.
+#{$ph} .sr-only-focusable:focus,
+#{$ph} .sr-only-focusable:focus-visible {
+	position: static;
+	width: auto;
+	height: auto;
+	overflow: visible;
+	clip: auto;
+	white-space: normal;
+}

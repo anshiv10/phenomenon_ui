@@ -1,0 +1,134 @@
+@import "scope";
+@import "palette";
+
+// ---------------------------------------------------------------------------
+// Colour tokens — light and dark, both scopes, one file.
+// ---------------------------------------------------------------------------
+//
+// Every value comes from `_palette.scss`. Nothing here is a literal.
+//
+// Dark mode lives here rather than in themes/_dark.scss on purpose: a dark
+// palette is a token set, not a set of overrides. Because the mapping layer
+// reads --ph-* and never a literal, re-declaring these tokens is enough to
+// re-theme every mapped Frappe variable in dark mode without touching a single
+// component rule.
+
+#{$ph} {
+	// -- Accent ------------------------------------------------------------
+	// --ph-primary is overridden inline by the theme engine when a site
+	// configures a custom accent, so everything downstream must read *this*
+	// variable and never the palette value behind it.
+	--ph-primary: #{$teal-600};
+	--ph-primary-hover: #{$teal-700};
+	--ph-primary-active: #{$teal-800};
+	--ph-primary-soft: #{$teal-050};
+	--ph-primary-border: #{$teal-200};
+	--ph-on-primary: #{$white};
+
+	// -- Surfaces ----------------------------------------------------------
+	--ph-surface: #{$grey-050}; // page background
+	--ph-surface-raised: #{$white}; // cards, form sections, modals
+	--ph-surface-sunken: #{$grey-100}; // wells, table headers, disabled controls
+	--ph-surface-hover: #{$grey-150};
+	--ph-surface-selected: var(--ph-primary-soft);
+	--ph-surface-inverse: #{$grey-900};
+
+	// -- Text --------------------------------------------------------------
+	--ph-text: #{$grey-900};
+	--ph-text-muted: #{$grey-600};
+	--ph-text-light: #{$grey-500};
+	--ph-text-inverse: #{$white};
+	--ph-text-link: var(--ph-primary);
+
+	// -- Borders -----------------------------------------------------------
+	--ph-border: #{$grey-200};
+	--ph-border-strong: #{$grey-300};
+	--ph-border-focus: var(--ph-primary);
+
+	// -- Semantic ----------------------------------------------------------
+	--ph-success: #{$success};
+	--ph-success-soft: #{$success-soft};
+	--ph-warning: #{$warning};
+	--ph-warning-soft: #{$warning-soft};
+	--ph-danger: #{$danger};
+	--ph-danger-soft: #{$danger-soft};
+	--ph-info: #{$info};
+	--ph-info-soft: #{$info-soft};
+
+	// -- Focus ring --------------------------------------------------------
+	// A visible ring is an accessibility requirement, not decoration. Defined
+	// once so every component uses the identical one.
+	--ph-focus-ring: 0 0 0 3px #{rgba($teal-600, 0.28)};
+
+	// -- High-contrast variants --------------------------------------------
+	// Consumed by themes/_accessibility.scss under prefers-contrast: more.
+	// A contrast fix is a token change, never a one-off override.
+	--ph-border-hc: #{$grey-300};
+	--ph-border-strong-hc: #{$grey-400};
+	--ph-text-muted-hc: #{$grey-700};
+	--ph-text-light-hc: #{$grey-600};
+}
+
+// ---------------------------------------------------------------------------
+// Dark
+// ---------------------------------------------------------------------------
+// Hooks the attribute Frappe already toggles rather than introducing a switch
+// of its own: the built-in light/dark/automatic control keeps working, users
+// keep their existing preference, and there is no second source of truth.
+//
+// VERIFY (Session 0): confirm the attribute is `data-theme` on <html> and the
+// value is exactly "dark". If this build differs, change $ph-dark in
+// tokens/_scope.scss — that one line is the only edit needed.
+
+#{$ph-dark} {
+	// -- Surfaces ----------------------------------------------------------
+	--ph-surface: #{$ink-800};
+	--ph-surface-raised: #{$ink-700};
+	--ph-surface-sunken: #{$ink-900};
+	--ph-surface-hover: #{$ink-600};
+	--ph-surface-selected: #{$teal-950};
+	--ph-surface-inverse: #{$grey-050};
+
+	// -- Text --------------------------------------------------------------
+	--ph-text: #{$ink-100};
+	--ph-text-muted: #{$ink-200};
+	--ph-text-light: #{$ink-300};
+	--ph-text-inverse: #{$ink-800};
+
+	// -- Borders -----------------------------------------------------------
+	--ph-border: #{$ink-500};
+	--ph-border-strong: #{$ink-400};
+
+	// -- Accent ------------------------------------------------------------
+	--ph-primary: #{$teal-400};
+	--ph-primary-hover: #{$teal-300};
+	--ph-primary-active: #{$teal-500};
+	--ph-primary-soft: #{$teal-950};
+	--ph-primary-border: #{$teal-900};
+	--ph-on-primary: #{$teal-ink};
+
+	// -- Semantic ----------------------------------------------------------
+	--ph-success: #{$success-dark};
+	--ph-success-soft: #{$success-soft-dark};
+	--ph-warning: #{$warning-dark};
+	--ph-warning-soft: #{$warning-soft-dark};
+	--ph-danger: #{$danger-dark};
+	--ph-danger-soft: #{$danger-soft-dark};
+	--ph-info: #{$info-dark};
+	--ph-info-soft: #{$info-soft-dark};
+
+	// -- Elevation ---------------------------------------------------------
+	// Shadows barely read on dark surfaces; the border does the separating,
+	// so they are reduced rather than kept at light-mode strength.
+	--ph-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+	--ph-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+	--ph-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+
+	--ph-focus-ring: 0 0 0 3px #{rgba($teal-400, 0.35)};
+
+	// -- High contrast -----------------------------------------------------
+	--ph-border-hc: #{$ink-400};
+	--ph-border-strong-hc: #{$ink-300};
+	--ph-text-muted-hc: #{$ink-100};
+	--ph-text-light-hc: #{$ink-200};
+}

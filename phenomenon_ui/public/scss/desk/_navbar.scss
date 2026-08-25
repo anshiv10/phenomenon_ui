@@ -1,0 +1,35 @@
+@import "../tokens/scope";
+
+// The navbar is the one surface a user sees on literally every page, which is
+// why it gets a style switch of its own rather than a single opinion.
+// VERIFY (Session 0): `.navbar` and `.navbar-brand` in this build.
+
+#{$ph} .navbar {
+	background-color: var(--ph-surface-raised);
+	border-bottom: 1px solid var(--ph-border);
+}
+
+#{$ph} .navbar .navbar-brand {
+	color: var(--ph-text);
+	font-weight: var(--ph-weight-semibold);
+}
+
+#{$ph} .navbar .nav-link {
+	color: var(--ph-text-muted);
+}
+
+#{$ph} .navbar .nav-link:hover {
+	color: var(--ph-text);
+}
+
+// -- Style variants ----------------------------------------------------------
+#{$ph}[data-ph-navbar="flat"] .navbar {
+	background-color: var(--ph-surface);
+	border-bottom-color: transparent;
+	box-shadow: none;
+}
+
+#{$ph}[data-ph-navbar="elevated"] .navbar {
+	border-bottom-color: transparent;
+	box-shadow: var(--ph-shadow);
+}

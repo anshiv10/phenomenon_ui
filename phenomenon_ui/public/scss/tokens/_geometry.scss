@@ -1,0 +1,93 @@
+@import "scope";
+
+// ---------------------------------------------------------------------------
+// Geometry — radius, density, elevation.
+// ---------------------------------------------------------------------------
+//
+// Radius and density are *not* fixed values. They resolve through attributes
+// the theme engine writes on <html>, which is what lets a site change its whole
+// feel from Settings without a rebuild.
+
+#{$ph} {
+	// Defaults, in case an attribute is missing (engine failed, JS disabled).
+	--ph-radius-sm: 4px;
+	--ph-radius: 6px;
+	--ph-radius-lg: 10px;
+	--ph-radius-full: 999px;
+
+	--ph-density-scale: 1;
+	--ph-row-height: 34px;
+	--ph-control-height: 30px;
+	--ph-space-1: 4px;
+	--ph-space-2: 8px;
+	--ph-space-3: 12px;
+	--ph-space-4: 16px;
+	--ph-space-5: 24px;
+	--ph-space-6: 32px;
+
+	// Elevation: two steps only. More than two and "raised" stops meaning
+	// anything, because everything is raised.
+	--ph-shadow-sm: 0 1px 2px rgba(23, 34, 44, 0.06);
+	--ph-shadow: 0 1px 3px rgba(23, 34, 44, 0.08), 0 1px 2px rgba(23, 34, 44, 0.04);
+	--ph-shadow-lg: 0 8px 24px rgba(23, 34, 44, 0.12), 0 2px 6px rgba(23, 34, 44, 0.06);
+
+	--ph-transition: 120ms ease;
+}
+
+// -- Radius ------------------------------------------------------------------
+#{$ph}[data-ph-radius="sharp"] {
+	--ph-radius-sm: 0;
+	--ph-radius: 0;
+	--ph-radius-lg: 0;
+}
+
+#{$ph}[data-ph-radius="small"] {
+	--ph-radius-sm: 2px;
+	--ph-radius: 4px;
+	--ph-radius-lg: 6px;
+}
+
+#{$ph}[data-ph-radius="medium"] {
+	--ph-radius-sm: 4px;
+	--ph-radius: 6px;
+	--ph-radius-lg: 10px;
+}
+
+#{$ph}[data-ph-radius="large"] {
+	--ph-radius-sm: 6px;
+	--ph-radius: 10px;
+	--ph-radius-lg: 16px;
+}
+
+// -- Density -----------------------------------------------------------------
+// Density must change *row height*, not only padding. A density switch that
+// does not visibly change how many rows fit on screen has not done its job.
+#{$ph}[data-ph-density="compact"] {
+	--ph-density-scale: 0.8;
+	--ph-row-height: 28px;
+	--ph-control-height: 26px;
+	--ph-space-1: 2px;
+	--ph-space-2: 6px;
+	--ph-space-3: 8px;
+	--ph-space-4: 12px;
+	--ph-space-5: 16px;
+	--ph-space-6: 24px;
+}
+
+#{$ph}[data-ph-density="comfortable"] {
+	--ph-density-scale: 1;
+	--ph-row-height: 34px;
+	--ph-control-height: 30px;
+}
+
+#{$ph}[data-ph-density="spacious"] {
+	--ph-density-scale: 1.2;
+	--ph-row-height: 42px;
+	--ph-control-height: 36px;
+	--ph-space-1: 6px;
+	--ph-space-2: 10px;
+	--ph-space-3: 16px;
+	--ph-space-4: 20px;
+	--ph-space-5: 28px;
+	--ph-space-6: 40px;
+}

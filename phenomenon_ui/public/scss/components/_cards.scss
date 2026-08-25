@@ -1,0 +1,39 @@
+@import "../tokens/scope";
+
+// Widgets are the workspace building block (number cards, charts, shortcuts,
+// links). Only the shared container is styled here — per-widget treatment is
+// Milestone 2, on its own branch.
+// VERIFY (Session 0): `.widget`, `.widget-head`, `.number-card`.
+
+#{$ph} .widget {
+	background-color: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border);
+	border-radius: var(--ph-radius-lg);
+	box-shadow: var(--ph-shadow-sm);
+	transition: box-shadow var(--ph-transition), border-color var(--ph-transition);
+}
+
+#{$ph} .widget:hover {
+	border-color: var(--ph-border-strong);
+	box-shadow: var(--ph-shadow);
+}
+
+#{$ph} .widget-head {
+	color: var(--ph-text);
+	font-weight: var(--ph-weight-semibold);
+}
+
+#{$ph} .card {
+	background-color: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border);
+	border-radius: var(--ph-radius-lg);
+}
+
+// Status pills. Colour carries meaning here, so only the shape and weight are
+// touched — hues stay Frappe's so a red indicator still reads as red.
+// VERIFY: `.indicator-pill`.
+#{$ph} .indicator-pill {
+	border-radius: var(--ph-radius-full);
+	font-weight: var(--ph-weight-medium);
+	font-size: var(--ph-text-xs);
+}

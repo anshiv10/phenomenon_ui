@@ -1,0 +1,47 @@
+@import "../tokens/scope";
+
+// `.modal-content` / `.modal-header` / `.modal-footer` are Bootstrap's, used
+// by frappe.ui.Dialog. Low risk of renaming.
+
+#{$ph} .modal-content {
+	background-color: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border);
+	border-radius: var(--ph-radius-lg);
+	box-shadow: var(--ph-shadow-lg);
+}
+
+#{$ph} .modal-header {
+	border-bottom: 1px solid var(--ph-border);
+}
+
+#{$ph} .modal-footer {
+	border-top: 1px solid var(--ph-border);
+	background-color: var(--ph-surface);
+	border-bottom-left-radius: var(--ph-radius-lg);
+	border-bottom-right-radius: var(--ph-radius-lg);
+}
+
+#{$ph} .modal-title {
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-heading);
+}
+
+#{$ph} .modal-backdrop.show {
+	opacity: 0.4;
+}
+
+// Awesomebar results and other dropdowns.
+// VERIFY (Session 0): `.awesomplete` markup in this build.
+#{$ph} .dropdown-menu,
+#{$ph} .awesomplete > ul {
+	background-color: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border);
+	border-radius: var(--ph-radius);
+	box-shadow: var(--ph-shadow-lg);
+}
+
+#{$ph} .dropdown-item:hover,
+#{$ph} .dropdown-item:focus {
+	background-color: var(--ph-surface-hover);
+	color: var(--ph-text);
+}

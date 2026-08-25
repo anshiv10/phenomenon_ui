@@ -1,0 +1,45 @@
+@import "../tokens/scope";
+
+// VERIFY (Session 0): `.standard-sidebar-item`, `.standard-sidebar-label`,
+// and the class Frappe puts on the *selected* item — the active state is the
+// single most valuable rule here and the easiest one to get wrong.
+
+#{$ph} .standard-sidebar-item {
+	border-radius: var(--ph-radius);
+	color: var(--ph-text-muted);
+	transition: background-color var(--ph-transition), color var(--ph-transition);
+}
+
+#{$ph} .standard-sidebar-item:hover {
+	background-color: var(--ph-surface-hover);
+	color: var(--ph-text);
+}
+
+#{$ph} .standard-sidebar-item.selected {
+	background-color: var(--ph-surface-selected);
+	color: var(--ph-primary);
+	font-weight: var(--ph-weight-medium);
+}
+
+#{$ph} .standard-sidebar-label {
+	color: var(--ph-text-light);
+	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+}
+
+// -- Style variants ----------------------------------------------------------
+#{$ph}[data-ph-sidebar="flat"] .standard-sidebar-item {
+	border-radius: 0;
+}
+
+#{$ph}[data-ph-sidebar="flat"] .standard-sidebar-item.selected {
+	background-color: transparent;
+	box-shadow: inset 2px 0 0 var(--ph-primary);
+}
+
+#{$ph}[data-ph-sidebar="floating"] .standard-sidebar-item {
+	border-radius: var(--ph-radius-lg);
+	margin-inline: var(--ph-space-2);
+}

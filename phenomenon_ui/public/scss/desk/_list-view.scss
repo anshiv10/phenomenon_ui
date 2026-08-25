@@ -1,0 +1,30 @@
+@import "../tokens/scope";
+
+// VERIFY (Session 0): `.list-row-container`, `.list-row-head`, `.list-row`.
+
+#{$ph} .list-row-head {
+	background-color: var(--ph-surface-sunken);
+	border-bottom: 1px solid var(--ph-border);
+	color: var(--ph-text-muted);
+	font-weight: var(--ph-weight-medium);
+}
+
+#{$ph} .list-row-container {
+	border-bottom: 1px solid var(--ph-border);
+	transition: background-color var(--ph-transition);
+}
+
+#{$ph} .list-row-container:hover {
+	background-color: var(--ph-surface-hover);
+}
+
+// Density has to reach the list, or "Compact" is a setting that changes
+// nothing on the screen users spend the most time on.
+#{$ph} .list-row {
+	min-height: var(--ph-row-height);
+	padding-block: var(--ph-space-2);
+}
+
+#{$ph} .list-row-container:last-child {
+	border-bottom: none;
+}

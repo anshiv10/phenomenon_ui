@@ -1,0 +1,122 @@
+@import "../tokens/scope";
+
+// ===========================================================================
+// THE MAPPING LAYER
+// ===========================================================================
+//
+// This is the most important file in the app, and the one to extend first when
+// something looks unthemed.
+//
+// Frappe paints nearly its entire desk from CSS custom properties declared in
+// `apps/frappe/frappe/public/scss/common/css_variables.scss`. Re-pointing those
+// variables at `--ph-*` tokens themes every page in the product at once —
+// including the pages neither you nor I have ever opened, and including pages
+// that ship in a future ERPNext release. A component rule themes exactly one
+// surface and only until someone renames the class.
+//
+// So: before writing a rule in components/ or desk/, ask whether a variable
+// here would have done it. Usually one does.
+//
+// SPECIFICITY
+// Frappe declares these on `:root` (0,1,0) and its dark overrides on
+// `[data-theme="dark"]` (0,1,0). `html[data-ph='on']` is (0,1,1) and wins both
+// without a single !important. Dark re-mapping lives in themes/_dark.scss at
+// (0,2,1) so it wins in turn.
+//
+// VERIFICATION STATUS
+// Every variable below is one I expect on a Frappe v15 build, but this app was
+// authored without a bench attached. Session 0 exists to confirm the list
+// against the installed source. Anything that turns out not to exist is dead
+// weight, not a bug — an unused custom property is inert — but delete it
+// anyway so this file stays an accurate description of the build.
+// The block at the bottom holds candidates I am *not* confident enough to map
+// blind; enable them once Session 0 confirms them.
+// ===========================================================================
+
+#{$ph} {
+	// -- Surfaces ----------------------------------------------------------
+	--bg-color: var(--ph-surface);
+	--fg-color: var(--ph-surface-raised);
+	--card-bg: var(--ph-surface-raised);
+	--control-bg: var(--ph-surface-raised);
+	--disabled-control-bg: var(--ph-surface-sunken);
+	--fg-hover-color: var(--ph-surface-hover);
+	--subtle-accent: var(--ph-surface-sunken);
+	--subtle-fg: var(--ph-surface-sunken);
+	--highlight-color: var(--ph-surface-hover);
+	--awesomplete-hover-bg: var(--ph-surface-selected);
+
+	// -- Text --------------------------------------------------------------
+	--text-color: var(--ph-text);
+	--text-muted: var(--ph-text-muted);
+	--text-light: var(--ph-text-light);
+	--heading-color: var(--ph-text);
+	--icon-stroke: currentColor;
+
+	// -- Borders -----------------------------------------------------------
+	--border-color: var(--ph-border);
+	--dark-border-color: var(--ph-border-strong);
+
+	// -- Accent ------------------------------------------------------------
+	// The single most load-bearing mapping in the file: this is what turns
+	// every stock primary button, active tab, focus ring and selected row
+	// teal without a component rule anywhere.
+	--primary: var(--ph-primary);
+	--primary-color: var(--ph-primary);
+
+	// -- Radius ------------------------------------------------------------
+	// Mapped to the attribute-driven tokens, which is how the Corner Radius
+	// setting reaches components this app never names.
+	--border-radius-sm: var(--ph-radius-sm);
+	--border-radius: var(--ph-radius);
+	--border-radius-md: var(--ph-radius);
+	--border-radius-lg: var(--ph-radius-lg);
+	--border-radius-full: var(--ph-radius-full);
+
+	// -- Elevation ---------------------------------------------------------
+	--shadow-base: var(--ph-shadow);
+	--shadow-sm: var(--ph-shadow-sm);
+	--shadow-md: var(--ph-shadow);
+	--shadow-lg: var(--ph-shadow-lg);
+
+	// -- Spacing -----------------------------------------------------------
+	// Density reaches stock components through these. Confirm the exact names
+	// in Session 0 before relying on them for layout-critical padding.
+	--padding-xs: var(--ph-space-1);
+	--padding-sm: var(--ph-space-2);
+	--padding-md: var(--ph-space-3);
+	--padding-lg: var(--ph-space-4);
+	--padding-xl: var(--ph-space-5);
+	--padding-2xl: var(--ph-space-6);
+
+	--margin-xs: var(--ph-space-1);
+	--margin-sm: var(--ph-space-2);
+	--margin-md: var(--ph-space-3);
+	--margin-lg: var(--ph-space-4);
+	--margin-xl: var(--ph-space-5);
+}
+
+// ---------------------------------------------------------------------------
+// CANDIDATES — verify in Session 0, then move up into the block above.
+// ---------------------------------------------------------------------------
+// Left commented on purpose. Mapping a variable that does not exist is
+// harmless but dishonest: this file is meant to double as documentation of
+// what the installed build actually exposes.
+//
+//   --navbar-bg
+//   --modal-bg
+//   --sidebar-select-color
+//   --control-bg-on-gray
+//   --scrollbar-thumb-color
+//   --navbar-height
+//   --page-head-height
+//   --error-bg / --error-border
+//   --alert-text-color
+//   --avatar-frame-bg
+//   --btn-height
+//   --input-height
+//   --checkbox-size
+//
+// Font-size variables (--text-xs … --text-4xl) are deliberately NOT mapped.
+// They are Frappe's type scale, and rescaling it globally reflows every list,
+// grid and report in ways no amount of spot-checking will catch.

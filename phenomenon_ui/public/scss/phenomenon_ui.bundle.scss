@@ -1,0 +1,45 @@
+// ===========================================================================
+// Phenomenon UI — desk bundle
+// ===========================================================================
+//
+// Compiled by Frappe's esbuild pipeline into
+// assets/phenomenon_ui/dist/css/phenomenon_ui.bundle.<hash>.css and loaded via
+// `app_include_css` in hooks.py.
+//
+// Import order is load-bearing:
+//   1. tokens    — declare --ph-* (light and dark) from the palette
+//   2. mapping   — re-point Frappe's variables at those tokens (themes
+//                  everything, including pages we never look at)
+//   3. base      — shell-level rules
+//   4. components / desk — targeted rules, only where a variable could not do it
+//   5. themes    — dark rules and accessibility, last so they win
+
+// 1. Tokens
+@import "tokens/scope";
+@import "tokens/palette";
+@import "tokens/colors";
+@import "tokens/geometry";
+@import "tokens/typography";
+
+// 2. Mapping
+@import "base/mapping";
+
+// 3. Base
+@import "base/shell";
+
+// 4. Components
+@import "components/buttons";
+@import "components/forms";
+@import "components/cards";
+@import "components/dialogs";
+@import "components/tables";
+
+// 4b. Desk surfaces
+@import "desk/navbar";
+@import "desk/sidebar";
+@import "desk/list-view";
+@import "desk/form-view";
+
+// 5. Themes
+@import "themes/dark";
+@import "themes/accessibility";

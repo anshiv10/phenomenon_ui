@@ -1,0 +1,33 @@
+@import "scope";
+@import "palette";
+
+// ---------------------------------------------------------------------------
+// Website tokens.
+// ---------------------------------------------------------------------------
+//
+// The portal bundle needs its own token declarations because the desk tokens
+// are scoped to html[data-ph='on'], an attribute the website never gets — the
+// theme engine only runs on the desk.
+//
+// The *values* still come from _palette.scss, so this is a second scope, not a
+// second palette. Only the tokens the web bundle actually consumes are
+// declared; there is no point shipping the full desk set to a public page.
+
+#{$ph-web} {
+	--ph-primary: #{$teal-600};
+	--ph-primary-hover: #{$teal-700};
+	--ph-on-primary: #{$white};
+
+	--ph-surface: #{$grey-050};
+	--ph-surface-raised: #{$white};
+
+	--ph-text: #{$grey-900};
+	--ph-text-muted: #{$grey-600};
+
+	--ph-border: #{$grey-200};
+
+	--ph-radius: 6px;
+	--ph-radius-lg: 10px;
+
+	--ph-font-sans: #{$font-sans};
+}
