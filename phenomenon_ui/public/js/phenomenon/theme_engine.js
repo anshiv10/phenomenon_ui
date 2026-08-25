@@ -12,15 +12,33 @@
 const ROOT_FLAG = "data-ph";
 const STYLE_ID = "phenomenon-custom-css";
 
+// Frappe owns the data-theme attribute. We only write it when a site has
+// explicitly asked us to force an appearance, and we record whatever was there
+// first so that disabling the theme puts it back exactly as found.
+const ORIGINAL_THEME = (function () {
+	try {
+		return document.documentElement.getAttribute("data-theme");
+	} catch (e) {
+		return null;
+	}
+})();
+
 const DEFAULTS = {
 	enabled: 1,
 	theme_preset: "Default",
+	appearance: "Follow User Preference",
 	accent_color: "",
 	density: "Comfortable",
 	corner_radius: "Medium",
 	sidebar_style: "Standard",
 	navbar_style: "Standard",
 	custom_css: "",
+};
+
+const APPEARANCE = {
+	"follow user preference": null,
+	"always light": "light",
+	"always dark": "dark",
 };
 
 const ALLOWED = {
@@ -43,6 +61,11 @@ function normalise(raw) {
 		const value = String(settings[key] || "").toLowerCase();
 		clean[key] = options.indexOf(value) !== -1 ? value : String(DEFAULTS[key]).toLowerCase();
 	}
+
+	const appearance = String(settings.appearance || "").toLowerCase();
+	clean.forced_theme = Object.prototype.hasOwnProperty.call(APPEARANCE, appearance)
+		? APPEARANCE[appearance]
+		: null;
 
 	const accent = String(settings.accent_color || "").trim();
 	clean.accent_color = HEX_RE.test(accent) ? accent : "";
@@ -67,8 +90,18 @@ function apply(raw) {
 		html.removeAttribute("data-ph-sidebar");
 		html.removeAttribute("data-ph-navbar");
 		html.style.removeProperty("--ph-primary");
+		restoreTheme();
 		removeCustomCSS();
 		return;
+	}
+
+	// Forcing an appearance overrides each user's own light/dark choice, which
+	// is why "Follow User Preference" is the default and the only mode that
+	// leaves data-theme alone.
+	if (s.forced_theme) {
+		html.setAttribute("data-theme", s.forced_theme);
+	} else {
+		restoreTheme();
 	}
 
 	html.setAttribute(ROOT_FLAG, "on");
@@ -85,6 +118,17 @@ function apply(raw) {
 	}
 
 	injectCustomCSS(s.custom_css);
+}
+
+// Put data-theme back exactly as it was found at load — including absent, if
+// that is how we found it. Anything less is residue.
+function restoreTheme() {
+	const html = document.documentElement;
+	if (ORIGINAL_THEME === null) {
+		html.removeAttribute("data-theme");
+	} else if (html.getAttribute("data-theme") !== ORIGINAL_THEME) {
+		html.setAttribute("data-theme", ORIGINAL_THEME);
+	}
 }
 
 function injectCustomCSS(css) {
@@ -133,6 +177,10 @@ if (window.frappe && frappe.router && frappe.router.on) {
 	frappe.router.on("change", () => refresh());
 }
 
+// Diagnostics deliberately do NOT live here. They are support tooling used on
+// exactly one form, and this bundle loads on every desk page — shipping ~7 KB
+// of probes to every page load to serve an occasional button is the wrong
+// trade. They live in the Phenomenon UI Settings form script instead.
 window.phenomenon = { apply, refresh, defaults: DEFAULTS };
 
 export { apply, refresh };

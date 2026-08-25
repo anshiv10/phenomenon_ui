@@ -3,6 +3,7 @@ import frappe
 DEFAULTS = {
 	"enabled": 1,
 	"theme_preset": "Default",
+	"appearance": "Follow User Preference",
 	"accent_color": "",
 	"density": "Comfortable",
 	"corner_radius": "Medium",
@@ -16,6 +17,7 @@ DEFAULTS = {
 # never produce an attribute the SCSS does not have a rule for.
 ALLOWED = {
 	"theme_preset": {"Default", "Clinical"},
+	"appearance": {"Follow User Preference", "Always Light", "Always Dark"},
 	"density": {"Compact", "Comfortable", "Spacious"},
 	"corner_radius": {"Sharp", "Small", "Medium", "Large"},
 	"sidebar_style": {"Standard", "Flat", "Floating"},
