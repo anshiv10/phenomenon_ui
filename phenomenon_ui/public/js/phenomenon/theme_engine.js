@@ -14,6 +14,7 @@ const STYLE_ID = "phenomenon-custom-css";
 
 const DEFAULTS = {
 	enabled: 1,
+	theme_preset: "Default",
 	accent_color: "",
 	density: "Comfortable",
 	corner_radius: "Medium",
@@ -23,10 +24,11 @@ const DEFAULTS = {
 };
 
 const ALLOWED = {
+	theme_preset: ["default", "clinical"],
 	density: ["compact", "comfortable", "spacious"],
 	corner_radius: ["sharp", "small", "medium", "large"],
 	sidebar_style: ["standard", "flat", "floating"],
-	navbar_style: ["standard", "flat", "elevated"],
+	navbar_style: ["standard", "flat", "elevated", "contrast"],
 };
 
 // #abc, #aabbcc, #aabbccdd — anything else is ignored rather than written into
@@ -59,6 +61,7 @@ function apply(raw) {
 		// Full rollback. Every Phenomenon rule is scoped under html[data-ph="on"],
 		// so removing this one attribute returns the desk to stock appearance.
 		html.removeAttribute(ROOT_FLAG);
+		html.removeAttribute("data-ph-preset");
 		html.removeAttribute("data-ph-density");
 		html.removeAttribute("data-ph-radius");
 		html.removeAttribute("data-ph-sidebar");
@@ -69,6 +72,7 @@ function apply(raw) {
 	}
 
 	html.setAttribute(ROOT_FLAG, "on");
+	html.setAttribute("data-ph-preset", s.theme_preset);
 	html.setAttribute("data-ph-density", s.density);
 	html.setAttribute("data-ph-radius", s.corner_radius);
 	html.setAttribute("data-ph-sidebar", s.sidebar_style);

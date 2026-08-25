@@ -20,8 +20,13 @@
 // SPECIFICITY
 // Frappe declares these on `:root` (0,1,0) and its dark overrides on
 // `[data-theme="dark"]` (0,1,0). `html[data-ph='on']` is (0,1,1) and wins both
-// without a single !important. Dark re-mapping lives in themes/_dark.scss at
-// (0,2,1) so it wins in turn.
+// without a single !important.
+//
+// Note what that means: this file is mapped ONCE, for every theme and preset.
+// Dark mode and the clinical preset re-declare `--ph-*` in tokens/_colors.scss
+// at higher specificity, and these mappings pick the new values up for free.
+// If you ever find yourself writing a second copy of this block for a theme,
+// stop — the token layer is the thing that should have changed.
 //
 // VERIFICATION STATUS
 // Every variable below is one I expect on a Frappe v15 build, but this app was
@@ -76,8 +81,20 @@
 	// -- Elevation ---------------------------------------------------------
 	--shadow-base: var(--ph-shadow);
 	--shadow-sm: var(--ph-shadow-sm);
-	--shadow-md: var(--ph-shadow);
+	--shadow-md: var(--ph-shadow-md);
 	--shadow-lg: var(--ph-shadow-lg);
+
+	// -- Shell surfaces ----------------------------------------------------
+	// Mapped so the navbar and modal are under this app's control rather than
+	// inheriting whatever the build happens to default to. If these variables
+	// do not exist in your build the declarations are inert, and the component
+	// rules in desk/_navbar.scss cover the same ground.
+	// VERIFY (Session 0): --navbar-bg, --modal-bg, --sidebar-select-color.
+	--navbar-bg: var(--ph-surface-raised);
+	--modal-bg: var(--ph-surface-raised);
+	--sidebar-select-color: var(--ph-surface-selected);
+	--control-bg-on-gray: var(--ph-surface-raised);
+	--scrollbar-thumb-color: var(--ph-border-strong);
 
 	// -- Spacing -----------------------------------------------------------
 	// Density reaches stock components through these. Confirm the exact names
@@ -103,11 +120,6 @@
 // harmless but dishonest: this file is meant to double as documentation of
 // what the installed build actually exposes.
 //
-//   --navbar-bg
-//   --modal-bg
-//   --sidebar-select-color
-//   --control-bg-on-gray
-//   --scrollbar-thumb-color
 //   --navbar-height
 //   --page-head-height
 //   --error-bg / --error-border

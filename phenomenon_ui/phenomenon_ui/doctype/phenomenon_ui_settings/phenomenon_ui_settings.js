@@ -4,6 +4,7 @@ frappe.ui.form.on("Phenomenon UI Settings", {
 			if (!window.phenomenon) return;
 			window.phenomenon.apply({
 				enabled: frm.doc.enabled ? 1 : 0,
+				theme_preset: frm.doc.theme_preset,
 				accent_color: frm.doc.accent_color || "",
 				density: frm.doc.density,
 				corner_radius: frm.doc.corner_radius,

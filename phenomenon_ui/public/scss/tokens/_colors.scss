@@ -41,8 +41,8 @@
 	--ph-text-link: var(--ph-primary);
 
 	// -- Borders -----------------------------------------------------------
-	--ph-border: #{$grey-200};
-	--ph-border-strong: #{$grey-300};
+	--ph-border: #{$grey-200}; // separators — decorative, not a control edge
+	--ph-border-strong: #{$grey-450}; // control edges — measured >= 3:1
 	--ph-border-focus: var(--ph-primary);
 
 	// -- Semantic ----------------------------------------------------------
@@ -63,10 +63,24 @@
 	// -- High-contrast variants --------------------------------------------
 	// Consumed by themes/_accessibility.scss under prefers-contrast: more.
 	// A contrast fix is a token change, never a one-off override.
-	--ph-border-hc: #{$grey-300};
-	--ph-border-strong-hc: #{$grey-400};
+	--ph-border-hc: #{$grey-450};
+	--ph-border-strong-hc: #{$grey-600};
 	--ph-text-muted-hc: #{$grey-700};
 	--ph-text-light-hc: #{$grey-600};
+
+	// -- Clinical status semantics -----------------------------------------
+	// Available in every preset, painted by nothing automatically. See
+	// components/_indicators.scss for the opt-in utilities.
+	--ph-critical: #{$state-critical};
+	--ph-critical-soft: #{$state-critical-soft};
+	--ph-urgent: #{$state-urgent};
+	--ph-urgent-soft: #{$state-urgent-soft};
+	--ph-stable: #{$state-stable};
+	--ph-stable-soft: #{$state-stable-soft};
+	--ph-routine: #{$state-routine};
+	--ph-routine-soft: #{$state-routine-soft};
+	--ph-inactive: #{$state-inactive};
+	--ph-inactive-soft: #{$state-inactive-soft};
 }
 
 // ---------------------------------------------------------------------------
@@ -97,7 +111,7 @@
 
 	// -- Borders -----------------------------------------------------------
 	--ph-border: #{$ink-500};
-	--ph-border-strong: #{$ink-400};
+	--ph-border-strong: #{$ink-450};
 
 	// -- Accent ------------------------------------------------------------
 	--ph-primary: #{$teal-400};
@@ -127,8 +141,113 @@
 	--ph-focus-ring: 0 0 0 3px #{rgba($teal-400, 0.35)};
 
 	// -- High contrast -----------------------------------------------------
-	--ph-border-hc: #{$ink-400};
-	--ph-border-strong-hc: #{$ink-300};
+	--ph-border-hc: #{$ink-450};
+	--ph-border-strong-hc: #{$ink-200};
 	--ph-text-muted-hc: #{$ink-100};
 	--ph-text-light-hc: #{$ink-200};
+
+	// -- Clinical status semantics -----------------------------------------
+	--ph-critical: #{$state-critical-dark};
+	--ph-critical-soft: #{$state-critical-soft-dark};
+	--ph-urgent: #{$state-urgent-dark};
+	--ph-urgent-soft: #{$state-urgent-soft-dark};
+	--ph-stable: #{$state-stable-dark};
+	--ph-stable-soft: #{$state-stable-soft-dark};
+	--ph-routine: #{$state-routine-dark};
+	--ph-routine-soft: #{$state-routine-soft-dark};
+	--ph-inactive: #{$state-inactive-dark};
+	--ph-inactive-soft: #{$state-inactive-soft-dark};
+}
+
+// ---------------------------------------------------------------------------
+// Clinical preset — day
+// ---------------------------------------------------------------------------
+// Selected in Phenomenon UI Settings. Only tokens change; not one component
+// rule knows this preset exists. That is the test of whether the token layer
+// is carrying its weight — if adding a preset had required editing
+// desk/_list-view.scss, the architecture would have failed.
+
+#{$ph-clinical} {
+	--ph-primary: #{$clinical-accent};
+	--ph-primary-hover: #{$clinical-accent-hover};
+	--ph-primary-active: #{$clinical-accent-active};
+	--ph-primary-soft: #{$clinical-accent-soft};
+	--ph-primary-border: #{$clinical-accent-border};
+	--ph-on-primary: #{$white};
+
+	--ph-surface: #{$clinical-050};
+	--ph-surface-raised: #{$white};
+	--ph-surface-sunken: #{$clinical-100};
+	--ph-surface-hover: #{$clinical-150};
+	--ph-surface-selected: var(--ph-primary-soft);
+	--ph-surface-inverse: #{$clinical-900};
+
+	--ph-text: #{$clinical-900};
+	--ph-text-muted: #{$clinical-600};
+	--ph-text-light: #{$clinical-500};
+	--ph-text-inverse: #{$white};
+
+	--ph-border: #{$clinical-200};
+	--ph-border-strong: #{$clinical-450};
+
+	--ph-focus-ring: 0 0 0 3px #{rgba($clinical-accent, 0.26)};
+
+	--ph-border-hc: #{$clinical-450};
+	--ph-border-strong-hc: #{$clinical-700};
+	--ph-text-muted-hc: #{$clinical-700};
+	--ph-text-light-hc: #{$clinical-600};
+}
+
+// ---------------------------------------------------------------------------
+// Clinical preset — night
+// ---------------------------------------------------------------------------
+// Not "the dark theme, but greener". Night shift runs with ward lighting down,
+// so overall luminance drops further than the standard dark palette: bright
+// enough to read a chart, dim enough that the screen is not the brightest
+// thing in a sleeping bay at 3am.
+
+#{$ph-clinical-dark} {
+	--ph-primary: #{$clinical-accent-night};
+	--ph-primary-hover: #{$clinical-accent-night-hover};
+	--ph-primary-active: #{$clinical-accent};
+	--ph-primary-soft: #{$clinical-accent-night-soft};
+	--ph-primary-border: #{$clinical-night-400};
+	--ph-on-primary: #{$clinical-night-900};
+
+	--ph-surface: #{$clinical-night-800};
+	--ph-surface-raised: #{$clinical-night-700};
+	--ph-surface-sunken: #{$clinical-night-900};
+	--ph-surface-hover: #{$clinical-night-600};
+	--ph-surface-selected: #{$clinical-accent-night-soft};
+	--ph-surface-inverse: #{$clinical-night-100};
+
+	--ph-text: #{$clinical-night-100};
+	--ph-text-muted: #{$clinical-night-200};
+	--ph-text-light: #{$clinical-night-300};
+	--ph-text-inverse: #{$clinical-night-900};
+
+	--ph-border: #{$clinical-night-500};
+	--ph-border-strong: #{$clinical-night-450};
+
+	--ph-focus-ring: 0 0 0 3px #{rgba($clinical-accent-night, 0.32)};
+
+	--ph-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
+	--ph-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+	--ph-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.65);
+
+	--ph-border-hc: #{$clinical-night-450};
+	--ph-border-strong-hc: #{$clinical-night-200};
+	--ph-text-muted-hc: #{$clinical-night-100};
+	--ph-text-light-hc: #{$clinical-night-200};
+
+	--ph-critical: #{$state-critical-dark};
+	--ph-critical-soft: #{$state-critical-soft-dark};
+	--ph-urgent: #{$state-urgent-dark};
+	--ph-urgent-soft: #{$state-urgent-soft-dark};
+	--ph-stable: #{$state-stable-dark};
+	--ph-stable-soft: #{$state-stable-soft-dark};
+	--ph-routine: #{$state-routine-dark};
+	--ph-routine-soft: #{$state-routine-soft-dark};
+	--ph-inactive: #{$state-inactive-dark};
+	--ph-inactive-soft: #{$state-inactive-soft-dark};
 }

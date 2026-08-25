@@ -1,25 +1,57 @@
 @import "../tokens/scope";
 
-// The navbar is the one surface a user sees on literally every page, which is
-// why it gets a style switch of its own rather than a single opinion.
-// VERIFY (Session 0): `.navbar` and `.navbar-brand` in this build.
+// ---------------------------------------------------------------------------
+// Navbar — the one surface a user sees on every single page.
+// ---------------------------------------------------------------------------
+//
+// VERIFY (Session 0): `.navbar`, `.navbar-brand`, `.navbar-nav`,
+// `.search-bar`, `.awesomplete input`.
+//
+// It gets a style switch rather than a single opinion because this is the
+// surface clients have the strongest feelings about, and "which shade is the
+// top bar" is not a question worth a code change each time.
 
 #{$ph} .navbar {
 	background-color: var(--ph-surface-raised);
 	border-bottom: 1px solid var(--ph-border);
+	transition: box-shadow var(--ph-transition), background-color var(--ph-transition);
 }
 
 #{$ph} .navbar .navbar-brand {
 	color: var(--ph-text);
 	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-heading);
 }
 
 #{$ph} .navbar .nav-link {
 	color: var(--ph-text-muted);
+	border-radius: var(--ph-radius);
+	transition: color var(--ph-transition), background-color var(--ph-transition);
 }
 
-#{$ph} .navbar .nav-link:hover {
+#{$ph} .navbar .nav-link:hover,
+#{$ph} .navbar .nav-link:focus {
 	color: var(--ph-text);
+	background-color: var(--ph-surface-hover);
+}
+
+// The awesomebar is the fastest path through the desk and currently looks
+// like a disabled input. Give it a real resting state and a focus state that
+// says it is the command surface.
+#{$ph} .navbar .search-bar .form-control,
+#{$ph} .navbar .awesomplete input {
+	background-color: var(--ph-surface-sunken);
+	border: 1px solid transparent;
+	border-radius: var(--ph-radius);
+	transition: background-color var(--ph-transition), border-color var(--ph-transition),
+		box-shadow var(--ph-transition);
+}
+
+#{$ph} .navbar .search-bar .form-control:focus,
+#{$ph} .navbar .awesomplete input:focus {
+	background-color: var(--ph-surface-raised);
+	border-color: var(--ph-border-focus);
+	box-shadow: var(--ph-focus-ring);
 }
 
 // -- Style variants ----------------------------------------------------------
@@ -31,5 +63,36 @@
 
 #{$ph}[data-ph-navbar="elevated"] .navbar {
 	border-bottom-color: transparent;
-	box-shadow: var(--ph-shadow);
+	box-shadow: var(--ph-shadow-md);
+}
+
+// Contrast: a dark bar under a light desk. This is the "hospital system"
+// look — a fixed dark chrome that frames the clinical content and stops the
+// page reading as one undifferentiated sheet of white. It is also the variant
+// that survives a projector and a bad ward monitor.
+#{$ph}[data-ph-navbar="contrast"] .navbar {
+	background-color: var(--ph-surface-inverse);
+	border-bottom-color: transparent;
+}
+
+#{$ph}[data-ph-navbar="contrast"] .navbar .navbar-brand,
+#{$ph}[data-ph-navbar="contrast"] .navbar .nav-link {
+	color: var(--ph-text-inverse);
+}
+
+#{$ph}[data-ph-navbar="contrast"] .navbar .nav-link:hover,
+#{$ph}[data-ph-navbar="contrast"] .navbar .nav-link:focus {
+	color: var(--ph-text-inverse);
+	background-color: rgba(255, 255, 255, 0.12);
+}
+
+#{$ph}[data-ph-navbar="contrast"] .navbar .search-bar .form-control,
+#{$ph}[data-ph-navbar="contrast"] .navbar .awesomplete input {
+	background-color: rgba(255, 255, 255, 0.1);
+	color: var(--ph-text-inverse);
+}
+
+#{$ph}[data-ph-navbar="contrast"] .navbar .search-bar .form-control::placeholder,
+#{$ph}[data-ph-navbar="contrast"] .navbar .awesomplete input::placeholder {
+	color: rgba(255, 255, 255, 0.55);
 }

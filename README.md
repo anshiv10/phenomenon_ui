@@ -7,7 +7,9 @@ Phenomenon UI re-themes the Frappe desk through CSS custom properties rather tha
 - **Deep teal accent**, deliberately not blue — ERPNext already spends blue on "informational link", and reusing it for primary actions collapses two meanings into one colour.
 - **Configurable density and corner radius** from a Settings page, resolved through DOM attributes rather than a rebuild.
 - **Dark mode** that hooks Frappe's own theme attribute, so the built-in light/dark/automatic switcher keeps working.
+- **A Clinical preset** for healthcare deployments: calmer surfaces for long shifts, a low-luminance night palette for ward night shifts, five opt-in severity indicators, and 44px touch targets on bedside tablets. See [`docs/HEALTHCARE.md`](docs/HEALTHCARE.md).
 - **No webfonts, no CDN, no telemetry.** Zero outbound requests — air-gapped installs are a normal ERPNext deployment.
+- **WCAG AA throughout**, measured rather than asserted — `python3 scripts/contrast_audit.py` gates every palette pair in all four themes.
 
 ---
 
@@ -58,11 +60,12 @@ Frappe Cloud builds assets during deploy, so no manual `bench build` is needed.
 | Field | Effect |
 |-------|--------|
 | Enable Phenomenon UI | Master switch. Off = stock Frappe, no residue. |
+| Theme Preset | Default or **Clinical** — see [`docs/HEALTHCARE.md`](docs/HEALTHCARE.md). |
 | Accent Colour | Overrides the teal. Blank uses the default. |
 | Density | Compact / Comfortable / Spacious — changes row heights, not just padding. |
 | Corner Radius | Sharp / Small / Medium / Large. |
 | Sidebar Style | Standard / Flat / Floating. |
-| Navbar Style | Standard / Flat / Elevated. |
+| Navbar Style | Standard / Flat / Elevated / Contrast (dark chrome). |
 | Custom CSS | Injected into one `<style>` tag after the theme. Prefer changing a token. |
 
 Saving clears the cache. Users pick it up on their next reload.
@@ -117,9 +120,9 @@ phenomenon_ui/
 │   ├── phenomenon_web.bundle.scss    website entry point (inert by design in v0.1)
 │   ├── tokens/     palette (every literal), colors, geometry, typography, web
 │   ├── base/       mapping (the important one), shell
-│   ├── components/ buttons, forms, cards, dialogs, tables
+│   ├── components/ buttons, forms, cards, dialogs, tables, indicators, motion
 │   ├── desk/       navbar, sidebar, list-view, form-view
-│   └── themes/     dark rules, accessibility
+│   └── themes/     dark rules, accessibility, print
 └── phenomenon_ui/doctype/phenomenon_ui_settings/
 ```
 

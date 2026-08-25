@@ -1,0 +1,123 @@
+@import "../tokens/scope";
+
+// ---------------------------------------------------------------------------
+// Status indicators, and the clinical severity utilities.
+// ---------------------------------------------------------------------------
+//
+// VERIFY (Session 0): `.indicator-pill`, `.indicator`, and the colour
+// modifier classes Frappe appends (`.red`, `.green`, `.orange`, `.blue`,
+// `.gray`). Only shape and weight are touched below — the hues stay Frappe's,
+// so a status that read as red before still reads as red. Restyling those hues
+// would silently change what a status *means* to someone who has used the
+// system for a year.
+
+#{$ph} .indicator-pill {
+	border-radius: var(--ph-radius-full);
+	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-medium);
+	letter-spacing: 0.01em;
+	white-space: nowrap;
+}
+
+// The dot in front of a status is the part people actually scan. Stock renders
+// it small enough to disappear against a busy row.
+#{$ph} .indicator-pill::before,
+#{$ph} .indicator::before {
+	width: 6px;
+	height: 6px;
+}
+
+// ===========================================================================
+// CLINICAL SEVERITY — opt-in
+// ===========================================================================
+//
+// Nothing in this theme decides that one of your statuses means "critical".
+// Guessing which of a site's workflow states is life-threatening is exactly
+// the kind of invention CLAUDE.md forbids, and getting it wrong in a clinical
+// setting is worse than leaving it unstyled.
+//
+// So these are utilities. Attach them from an Indicator formatter, a client
+// script, or a workflow state's own colour, and they will follow every preset
+// and both themes because they read tokens.
+//
+// Applied to a Patient Appointment list, for example:
+//
+//   frappe.listview_settings["Patient Appointment"] = {
+//     get_indicator(doc) {
+//       if (doc.status === "Cancelled") return [__("Cancelled"), "ph-inactive"];
+//       ...
+//     }
+//   };
+//
+// WHY FIVE STATES, AND WHY THEY LOOK THE WAY THEY DO
+//
+// Severity is carried by three channels at once — hue, lightness and the
+// weight of the left rail — not by hue alone. Around 8% of men have a red/green
+// colour vision deficiency; a critical/stable pair distinguished only by hue
+// is invisible to them. Lightness and rail weight survive that, and survive a
+// bad ward monitor, and survive being printed in greyscale.
+
+#{$ph} .ph-critical,
+#{$ph} .ph-urgent,
+#{$ph} .ph-stable,
+#{$ph} .ph-routine,
+#{$ph} .ph-inactive {
+	border-radius: var(--ph-radius-full);
+	display: inline-flex;
+	align-items: center;
+	gap: var(--ph-space-1);
+	padding: 2px var(--ph-space-2);
+	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-semibold);
+	line-height: var(--ph-leading-tight);
+}
+
+#{$ph} .ph-critical {
+	background-color: var(--ph-critical-soft);
+	color: var(--ph-critical);
+	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-critical);
+	padding-left: var(--ph-space-3);
+}
+
+#{$ph} .ph-urgent {
+	background-color: var(--ph-urgent-soft);
+	color: var(--ph-urgent);
+	box-shadow: inset 2px 0 0 var(--ph-urgent);
+	padding-left: var(--ph-space-3);
+}
+
+#{$ph} .ph-stable {
+	background-color: var(--ph-stable-soft);
+	color: var(--ph-stable);
+}
+
+#{$ph} .ph-routine {
+	background-color: var(--ph-routine-soft);
+	color: var(--ph-routine);
+}
+
+#{$ph} .ph-inactive {
+	background-color: var(--ph-inactive-soft);
+	color: var(--ph-inactive);
+	font-weight: var(--ph-weight-medium);
+}
+
+// -- Out-of-range values -----------------------------------------------------
+// For a lab result or an observation outside its reference range. Tabular
+// numerals are inherited from base/_shell.scss; this adds the emphasis.
+#{$ph} .ph-out-of-range {
+	color: var(--ph-critical);
+	font-weight: var(--ph-weight-semibold);
+	font-variant-numeric: tabular-nums;
+}
+
+#{$ph} .ph-out-of-range::after {
+	content: "";
+	display: inline-block;
+	width: 5px;
+	height: 5px;
+	margin-left: var(--ph-space-1);
+	border-radius: var(--ph-radius-full);
+	background-color: var(--ph-critical);
+	vertical-align: middle;
+}

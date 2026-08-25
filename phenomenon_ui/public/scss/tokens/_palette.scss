@@ -18,7 +18,7 @@
 $teal-600: #0d7c74;
 $teal-700: #0a635d;
 $teal-800: #084d48;
-$teal-050: #e4f3f1;
+$teal-050: #e8f5f3; // soft fill — lightened so $teal-600 on it clears 4.5:1
 $teal-200: #b7dedb;
 
 // Dark-mode accent. Lifted from $teal-600, which falls under 4.5:1 against a
@@ -40,7 +40,9 @@ $grey-150: #eaeef0;
 $grey-200: #e2e7ea;
 $grey-300: #ccd4d9;
 $grey-400: #9aa8b2;
-$grey-500: #8b98a3;
+// Control boundaries — see the CONTROL BORDERS note at the foot of this file.
+$grey-450: #7e929f;
+$grey-500: #83919d; // micro-labels and placeholders — measured >= 3:1
 $grey-600: #5a6b78;
 $grey-700: #45535f;
 $grey-900: #17222c;
@@ -56,6 +58,7 @@ $ink-700: #1b2126;
 $ink-600: #232a30;
 $ink-500: #2a323a;
 $ink-400: #3a444d;
+$ink-450: #5c6c7a; // control boundaries in dark mode
 $ink-300: #7d8b95;
 $ink-200: #a4b1ba;
 $ink-100: #e6ebee;
@@ -81,6 +84,110 @@ $danger-soft-dark: #2d1816;
 $info-dark: #5aa6df;
 $info-soft-dark: #14232f;
 
+// ===========================================================================
+// CLINICAL PRESET
+// ===========================================================================
+//
+// Why teal was already the right accent, and why this preset leans into it:
+// surgical greens and teals are the convention in medicine for a physiological
+// reason — they sit opposite red on the colour wheel, so they suppress the
+// green afterimage that follows sustained focus on blood and tissue. A
+// healthcare product in ERPNext blue is fighting a convention its users read
+// as "not clinical".
+//
+// The rest of this preset is about shift length. Ward and clinic staff hold
+// these screens for eight to twelve hours, often on a bedside tablet under
+// hospital lighting. So: surfaces move a touch warmer and greener to cut the
+// blue glare of a white page, contrast between adjacent surfaces drops
+// slightly (the border does the separating instead), and the accent
+// desaturates a step — a fully saturated primary is fine for a button pressed
+// twice a day and fatiguing on a screen held all shift.
+
+// -- Clinical surfaces, day --------------------------------------------------
+$clinical-050: #f2f6f5; // page — a green-grey, not a blue-grey
+$clinical-100: #e8efee;
+$clinical-150: #e0eae8;
+$clinical-200: #d8e4e2;
+$clinical-300: #bccdca;
+$clinical-450: #72958f; // control boundaries
+$clinical-500: #72958f; // micro-labels — same tone, different job
+$clinical-600: #55676b;
+$clinical-700: #3d5155;
+$clinical-900: #16282c; // ink, slightly warmer than $grey-900
+
+// -- Clinical accent ---------------------------------------------------------
+// One step deeper and less saturated than $teal-600. Still unmistakably the
+// same brand, calmer over a long session.
+$clinical-accent: #0b6f68;
+$clinical-accent-hover: #095752;
+$clinical-accent-active: #07443f;
+$clinical-accent-soft: #e0efed;
+$clinical-accent-border: #a9d3cf;
+
+// -- Clinical surfaces, night ------------------------------------------------
+// Night shift on a ward runs with the lights down. These are lower-luminance
+// than the standard dark palette: bright enough to read, dim enough not to be
+// the brightest object in a sleeping bay.
+$clinical-night-900: #0d1416;
+$clinical-night-800: #111a1d;
+$clinical-night-700: #172226;
+$clinical-night-600: #1e2b30;
+$clinical-night-500: #263539;
+$clinical-night-400: #35484d;
+$clinical-night-450: #516f76; // control boundaries at night
+$clinical-night-300: #7a8e93;
+$clinical-night-200: #a2b5b9;
+$clinical-night-100: #dde7e9;
+
+$clinical-accent-night: #34b3a6;
+$clinical-accent-night-hover: #45c7b9;
+$clinical-accent-night-soft: #12312e;
+
+// ===========================================================================
+// CLINICAL STATUS SEMANTICS
+// ===========================================================================
+//
+// In an ERP, misreading a status costs a reconciliation. In a clinical
+// workflow it can cost more, so these five states are pulled further apart
+// than a general-purpose palette would bother to: distinguishable at a glance,
+// across the room, and — the one that is usually forgotten — distinguishable
+// to the ~8% of male staff with a red/green colour vision deficiency, which is
+// why urgency is carried by lightness and saturation as well as by hue.
+//
+// These are exposed as tokens. Nothing in the theme paints a clinical status
+// on its own — a doctype has to opt in — because guessing which of a site's
+// statuses means "critical" is exactly the kind of invention CLAUDE.md forbids.
+$state-critical: #b3261e;
+$state-critical-soft: #fbe9e7;
+$state-urgent: #a35a00;
+$state-urgent-soft: #fdf0e0;
+$state-stable: #10714a;
+$state-stable-soft: #e2f2ea;
+$state-routine: #1a5f96;
+$state-routine-soft: #e7f0f8;
+$state-inactive: #5c6b73;
+$state-inactive-soft: #edf1f2;
+
+$state-critical-dark: #f2685c;
+$state-critical-soft-dark: #341917;
+$state-urgent-dark: #e0a13f;
+$state-urgent-soft-dark: #302416;
+$state-stable-dark: #45c489;
+$state-stable-soft-dark: #14291f;
+$state-routine-dark: #62aae2;
+$state-routine-soft-dark: #152530;
+$state-inactive-dark: #8b9ba2;
+$state-inactive-soft-dark: #1e262a;
+
+// -- Print -------------------------------------------------------------------
+// Paper is not a screen: the cool grey that cuts glare on a monitor is wasted
+// toner, and muted body text at 60% grey is hard to read under ward lighting.
+$print-paper: #fff;
+$print-ink: #000;
+$print-ink-light: #333;
+$print-rule: #999;
+$print-rule-strong: #666;
+
 // -- Type stacks -------------------------------------------------------------
 // No webfont. A theme that fetches a font file adds an outbound request to
 // every page load, blocks first paint on a third party, and fails outright on
@@ -92,3 +199,26 @@ $font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter",
 	"Segoe UI Emoji";
 $font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
 	"Liberation Mono", monospace;
+
+// ===========================================================================
+// CONTROL BORDERS — why there are two border tokens
+// ===========================================================================
+//
+// WCAG 2.2 SC 1.4.11 asks for 3:1 against the adjacent surface for anything
+// needed to *identify a control* — the edge of a text input is what tells you
+// it is a text input. It does not ask that of a decorative divider between two
+// table rows.
+//
+// So the theme carries two:
+//
+//   --ph-border          separators and dividers. Light. Not a control edge,
+//                        not subject to 3:1.
+//   --ph-border-strong   control boundaries: inputs, secondary buttons,
+//                        select edges. The $*-450 values below, all measured
+//                        at >= 3:1 against both the page and the card surface
+//                        they sit on.
+//
+// The original v0.1 values sat at 1.4-1.8:1 in every theme, which is a real
+// accessibility failure and also the main reason the desk read as washed out:
+// a form control with an invisible edge does not look like a control.
+// ===========================================================================

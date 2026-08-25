@@ -25,13 +25,39 @@
 	--ph-space-5: 24px;
 	--ph-space-6: 32px;
 
-	// Elevation: two steps only. More than two and "raised" stops meaning
-	// anything, because everything is raised.
+	// Elevation: three steps, and they mean three things — resting, lifted by
+	// the pointer, floating above the page. More steps than that and "raised"
+	// stops meaning anything, because everything is raised.
+	//
+	// Each is layered: a tight shadow for the contact edge plus a wider,
+	// softer one for the ambient cast. A single blurred shadow reads as a grey
+	// smudge; two read as an object above a surface.
 	--ph-shadow-sm: 0 1px 2px rgba(23, 34, 44, 0.06);
 	--ph-shadow: 0 1px 3px rgba(23, 34, 44, 0.08), 0 1px 2px rgba(23, 34, 44, 0.04);
+	--ph-shadow-md: 0 4px 12px rgba(23, 34, 44, 0.1), 0 1px 3px rgba(23, 34, 44, 0.06);
 	--ph-shadow-lg: 0 8px 24px rgba(23, 34, 44, 0.12), 0 2px 6px rgba(23, 34, 44, 0.06);
 
-	--ph-transition: 120ms ease;
+	// -- Motion ------------------------------------------------------------
+	// Three durations. Anything an ERP user triggers hundreds of times a day
+	// (a row hover, a button press) has to be under 150ms or the interface
+	// feels like it is thinking; only things that travel a distance —
+	// a dialog, a drawer — earn longer.
+	--ph-ease: cubic-bezier(0.2, 0, 0.2, 1);
+	--ph-ease-out: cubic-bezier(0, 0, 0.2, 1);
+	--ph-duration-fast: 120ms;
+	--ph-duration: 180ms;
+	--ph-duration-slow: 260ms;
+	--ph-transition: var(--ph-duration-fast) var(--ph-ease);
+
+	// The accent rail that marks a hovered or selected row. Expressed as a
+	// token so density and preset can both reach it.
+	--ph-rail-width: 3px;
+
+	// -- Hit targets -------------------------------------------------------
+	// 44px is the WCAG 2.2 target-size floor and roughly a fingertip. It is
+	// applied only under a coarse pointer, so a mouse user keeps the compact
+	// rows they chose and a nurse on a bedside tablet gets a tappable one.
+	--ph-touch-target: 44px;
 }
 
 // -- Radius ------------------------------------------------------------------

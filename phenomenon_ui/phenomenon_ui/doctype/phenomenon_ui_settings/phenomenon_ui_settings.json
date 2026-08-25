@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "enabled",
+  "theme_preset",
   "appearance_section",
   "accent_color",
   "column_break_appearance",
@@ -26,6 +27,14 @@
    "fieldname": "enabled",
    "fieldtype": "Check",
    "label": "Enable Phenomenon UI"
+  },
+  {
+   "default": "Default",
+   "description": "Clinical shifts surfaces and accent toward calmer, lower-glare tones for long shifts, and pairs with a low-luminance night palette when dark mode is on.",
+   "fieldname": "theme_preset",
+   "fieldtype": "Select",
+   "label": "Theme Preset",
+   "options": "Default\nClinical"
   },
   {
    "fieldname": "appearance_section",
@@ -77,7 +86,7 @@
    "fieldname": "navbar_style",
    "fieldtype": "Select",
    "label": "Navbar Style",
-   "options": "Standard\nFlat\nElevated"
+   "options": "Standard\nFlat\nElevated\nContrast"
   },
   {
    "collapsible": 1,

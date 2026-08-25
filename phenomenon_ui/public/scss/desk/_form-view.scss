@@ -20,6 +20,13 @@
 	background-color: var(--ph-surface-raised);
 	border: 1px solid var(--ph-border);
 	border-radius: var(--ph-radius-lg);
+	box-shadow: var(--ph-shadow-sm);
+}
+
+// The document status sits at the top of every form and is the first thing a
+// user checks. VERIFY (Session 0): `.indicator-pill` inside `.page-head`.
+#{$ph} .page-head .indicator-pill {
+	font-weight: var(--ph-weight-semibold);
 }
 
 #{$ph} .form-section:not(:last-child) {

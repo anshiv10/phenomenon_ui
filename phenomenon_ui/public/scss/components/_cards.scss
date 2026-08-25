@@ -15,12 +15,23 @@
 
 #{$ph} .widget:hover {
 	border-color: var(--ph-border-strong);
-	box-shadow: var(--ph-shadow);
+	box-shadow: var(--ph-shadow-md);
 }
 
 #{$ph} .widget-head {
 	color: var(--ph-text);
 	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-heading);
+}
+
+// A number card's whole job is one figure read at a glance from across a desk.
+// Tabular numerals stop the digits jittering as the value updates.
+// VERIFY (Session 0): `.number-card`, `.widget-content .number`.
+#{$ph} .number-card .widget-content .number,
+#{$ph} .number-card .number {
+	font-variant-numeric: tabular-nums;
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-heading);
 }
 
 #{$ph} .card {

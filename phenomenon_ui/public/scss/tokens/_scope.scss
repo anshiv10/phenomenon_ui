@@ -1,4 +1,4 @@
-// The single scope every Phenomenon rule lives under.
+// The scopes every Phenomenon rule lives under.
 //
 // One attribute, set by the theme engine on <html>. Remove it and the entire
 // theme disappears with zero residue — which is what makes
@@ -6,7 +6,7 @@
 //
 // Usage:  #{$ph} .navbar { ... }
 //
-// Never write a rule outside this scope. Never use !important — if a rule is
+// Never write a rule outside these scopes. Never use !important — if a rule is
 // losing a specificity fight, the fix belongs in base/_mapping.scss.
 
 $ph: "html[data-ph='on']";
@@ -15,6 +15,23 @@ $ph: "html[data-ph='on']";
 // the same element and combine without a descendant selector.
 // VERIFY (Session 0): confirm the attribute name and that "dark" is the value.
 $ph-dark: "html[data-ph='on'][data-theme='dark']";
+
+// -- Presets -----------------------------------------------------------------
+// A preset is a *token* swap, never a rule swap: it re-declares --ph-* and the
+// mapping layer carries the change everywhere. Adding a preset should not
+// require touching a single component file.
+//
+// SPECIFICITY, deliberately:
+//   $ph               (0,1,1)
+//   $ph-dark          (0,2,1)
+//   $ph-clinical      (0,3,1)  — the :not() is what lifts it past $ph-dark
+//   $ph-clinical-dark (0,3,1)
+//
+// The two clinical scopes are mutually exclusive by construction, so neither
+// depends on import order to win. That matters: an ordering-dependent cascade
+// is a bug waiting for someone to reorder an @import.
+$ph-clinical: "html[data-ph='on'][data-ph-preset='clinical']:not([data-theme='dark'])";
+$ph-clinical-dark: "html[data-ph='on'][data-ph-preset='clinical'][data-theme='dark']";
 
 // Website / portal scope. Nothing sets this class in v0.1 — see the note in
 // phenomenon_web.bundle.scss for why that is deliberate.

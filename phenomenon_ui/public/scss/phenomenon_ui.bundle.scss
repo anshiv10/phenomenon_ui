@@ -33,6 +33,8 @@
 @import "components/cards";
 @import "components/dialogs";
 @import "components/tables";
+@import "components/indicators";
+@import "components/motion";
 
 // 4b. Desk surfaces
 @import "desk/navbar";
@@ -43,3 +45,4 @@
 // 5. Themes
 @import "themes/dark";
 @import "themes/accessibility";
+@import "themes/print";

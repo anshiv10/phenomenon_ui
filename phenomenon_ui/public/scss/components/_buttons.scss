@@ -26,6 +26,7 @@
 	background-color: var(--ph-primary-hover);
 	border-color: var(--ph-primary-hover);
 	color: var(--ph-on-primary);
+	box-shadow: var(--ph-shadow-sm);
 }
 
 #{$ph} .btn-primary:active,
@@ -65,4 +66,14 @@
 #{$ph} .btn.disabled {
 	opacity: 0.55;
 	box-shadow: none;
+	transform: none;
+}
+
+// -- Touch -------------------------------------------------------------------
+// Ward tablets. A 26px toolbar button is a mis-tap waiting to happen when the
+// next control along submits a document.
+@media (pointer: coarse) {
+	#{$ph} .btn {
+		min-height: var(--ph-touch-target);
+	}
 }

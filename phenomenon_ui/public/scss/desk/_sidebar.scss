@@ -1,13 +1,20 @@
 @import "../tokens/scope";
 
+// ---------------------------------------------------------------------------
+// Sidebar — workspace navigation and the list-view filter panel.
+// ---------------------------------------------------------------------------
+//
 // VERIFY (Session 0): `.standard-sidebar-item`, `.standard-sidebar-label`,
-// and the class Frappe puts on the *selected* item — the active state is the
-// single most valuable rule here and the easiest one to get wrong.
+// `.layout-side-section`, `.sidebar-label`, `.list-sidebar`, and — the
+// important one — the class Frappe puts on the *selected* item. This file
+// assumes `.selected`. An active state that never matches is exactly the
+// half-styled look that reads worse than no theme at all.
 
 #{$ph} .standard-sidebar-item {
 	border-radius: var(--ph-radius);
 	color: var(--ph-text-muted);
-	transition: background-color var(--ph-transition), color var(--ph-transition);
+	transition: background-color var(--ph-transition), color var(--ph-transition),
+		box-shadow var(--ph-transition);
 }
 
 #{$ph} .standard-sidebar-item:hover {
@@ -21,12 +28,39 @@
 	font-weight: var(--ph-weight-medium);
 }
 
-#{$ph} .standard-sidebar-label {
+// Group headings. Uppercase micro-type is the standard way to make a label
+// recede without making it illegible — but it needs the tracking, or the caps
+// jam together at 11px.
+#{$ph} .standard-sidebar-label,
+#{$ph} .sidebar-label {
 	color: var(--ph-text-light);
 	font-size: var(--ph-text-xs);
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: 0.04em;
+	letter-spacing: 0.06em;
 	text-transform: uppercase;
+}
+
+// The list-view filter panel — bare in stock, and the thing on the left of
+// every list screen.
+#{$ph} .layout-side-section .sidebar-section,
+#{$ph} .list-sidebar .sidebar-section {
+	margin-bottom: var(--ph-space-5);
+}
+
+#{$ph} .layout-side-section .form-control {
+	background-color: var(--ph-surface-raised);
+	border-color: var(--ph-border);
+	border-radius: var(--ph-radius);
+}
+
+#{$ph} .layout-side-section a {
+	color: var(--ph-text-muted);
+	transition: color var(--ph-transition);
+}
+
+#{$ph} .layout-side-section a:hover {
+	color: var(--ph-primary);
+	text-decoration: none;
 }
 
 // -- Style variants ----------------------------------------------------------
@@ -36,10 +70,23 @@
 
 #{$ph}[data-ph-sidebar="flat"] .standard-sidebar-item.selected {
 	background-color: transparent;
-	box-shadow: inset 2px 0 0 var(--ph-primary);
+	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
 }
 
 #{$ph}[data-ph-sidebar="floating"] .standard-sidebar-item {
 	border-radius: var(--ph-radius-lg);
 	margin-inline: var(--ph-space-2);
+}
+
+#{$ph}[data-ph-sidebar="floating"] .standard-sidebar-item.selected {
+	box-shadow: var(--ph-shadow-sm);
+}
+
+// -- Touch -------------------------------------------------------------------
+@media (pointer: coarse) {
+	#{$ph} .standard-sidebar-item {
+		min-height: var(--ph-touch-target);
+		display: flex;
+		align-items: center;
+	}
 }
