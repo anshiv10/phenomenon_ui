@@ -123,9 +123,9 @@ Report format after any styling session:
 - [ ] Dark mode covered for every new surface
 - [ ] `Enable Phenomenon UI = 0` returns the surface to *exactly* stock — no residue
 - [ ] Works at 430 / 390 / 375 / 360px
-- [ ] Contrast meets WCAG AA: 4.5:1 body, 3:1 large text and UI borders
+- [ ] Contrast meets WCAG AA: `python3 scripts/contrast_audit.py` exits 0
 - [ ] No `!important` outside the documented exception
-- [ ] No hex outside `tokens/`
+- [ ] No hex outside `tokens/_palette.scss`
 - [ ] No unscoped rule
 - [ ] Asset sizes reported against budget
 - [ ] ≥ 90% of changed files are L1

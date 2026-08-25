@@ -13,17 +13,28 @@ Phenomenon UI re-themes the Frappe desk through CSS custom properties rather tha
 
 ---
 
-## Status: v0.1.0 — scaffold, pending bench verification
+## Status: v0.2.0 — feature-complete, pending bench verification
 
-This app was authored without a bench attached. It is structurally complete and installable, but **its selectors and variable mappings have not yet been checked against an installed Frappe build.**
+Everything described below is built, compiles, and is measured against its budgets. **What has not happened is verification against an installed Frappe build** — this app was authored without a bench attached, so no selector or variable name has been checked against real source.
 
-Before relying on it, run the Session 0 reconnaissance in [`docs/SESSION-0-CHECKLIST.md`](docs/SESSION-0-CHECKLIST.md) and correct anything marked `// VERIFY (Session 0):` in the SCSS. Unverified rules are marked in place — grep for them:
+That is the one outstanding piece of work, and it needs a bench. Two commands do it:
 
 ```bash
-grep -rn "VERIFY (Session 0)" phenomenon_ui/public/scss/
+# source side — greps installed Frappe/ERPNext
+cd ~/frappe-bench && bash apps/phenomenon_ui/scripts/session0.sh > session0-report.txt
+
+# runtime side — Phenomenon UI Settings -> Run Diagnostics -> Copy to Clipboard
 ```
 
-An unmatched selector degrades to "not themed", never to "broken", so an unverified install is safe to look at. It is just not finished.
+Then correct anything the reports contradict. Unverified rules are marked in place:
+
+```bash
+grep -rn "VERIFY (Session 0)" phenomenon_ui/public/scss/     # 17 markers across 14 files
+```
+
+An unmatched selector degrades to "not themed", never to "broken", so an unverified install is safe to run and look at. It is just not finished.
+
+**Known unresolved:** on at least one v15 build, `data-theme` is absent from `<html>`, which would mean dark mode never activates. `$ph-dark` in `tokens/_scope.scss` is a single line and changing it re-points the dark palette and the clinical night palette together — but the diagnostics report has to say what the attribute actually is first.
 
 ---
 
@@ -157,7 +168,7 @@ phenomenon_ui/
 │   └── phenomenon/theme_engine.js
 ├── public/scss/
 │   ├── phenomenon_ui.bundle.scss     desk entry point
-│   ├── phenomenon_web.bundle.scss    website entry point (inert by design in v0.1)
+│   ├── phenomenon_web.bundle.scss    website entry point (inert by design — see file header)
 │   ├── tokens/     palette (every literal), colors, geometry, typography, web
 │   ├── base/       mapping (the important one), shell
 │   ├── components/ buttons, forms, cards, dialogs, tables, indicators, motion

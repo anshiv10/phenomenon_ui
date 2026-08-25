@@ -2,6 +2,32 @@
 
 This app was scaffolded without a bench attached, so nothing in it has been checked against installed Frappe source. This file is the work that closes that gap. **Do it before trusting any visual output**, and do it read-only — no code changes in this session.
 
+---
+
+## The short version
+
+Most of what follows is now automated. Two commands produce both reports:
+
+```bash
+# 1. Source side — greps installed Frappe/ERPNext. Read-only.
+cd ~/frappe-bench
+bash apps/phenomenon_ui/scripts/session0.sh > session0-report.txt
+
+# 2. Runtime side — Phenomenon UI Settings → Run Diagnostics → Copy to Clipboard.
+#    Run it three times: from a list view, a form, and a workspace.
+```
+
+Run both. They answer different questions and disagreement between them is informative, not a bug:
+
+- A variable can be **defined in source** but resolve **empty at runtime** — the definition is behind a selector that does not match, so the mapping is still dead.
+- A class can **exist in source** but never appear in `querySelectorAll` — it belongs to a surface the page you are on does not render. That is why you run the runtime half from three different pages.
+
+The manual steps below are kept because they explain *what* each check is looking for and *what to do* with the answer. The script tells you the state; this file tells you the decision.
+
+---
+
+## The long version
+
 Run everything from `~/frappe-bench`.
 
 ---
