@@ -55,7 +55,7 @@
 // -- Awesomebar --------------------------------------------------------------
 #{$ph} .navbar .search-bar .form-control,
 #{$ph} .navbar .awesomplete input,
-#{$ph} #navbar-search {
+#{$ph} .navbar #navbar-search {
 	background-color: var(--ph-surface-chrome-hover);
 	border: 1px solid transparent;
 	border-radius: var(--ph-radius-lg);
@@ -65,12 +65,12 @@
 
 #{$ph} .navbar .search-bar .form-control::placeholder,
 #{$ph} .navbar .awesomplete input::placeholder,
-#{$ph} #navbar-search::placeholder {
+#{$ph} .navbar #navbar-search::placeholder {
 	color: var(--ph-text-on-chrome-muted);
 }
 
 #{$ph} .navbar .search-bar .form-control:hover:not(:focus),
-#{$ph} #navbar-search:hover:not(:focus) {
+#{$ph} .navbar #navbar-search:hover:not(:focus) {
 	border-color: var(--ph-border-strong);
 }
 
@@ -78,7 +78,7 @@
 // same 2px primary frame, no leading bar (it is a search box, not a field).
 #{$ph} .navbar .search-bar .form-control:focus,
 #{$ph} .navbar .awesomplete input:focus,
-#{$ph} #navbar-search:focus {
+#{$ph} .navbar #navbar-search:focus {
 	background-color: var(--ph-surface-chrome-hover);
 	border-color: var(--ph-primary);
 	color: var(--ph-text-on-chrome);
@@ -88,4 +88,51 @@
 #{$ph} .navbar .search-bar .search-icon,
 #{$ph} .navbar .search-bar .icon {
 	color: var(--ph-text-on-chrome-muted);
+}
+
+// ---------------------------------------------------------------------------
+// FRAPPE v16 — THE COMMAND PALETTE
+// ---------------------------------------------------------------------------
+//
+// v16 moved the awesomebar out of the navbar: `#navbar-search` is now the input
+// of a dismissible modal opened with Cmd+K (see
+// apps/frappe/frappe/public/js/frappe/ui/toolbar/awesome_bar.js, which builds
+// the input inside `search_modal`). The id did not change, so a rule written
+// for the navbar followed it into the modal and painted on-chrome text — pale
+// grey — onto a white panel. That is the invisible typing.
+//
+// Every rule above is therefore scoped to `.navbar`. The palette gets its own
+// treatment here, on content tokens, because the panel is a content surface.
+
+#{$ph} .modal #navbar-search,
+#{$ph} .modal .search-bar .form-control {
+	background-color: var(--ph-surface-secondary);
+	border: 1px solid transparent;
+	border-radius: var(--ph-radius-sm);
+	color: var(--ph-text-primary);
+	box-shadow: none;
+}
+
+#{$ph} .modal #navbar-search::placeholder {
+	color: var(--ph-text-muted);
+}
+
+#{$ph} .modal #navbar-search:focus {
+	background-color: var(--ph-surface-raised);
+	border-color: var(--ph-primary);
+	color: var(--ph-text-primary);
+	box-shadow: 0 0 0 1px var(--ph-primary);
+}
+
+// Palette results. The highlighted match keeps the accent; the row itself uses
+// the same selected wash as a list row, so "where am I" reads identically.
+#{$ph} .modal .search-results .result,
+#{$ph} .modal .awesomplete > ul > li {
+	color: var(--ph-text-primary);
+}
+
+#{$ph} .modal .awesomplete mark,
+#{$ph} .modal .search-results mark {
+	background-color: var(--ph-warning-soft);
+	color: var(--ph-text-primary);
 }

@@ -166,6 +166,175 @@ function build_report() {
 	return L.join("\n");
 }
 
+// ---------------------------------------------------------------------------
+// Visual check — contrast, measured on the live DOM
+// ---------------------------------------------------------------------------
+//
+// Diagnostics answers "does this selector exist". This answers the question
+// that actually bites: "is anything on this page unreadable". It reads the
+// computed colour of an element, walks up until it finds the first ancestor
+// with a non-transparent background, and measures the WCAG 2.1 ratio between
+// them.
+//
+// It exists because the invisible-text failure mode is invisible to review:
+// a rule written for one container follows a shared id or class into another,
+// paints pale-on-pale, and nothing errors. It cannot be caught by reading CSS
+// and it is trivial to catch by measuring. Run it on any screen that looks
+// wrong, and on every screen after a token change.
+//
+// Read-only.
+
+const CONTRAST_PROBES = [
+	// [ label, selector, floor ]
+	["Sidebar item label", ".body-sidebar .sidebar-item-label", 4.5],
+	["Sidebar selected item", ".active-sidebar .sidebar-item-label", 4.5],
+	["Sidebar header title", ".sidebar-header .header-title", 4.5],
+	["Sidebar header subtitle", ".sidebar-header .header-subtitle", 4.5],
+	["Sidebar user name", ".sidebar-user-button", 4.5],
+	["Command palette input", ".modal #navbar-search", 4.5],
+	["Navbar search input", ".navbar #navbar-search", 4.5],
+	["Dropdown item", ".dropdown-menu .dropdown-item", 4.5],
+	["Form sidebar action", ".form-sidebar .form-sidebar-items a", 4.5],
+	["Form sidebar label", ".form-sidebar .sidebar-label", 4.5],
+	["Filter panel label", ".layout-side-section .sidebar-label", 4.5],
+	["List row title", ".list-subject a", 4.5],
+	["List column head", ".list-row-head .list-row-col", 4.5],
+	["List count", ".list-count", 4.5],
+	["Status pill", ".indicator-pill", 4.5],
+	["Field label", ".control-label", 4.5],
+	["Field value", ".form-control", 4.5],
+	["Disabled field value", ".like-disabled-input", 4.5],
+	["Section heading", ".section-head", 4.5],
+	["Active tab", ".form-tabs-list .nav-link.active", 4.5],
+	["Inactive tab", ".form-tabs-list .nav-link:not(.active)", 4.5],
+	["Primary button", ".btn-primary", 4.5],
+	["Secondary button", ".btn-default", 4.5],
+	["Page title", ".title-text", 4.5],
+	["Breadcrumb", "#navbar-breadcrumbs a", 4.5],
+	["Grid header", ".grid-heading-row", 4.5],
+	["Grid cell", ".grid-row .grid-static-col", 4.5],
+	["Timeline text", ".timeline-content", 4.5],
+	["Modal title", ".modal-title", 4.5],
+	["Placeholder", ".form-control::placeholder", 3.0],
+];
+
+function parse_rgb(value) {
+	const m = String(value).match(/rgba?\(([^)]+)\)/);
+	if (!m) return null;
+	const p = m[1].split(",").map((n) => parseFloat(n.trim()));
+	if (p.length < 3 || p.some(isNaN)) return null;
+	return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 };
+}
+
+function luminance(c) {
+	const ch = (v) => {
+		v /= 255;
+		return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+	};
+	return 0.2126 * ch(c.r) + 0.7152 * ch(c.g) + 0.0722 * ch(c.b);
+}
+
+function contrast(fg, bg) {
+	const a = luminance(fg);
+	const b = luminance(bg);
+	return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+// The colour a user actually sees behind an element: the first ancestor whose
+// background is not fully transparent. Without this every ratio is measured
+// against rgba(0,0,0,0) and the whole report is fiction.
+function effective_bg(el) {
+	let node = el;
+	while (node && node !== document.documentElement) {
+		const bg = parse_rgb(getComputedStyle(node).backgroundColor);
+		if (bg && bg.a > 0.05) return bg;
+		node = node.parentElement;
+	}
+	return { r: 255, g: 255, b: 255, a: 1 };
+}
+
+function build_visual_report() {
+	const L = [];
+	const rule = "-".repeat(66);
+	let fails = 0;
+	let checked = 0;
+
+	L.push("PHENOMENON UI — VISUAL CHECK (contrast, measured on this page)");
+	L.push("Route: " + (frappe.get_route_str ? frappe.get_route_str() : location.hash));
+	L.push("Theme: " + (document.documentElement.getAttribute("data-theme") || "light") +
+		" · chrome: " + (document.documentElement.getAttribute("data-ph-chrome") || "-"));
+	L.push(rule);
+
+	CONTRAST_PROBES.forEach(([label, selector, floor]) => {
+		let el = null;
+		try {
+			el = document.querySelector(selector.replace("::placeholder", ""));
+		} catch (e) {
+			el = null;
+		}
+		if (!el) {
+			L.push("  --    (not on this page)          " + label);
+			return;
+		}
+		const cs = getComputedStyle(el);
+		const fg = parse_rgb(cs.color);
+		if (!fg) {
+			L.push("  --    (no colour)                 " + label);
+			return;
+		}
+		const bg = effective_bg(el);
+		const ratio = contrast(fg, bg);
+		checked += 1;
+		const ok = ratio >= floor;
+		if (!ok) fails += 1;
+		L.push(
+			"  " + (ok ? "PASS" : "FAIL") + "  " + ratio.toFixed(2) + ":1 (>= " + floor + ")  " +
+			label + "\n          fg " + cs.color + "  on bg rgb(" +
+			[bg.r, bg.g, bg.b].join(", ") + ")"
+		);
+	});
+
+	L.push(rule);
+	L.push(checked + " measured on this page, " + fails + " below the floor.");
+	L.push("");
+	L.push("A FAIL means that text is hard or impossible to read where it sits.");
+	L.push("Run this on a list, a form, a workspace, with the command palette");
+	L.push("open, and with a sidebar menu open — each renders a different set.");
+
+	return L.join("\n");
+}
+
+function show_visual_check() {
+	const text = build_visual_report();
+	const d = new frappe.ui.Dialog({
+		title: __("Phenomenon UI Visual Check"),
+		size: "large",
+		fields: [
+			{
+				fieldtype: "HTML",
+				fieldname: "intro",
+				options: `<p class="text-muted small">${__(
+					"Measures the contrast of every themed surface present on the page behind this dialog. Read-only."
+				)}</p>`,
+			},
+			{
+				fieldtype: "Code",
+				fieldname: "report",
+				label: __("Report"),
+				options: "Text",
+				read_only: 1,
+				default: text,
+			},
+		],
+		primary_action_label: __("Copy to Clipboard"),
+		primary_action() {
+			frappe.utils.copy_to_clipboard(text);
+			d.hide();
+		},
+	});
+	d.show();
+}
+
 function show_diagnostics() {
 	const text = build_report();
 	const d = new frappe.ui.Dialog({
@@ -200,6 +369,7 @@ function show_diagnostics() {
 frappe.ui.form.on("Phenomenon UI Settings", {
 	refresh(frm) {
 		frm.add_custom_button(__("Run Diagnostics"), show_diagnostics);
+		frm.add_custom_button(__("Run Visual Check"), show_visual_check);
 
 		frm.add_custom_button(__("Reload Saved"), () => {
 			window.phenomenon && window.phenomenon.refresh();

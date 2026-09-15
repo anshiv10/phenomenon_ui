@@ -190,6 +190,10 @@
 	--disabled-text-color: var(--ph-text-muted);
 	--input-disabled-bg: var(--ph-surface-disabled);
 	--text-dark: var(--ph-text-primary);
+	// v16 paints its own error border from these two.
+	--error-border: var(--ph-danger);
+	--error-bg: var(--ph-danger-soft);
+	--red-400: var(--ph-danger);
 	--text-neutral: var(--ph-text-secondary);
 	--neutral: var(--ph-surface-raised);
 }

@@ -42,3 +42,41 @@
 
 // The "unsaved" / "not saved" indicator in the page head keeps its place —
 // Frappe marks the document dirty, not the section (spec §15).
+
+// ---------------------------------------------------------------------------
+// Timeline and activity
+// ---------------------------------------------------------------------------
+//
+// Frappe wraps whole activity sentences in anchors: "You changed the value of
+// Advance Paid from 0 to null" is a link, not a phrase containing one. The
+// global rule that a link is a target therefore turned the entire activity
+// feed teal, which both drowns out the accent and reads as low-contrast body
+// copy. Inside the timeline the text is text-primary and the underline on
+// hover carries the affordance instead.
+//
+// VERIFY (Session 0): `.timeline-content`, `.timeline-message-box`,
+// `.new-timeline`.
+#{$ph} .timeline-content a,
+#{$ph} .timeline-message-box a,
+#{$ph} .timeline-item .timeline-content .timeline-message-box a {
+	color: var(--ph-text-primary);
+	text-decoration: none;
+}
+
+#{$ph} .timeline-content a:hover,
+#{$ph} .timeline-message-box a:hover {
+	color: var(--ph-primary);
+	text-decoration: underline;
+}
+
+#{$ph} .timeline-content .timeline-message-box {
+	background-color: var(--ph-surface-card);
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-md);
+	box-shadow: none;
+}
+
+#{$ph} .timeline-dot,
+#{$ph} .timeline-indicator {
+	background-color: var(--ph-border-strong);
+}

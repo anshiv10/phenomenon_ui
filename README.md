@@ -18,7 +18,7 @@ Phenomenon UI implements the **Instrument Panel** design system (Direction B, to
 
 ---
 
-## Status: v0.3.1 — spec-complete, verified against v16 source
+## Status: v0.3.2 — spec-complete, verified against v16 source
 
 v0.3.0 rebuilt the token layer and every component rule to the Instrument Panel specification. v0.3.1 adds the v16 mapping layer and shell rules, written against Frappe `version-16` source rather than guessed. The 34 spec contrast pairs pass in both modes.
 
@@ -114,6 +114,12 @@ Every appearance field **previews live as you edit**, before you save. **Reload 
 ### Diagnostics
 
 **Phenomenon UI Settings → Run Diagnostics** answers the two questions that are otherwise painful:
+
+There are two, and they answer different questions.
+
+**Run Visual Check** measures contrast on the live DOM: for every themed surface present on the page behind the dialog it reads the computed text colour, walks up to the first ancestor with a real background, and reports the WCAG ratio. A FAIL is text that is hard or impossible to read *where it actually sits*. This is the one that catches the failure mode CSS review cannot: a rule written for one container following a shared id or class into another and painting pale on pale. Run it on a list, a form, a workspace, with the command palette open, and with a sidebar menu open — each renders a different set.
+
+**Run Diagnostics** answers the structural questions:
 
 - **Is the theme actually loaded?** Whether the stylesheet compiled, the engine ran, and boot data arrived — which distinguishes "the theme is broken" from "the assets were never rebuilt".
 - **Do the classes I styled exist in this build?** It queries the live DOM for every selector the theme assumes and lists present vs absent. Run it from a list view, a form and a workspace to cover every surface.

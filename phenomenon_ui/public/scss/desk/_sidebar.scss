@@ -351,3 +351,153 @@
 #{$ph} .body-sidebar .sidebar-search .item-anchor {
 	border-radius: var(--ph-radius-lg);
 }
+
+// ===========================================================================
+// POPOVERS ESCAPE THE CHROME
+// ===========================================================================
+//
+// The blocks above re-declare the espresso and legacy variables inside the
+// chrome containers, which is what repaints every descendant as chrome. A
+// dropdown, modal or tooltip that is a DOM child of one of those containers
+// inherits them too — and then paints chrome-coloured text on its own white
+// panel, which is why hovering the sidebar header menu showed nothing at all.
+//
+// A popover is a content surface wherever it is anchored, so it takes the
+// variables back. One block, rather than a rule per popover.
+
+#{$ph} .body-sidebar .dropdown-menu,
+#{$ph} .sidebar-header .dropdown-menu,
+#{$ph} .layout-side-section .dropdown-menu,
+#{$ph} .body-sidebar .modal,
+#{$ph} .sidebar-header .modal,
+#{$ph} .layout-side-section .modal,
+#{$ph} .body-sidebar .popover,
+#{$ph} .layout-side-section .popover,
+#{$ph} .body-sidebar .notifications-list,
+#{$ph} .body-sidebar .awesomplete > ul {
+	--ink-gray-9: var(--ph-text-primary);
+	--ink-gray-8: var(--ph-text-primary);
+	--ink-gray-7: var(--ph-text-secondary);
+	--ink-gray-6: var(--ph-text-secondary);
+	--ink-gray-5: var(--ph-text-muted);
+	--ink-gray-4: var(--ph-text-muted);
+	--ink-gray-3: var(--ph-border-strong);
+	--ink-gray-2: var(--ph-border-subtle);
+	--ink-gray-1: var(--ph-border-subtle);
+
+	--surface-white: var(--ph-surface-raised);
+	--surface-menu-bar: var(--ph-surface-raised);
+	--surface-gray-1: var(--ph-surface-primary);
+	--surface-gray-2: var(--ph-surface-secondary);
+	--surface-gray-3: var(--ph-surface-secondary);
+	--surface-gray-4: var(--ph-surface-base);
+
+	--outline-gray-1: var(--ph-border-subtle);
+	--outline-gray-2: var(--ph-border-subtle);
+	--outline-gray-3: var(--ph-border-strong);
+
+	--text-color: var(--ph-text-primary);
+	--text-muted: var(--ph-text-secondary);
+	--text-light: var(--ph-text-muted);
+	--icon-stroke: var(--ph-text-secondary);
+	--control-bg: var(--ph-surface-secondary);
+	--border-color: var(--ph-border-subtle);
+	--fg-color: var(--ph-surface-raised);
+	--bg-color: var(--ph-surface-primary);
+
+	color: var(--ph-text-primary);
+	background-color: var(--ph-surface-raised);
+}
+
+// Hover inside such a menu is the same wash a selected row gets, so the
+// pointer always has an answer.
+#{$ph} .body-sidebar .dropdown-item,
+#{$ph} .sidebar-header .dropdown-item,
+#{$ph} .layout-side-section .dropdown-item {
+	color: var(--ph-text-primary);
+	background-color: transparent;
+}
+
+#{$ph} .body-sidebar .dropdown-item:hover,
+#{$ph} .body-sidebar .dropdown-item:focus,
+#{$ph} .sidebar-header .dropdown-item:hover,
+#{$ph} .sidebar-header .dropdown-item:focus,
+#{$ph} .layout-side-section .dropdown-item:hover,
+#{$ph} .layout-side-section .dropdown-item:focus {
+	background-color: var(--ph-primary-soft);
+	color: var(--ph-text-primary);
+}
+
+#{$ph} .body-sidebar .dropdown-item .icon,
+#{$ph} .sidebar-header .dropdown-item .icon,
+#{$ph} .body-sidebar .dropdown-item svg,
+#{$ph} .sidebar-header .dropdown-item svg {
+	color: var(--ph-text-secondary);
+	stroke: var(--ph-text-secondary);
+}
+
+// ===========================================================================
+// `.layout-side-section` IS NOT ALWAYS THE FRAME
+// ===========================================================================
+//
+// On v15 that class was the workspace navigation. v16 kept it for the list
+// filter panel and the form sidebar, but also uses it INSIDE the global search
+// modal (`search.html`: `.layout-side-section.search-shortcuts-sidebar`). A
+// chrome ground there would paint a dark slab inside a white dialog, so the
+// modal copy is handed back to the content plane.
+
+#{$ph} .modal .layout-side-section,
+#{$ph} .search-results .layout-side-section {
+	--ink-gray-9: var(--ph-text-primary);
+	--ink-gray-6: var(--ph-text-secondary);
+	--ink-gray-4: var(--ph-text-muted);
+	--surface-white: var(--ph-surface-raised);
+	--surface-gray-1: var(--ph-surface-primary);
+	--surface-gray-2: var(--ph-surface-secondary);
+	--text-color: var(--ph-text-primary);
+	--text-muted: var(--ph-text-secondary);
+	--text-light: var(--ph-text-muted);
+	--icon-stroke: var(--ph-text-secondary);
+	--control-bg: var(--ph-surface-secondary);
+	--border-color: var(--ph-border-subtle);
+	--fg-color: var(--ph-surface-raised);
+	--bg-color: var(--ph-surface-raised);
+
+	background-color: var(--ph-surface-raised);
+	color: var(--ph-text-primary);
+	border-left: none;
+}
+
+#{$ph} .modal .layout-side-section a,
+#{$ph} .modal .layout-side-section .sidebar-label {
+	color: var(--ph-text-primary);
+}
+
+// ===========================================================================
+// FORM SIDEBAR LEGIBILITY
+// ===========================================================================
+//
+// `form_sidebar.scss` paints Assign / Attachments / Tags / Share, their icons
+// and their timestamps with `--text-light`. Inside the frame that resolved to
+// on-chrome-muted, which clears 4.5:1 on paper and still reads as a whisper
+// next to the near-white labels beside it. These are action rows, not
+// timestamps, so they take the full on-chrome value and only the genuinely
+// secondary lines stay muted.
+
+#{$ph} .form-sidebar .form-sidebar-items,
+#{$ph} .form-sidebar .form-sidebar-items a,
+#{$ph} .form-sidebar .sidebar-label,
+#{$ph} .layout-side-section .sidebar-menu li a {
+	color: var(--ph-text-on-chrome);
+}
+
+#{$ph} .form-sidebar .form-sidebar-items .icon,
+#{$ph} .form-sidebar .form-sidebar-items svg {
+	stroke: var(--ph-text-on-chrome);
+	color: var(--ph-text-on-chrome);
+}
+
+#{$ph} .form-sidebar .modified-by .frappe-timestamp,
+#{$ph} .form-sidebar .created-by .frappe-timestamp {
+	color: var(--ph-text-on-chrome-muted);
+}

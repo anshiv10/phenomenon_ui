@@ -95,14 +95,29 @@
 }
 
 // -- Validation --------------------------------------------------------------
+// A 1px danger border, and nothing else.
+//
+// Frappe marks every empty mandatory field `.has-error` the moment a new
+// document opens, so on a form with four required fields this state is the
+// first thing a user sees. The earlier 2px frame plus ring plus red label
+// stacked on top of v16's own 1px error border and turned an ordinary blank
+// form into an alarm — and it put red, which this system reserves for a failed
+// or expired STATUS, on a field that is merely not filled in yet.
+//
+// The asterisk already says required. The border says which one. The label
+// stays where it was, because recolouring it makes the field read as broken.
 #{$ph} .has-error .form-control,
+#{$ph} .has-error input,
 #{$ph} .form-control.invalid {
-	border-color: var(--ph-danger);
-	box-shadow: 0 0 0 1px var(--ph-danger);
+	border: 1px solid var(--ph-danger);
+	box-shadow: none;
 }
 
-#{$ph} .has-error .control-label {
-	color: var(--ph-danger);
+#{$ph} .has-error .form-control:focus,
+#{$ph} .has-error input:focus {
+	border-color: var(--ph-primary);
+	box-shadow: 0 0 0 1px var(--ph-primary),
+		inset var(--ph-rail-width) 0 0 var(--ph-primary);
 }
 
 // -- Help text ---------------------------------------------------------------
