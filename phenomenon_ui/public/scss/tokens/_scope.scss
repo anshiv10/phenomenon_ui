@@ -16,23 +16,17 @@ $ph: "html[data-ph='on']";
 // VERIFY (Session 0): confirm the attribute name and that "dark" is the value.
 $ph-dark: "html[data-ph='on'][data-theme='dark']";
 
-// -- Presets -----------------------------------------------------------------
-// A preset is a *token* swap, never a rule swap: it re-declares --ph-* and the
-// mapping layer carries the change everywhere. Adding a preset should not
-// require touching a single component file.
+// Chrome. Dark chrome is the spec and the default; "light" is the one
+// deviation offered in Settings for a client who rejects a dark frame. It is a
+// token swap only (tokens/_colors.scss) — no rule in desk/ knows it exists.
 //
 // SPECIFICITY, deliberately:
 //   $ph               (0,1,1)
 //   $ph-dark          (0,2,1)
-//   $ph-clinical      (0,3,1)  — the :not() is what lifts it past $ph-dark
-//   $ph-clinical-dark (0,3,1)
-//
-// The two clinical scopes are mutually exclusive by construction, so neither
-// depends on import order to win. That matters: an ordering-dependent cascade
-// is a bug waiting for someone to reorder an @import.
-$ph-clinical: "html[data-ph='on'][data-ph-preset='clinical']:not([data-theme='dark'])";
-$ph-clinical-dark: "html[data-ph='on'][data-ph-preset='clinical'][data-theme='dark']";
+//   $ph-chrome-light  (0,2,1)  — declared AFTER the dark block so it wins the
+//                               chrome tokens in both modes.
+$ph-chrome-light: "html[data-ph='on'][data-ph-chrome='light']";
 
-// Website / portal scope. Nothing sets this class in v0.1 — see the note in
+// Website / portal scope. Nothing sets this class yet — see the note in
 // phenomenon_web.bundle.scss for why that is deliberate.
 $ph-web: "body.phenomenon-web";

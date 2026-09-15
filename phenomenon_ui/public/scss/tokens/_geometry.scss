@@ -1,47 +1,41 @@
 @import "scope";
 
 // ---------------------------------------------------------------------------
-// Geometry — radius, density, elevation.
+// Geometry — radius, space, density, motion.
 // ---------------------------------------------------------------------------
 //
-// Radius and density are *not* fixed values. They resolve through attributes
-// the theme engine writes on <html>, which is what lets a site change its whole
-// feel from Settings without a rebuild.
+// RADIUS — 3 steps, meaning distance from the page. Anchored things are nearly
+// square; only dismissible things are soft. Radius is never decoration, which
+// is why it is fixed here and not a Settings field.
+//
+// SPACE — fixed across density modes. Only the three density tokens change,
+// which is what keeps the variants a three-line override rather than a second
+// theme. Type sizes never change with density: 13px is the floor.
 
 #{$ph} {
-	// Defaults, in case an attribute is missing (engine failed, JS disabled).
-	--ph-radius-sm: 4px;
-	--ph-radius: 6px;
-	--ph-radius-lg: 10px;
-	--ph-radius-full: 999px;
+	--ph-radius-sm: 3px; // controls, buttons, pills, tabs
+	--ph-radius-md: 6px; // form card, grid wrapper, panels
+	--ph-radius-lg: 10px; // modal, dropdown, awesomebar
 
-	--ph-density-scale: 1;
-	--ph-row-height: 34px;
-	--ph-control-height: 30px;
-	--ph-space-1: 4px;
-	--ph-space-2: 8px;
-	--ph-space-3: 12px;
-	--ph-space-4: 16px;
-	--ph-space-5: 24px;
-	--ph-space-6: 32px;
+	--ph-space-1: 2px;
+	--ph-space-2: 4px;
+	--ph-space-3: 8px;
+	--ph-space-4: 12px;
+	--ph-space-5: 16px;
+	--ph-space-6: 24px;
 
-	// Elevation: three steps, and they mean three things — resting, lifted by
-	// the pointer, floating above the page. More steps than that and "raised"
-	// stops meaning anything, because everything is raised.
-	//
-	// Each is layered: a tight shadow for the contact edge plus a wider,
-	// softer one for the ambient cast. A single blurred shadow reads as a grey
-	// smudge; two read as an object above a surface.
-	--ph-shadow-sm: 0 1px 2px rgba(23, 34, 44, 0.06);
-	--ph-shadow: 0 1px 3px rgba(23, 34, 44, 0.08), 0 1px 2px rgba(23, 34, 44, 0.04);
-	--ph-shadow-md: 0 4px 12px rgba(23, 34, 44, 0.1), 0 1px 3px rgba(23, 34, 44, 0.06);
-	--ph-shadow-lg: 0 8px 24px rgba(23, 34, 44, 0.12), 0 2px 6px rgba(23, 34, 44, 0.06);
+	// Density — comfortable is the default, declared in root.
+	--ph-control-height: 32px;
+	--ph-row-padding: 7px 12px;
+	--ph-section-gap: 24px;
+
+	// The 3px accent bar on the leading edge — the focus contract, drawn the
+	// same way on a sidebar item, a list row and a focused control.
+	--ph-rail-width: 3px;
 
 	// -- Motion ------------------------------------------------------------
-	// Three durations. Anything an ERP user triggers hundreds of times a day
-	// (a row hover, a button press) has to be under 150ms or the interface
-	// feels like it is thinking; only things that travel a distance —
-	// a dialog, a drawer — earn longer.
+	// Motion is feedback, never decoration. Anything triggered hundreds of
+	// times a day stays under 150ms; only things that travel earn longer.
 	--ph-ease: cubic-bezier(0.2, 0, 0.2, 1);
 	--ph-ease-out: cubic-bezier(0, 0, 0.2, 1);
 	--ph-duration-fast: 120ms;
@@ -49,71 +43,27 @@
 	--ph-duration-slow: 260ms;
 	--ph-transition: var(--ph-duration-fast) var(--ph-ease);
 
-	// The accent rail that marks a hovered or selected row. Expressed as a
-	// token so density and preset can both reach it.
-	--ph-rail-width: 3px;
-
 	// -- Hit targets -------------------------------------------------------
-	// 44px is the WCAG 2.2 target-size floor and roughly a fingertip. It is
-	// applied only under a coarse pointer, so a mouse user keeps the compact
-	// rows they chose and a nurse on a bedside tablet gets a tappable one.
+	// Applied only under a coarse pointer (see the @media blocks in desk/),
+	// so a mouse user keeps the density they chose.
 	--ph-touch-target: 44px;
 }
 
-// -- Radius ------------------------------------------------------------------
-#{$ph}[data-ph-radius="sharp"] {
-	--ph-radius-sm: 0;
-	--ph-radius: 0;
-	--ph-radius-lg: 0;
-}
-
-#{$ph}[data-ph-radius="small"] {
-	--ph-radius-sm: 2px;
-	--ph-radius: 4px;
-	--ph-radius-lg: 6px;
-}
-
-#{$ph}[data-ph-radius="medium"] {
-	--ph-radius-sm: 4px;
-	--ph-radius: 6px;
-	--ph-radius-lg: 10px;
-}
-
-#{$ph}[data-ph-radius="large"] {
-	--ph-radius-sm: 6px;
-	--ph-radius: 10px;
-	--ph-radius-lg: 16px;
-}
-
-// -- Density -----------------------------------------------------------------
-// Density must change *row height*, not only padding. A density switch that
-// does not visibly change how many rows fit on screen has not done its job.
+// -- Density variants — three tokens, nothing else ---------------------------
 #{$ph}[data-ph-density="compact"] {
-	--ph-density-scale: 0.8;
-	--ph-row-height: 28px;
 	--ph-control-height: 26px;
-	--ph-space-1: 2px;
-	--ph-space-2: 6px;
-	--ph-space-3: 8px;
-	--ph-space-4: 12px;
-	--ph-space-5: 16px;
-	--ph-space-6: 24px;
+	--ph-row-padding: 4px 10px;
+	--ph-section-gap: 16px;
 }
 
 #{$ph}[data-ph-density="comfortable"] {
-	--ph-density-scale: 1;
-	--ph-row-height: 34px;
-	--ph-control-height: 30px;
+	--ph-control-height: 32px;
+	--ph-row-padding: 7px 12px;
+	--ph-section-gap: 24px;
 }
 
 #{$ph}[data-ph-density="spacious"] {
-	--ph-density-scale: 1.2;
-	--ph-row-height: 42px;
-	--ph-control-height: 36px;
-	--ph-space-1: 6px;
-	--ph-space-2: 10px;
-	--ph-space-3: 16px;
-	--ph-space-4: 20px;
-	--ph-space-5: 28px;
-	--ph-space-6: 40px;
+	--ph-control-height: 38px;
+	--ph-row-padding: 10px 14px;
+	--ph-section-gap: 32px;
 }

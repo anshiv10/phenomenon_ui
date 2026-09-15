@@ -1,98 +1,91 @@
 @import "../tokens/scope";
 
 // ---------------------------------------------------------------------------
-// Navbar — the one surface a user sees on every single page.
+// Navbar — the top half of the chrome frame.
 // ---------------------------------------------------------------------------
 //
-// VERIFY (Session 0): `.navbar`, `.navbar-brand`, `.navbar-nav`,
-// `.search-bar`, `.awesomplete input`.
+// surface-chrome ground, chrome-edge 2px bottom rule, text-on-chrome labels,
+// on-chrome-muted icons. The awesomebar is chrome-hover at radius-lg — it
+// opens a dismissible panel, so it earns the soft corner.
 //
-// It gets a style switch rather than a single opinion because this is the
-// surface clients have the strongest feelings about, and "which shade is the
-// top bar" is not a question worth a code change each time.
+// Light chrome (Settings) is a token swap in tokens/_colors.scss; nothing
+// here changes for it.
+//
+// VERIFY (Session 0): `.navbar`, `.navbar-brand`, `.navbar-nav .nav-link`,
+// `.search-bar`, `#navbar-search`, `.navbar .avatar`.
 
 #{$ph} .navbar {
-	background-color: var(--ph-surface-raised);
-	border-bottom: 1px solid var(--ph-border);
-	transition: box-shadow var(--ph-transition), background-color var(--ph-transition);
+	background-color: var(--ph-surface-chrome);
+	border-bottom: 2px solid var(--ph-chrome-edge);
+	box-shadow: none;
+	color: var(--ph-text-on-chrome);
+	--icon-stroke: var(--ph-text-on-chrome-muted);
 }
 
-#{$ph} .navbar .navbar-brand {
-	color: var(--ph-text);
+#{$ph} .navbar .navbar-brand,
+#{$ph} .navbar .navbar-brand:hover {
+	color: var(--ph-text-on-chrome);
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: var(--ph-tracking-heading);
+	text-decoration: none;
 }
 
-#{$ph} .navbar .nav-link {
-	color: var(--ph-text-muted);
-	border-radius: var(--ph-radius);
-	transition: color var(--ph-transition), background-color var(--ph-transition);
+#{$ph} .navbar .nav-link,
+#{$ph} .navbar .navbar-nav .nav-link,
+#{$ph} .navbar .dropdown-toggle {
+	color: var(--ph-text-on-chrome);
+	font-size: var(--ph-text-md);
+	font-weight: var(--ph-weight-medium);
+	border-radius: var(--ph-radius-sm);
+	text-decoration: none;
 }
 
 #{$ph} .navbar .nav-link:hover,
 #{$ph} .navbar .nav-link:focus {
-	color: var(--ph-text);
-	background-color: var(--ph-surface-hover);
+	color: var(--ph-text-on-chrome);
+	background-color: var(--ph-surface-chrome-hover);
+	text-decoration: none;
 }
 
-// The awesomebar is the fastest path through the desk and currently looks
-// like a disabled input. Give it a real resting state and a focus state that
-// says it is the command surface.
+#{$ph} .navbar .icon,
+#{$ph} .navbar svg {
+	color: var(--ph-text-on-chrome-muted);
+	stroke: var(--ph-text-on-chrome-muted);
+}
+
+// -- Awesomebar --------------------------------------------------------------
 #{$ph} .navbar .search-bar .form-control,
-#{$ph} .navbar .awesomplete input {
-	background-color: var(--ph-surface-sunken);
+#{$ph} .navbar .awesomplete input,
+#{$ph} #navbar-search {
+	background-color: var(--ph-surface-chrome-hover);
 	border: 1px solid transparent;
-	border-radius: var(--ph-radius);
-	transition: background-color var(--ph-transition), border-color var(--ph-transition),
-		box-shadow var(--ph-transition);
-}
-
-#{$ph} .navbar .search-bar .form-control:focus,
-#{$ph} .navbar .awesomplete input:focus {
-	background-color: var(--ph-surface-raised);
-	border-color: var(--ph-border-focus);
-	box-shadow: var(--ph-focus-ring);
-}
-
-// -- Style variants ----------------------------------------------------------
-#{$ph}[data-ph-navbar="flat"] .navbar {
-	background-color: var(--ph-surface);
-	border-bottom-color: transparent;
+	border-radius: var(--ph-radius-lg);
+	color: var(--ph-text-on-chrome);
 	box-shadow: none;
 }
 
-#{$ph}[data-ph-navbar="elevated"] .navbar {
-	border-bottom-color: transparent;
-	box-shadow: var(--ph-shadow-md);
+#{$ph} .navbar .search-bar .form-control::placeholder,
+#{$ph} .navbar .awesomplete input::placeholder,
+#{$ph} #navbar-search::placeholder {
+	color: var(--ph-text-on-chrome-muted);
 }
 
-// Contrast: a dark bar under a light desk. This is the "hospital system"
-// look — a fixed dark chrome that frames the clinical content and stops the
-// page reading as one undifferentiated sheet of white. It is also the variant
-// that survives a projector and a bad ward monitor.
-#{$ph}[data-ph-navbar="contrast"] .navbar {
-	background-color: var(--ph-surface-inverse);
-	border-bottom-color: transparent;
+#{$ph} .navbar .search-bar .form-control:hover:not(:focus),
+#{$ph} #navbar-search:hover:not(:focus) {
+	border-color: var(--ph-border-strong);
 }
 
-#{$ph}[data-ph-navbar="contrast"] .navbar .navbar-brand,
-#{$ph}[data-ph-navbar="contrast"] .navbar .nav-link {
-	color: var(--ph-text-inverse);
+// The awesomebar is the one control whose focus frame is drawn on chrome:
+// same 2px primary frame, no leading bar (it is a search box, not a field).
+#{$ph} .navbar .search-bar .form-control:focus,
+#{$ph} .navbar .awesomplete input:focus,
+#{$ph} #navbar-search:focus {
+	background-color: var(--ph-surface-chrome-hover);
+	border-color: var(--ph-primary);
+	color: var(--ph-text-on-chrome);
+	box-shadow: 0 0 0 1px var(--ph-primary);
 }
 
-#{$ph}[data-ph-navbar="contrast"] .navbar .nav-link:hover,
-#{$ph}[data-ph-navbar="contrast"] .navbar .nav-link:focus {
-	color: var(--ph-text-inverse);
-	background-color: rgba(255, 255, 255, 0.12);
-}
-
-#{$ph}[data-ph-navbar="contrast"] .navbar .search-bar .form-control,
-#{$ph}[data-ph-navbar="contrast"] .navbar .awesomplete input {
-	background-color: rgba(255, 255, 255, 0.1);
-	color: var(--ph-text-inverse);
-}
-
-#{$ph}[data-ph-navbar="contrast"] .navbar .search-bar .form-control::placeholder,
-#{$ph}[data-ph-navbar="contrast"] .navbar .awesomplete input::placeholder {
-	color: rgba(255, 255, 255, 0.55);
+#{$ph} .navbar .search-bar .search-icon,
+#{$ph} .navbar .search-bar .icon {
+	color: var(--ph-text-on-chrome-muted);
 }

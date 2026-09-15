@@ -1,72 +1,82 @@
 @import "../tokens/scope";
 
 // ---------------------------------------------------------------------------
-// List view — the screen an ERP user spends most of their day inside.
+// List view — the densest read.
 // ---------------------------------------------------------------------------
 //
-// VERIFY (Session 0): `.list-row-container`, `.list-row-head`, `.list-row`,
-// `.list-row-col`, `.level-left`, `.list-subject`.
+//   row           surface-raised, text-md/500, bottom 1px border-subtle,
+//                 row-padding drives the height
+//   row hover     surface-secondary — background only, NO rail
+//   row selected  primary-soft + inset 3px primary bar + filled checkbox —
+//                 the signature; the rail is spent on selection only
+//   header        surface-secondary, text-xs/600/caps, text-muted
 //
-// Three decisions worth recording, because each is a thing deliberately NOT
-// done:
+// Numerals: Grand Total right-aligned, tabular, 500. IDs drop to mono 12px
+// text-secondary. Column rules are not possible here (spec §15) — list rows
+// are flex divs without per-cell elements in every column.
 //
-// 1. No zebra striping. Alternating row backgrounds compete with status
-//    colour, and in a clinical list the status is the thing you are scanning
-//    for. Hover does the row-tracking job without spending a colour channel.
-// 2. Hover is an inset rail, not a border. A real border on hover shifts
-//    every following row by a pixel; box-shadow: inset paints inside the box
-//    and moves nothing.
-// 3. No row transform on hover. Lifting a row in a dense list makes the list
-//    feel loose and, at 60 rows, makes scrolling feel like walking on a
-//    trampoline. Reserve motion for cards.
+// VERIFY (Session 0): `.frappe-list`, `.list-row-container`, `.list-row-head`,
+// `.list-row`, `.list-row-col`, `.list-subject`, `.list-count`,
+// `.standard-filter-section`, `.filter-selector`, `.sort-selector`.
 
-// -- The list reads as a sheet on the page background ------------------------
+// -- The sheet ---------------------------------------------------------------
+#{$ph} .frappe-list .result,
+#{$ph} .frappe-list .list-paging-area {
+	background-color: var(--ph-surface-card);
+}
+
+#{$ph} .frappe-list .frappe-card,
+#{$ph} .frappe-list .page-form {
+	border-radius: var(--ph-radius-md);
+	box-shadow: none;
+}
+
 #{$ph} .list-row-head {
-	background-color: var(--ph-surface-sunken);
-	border-bottom: 1px solid var(--ph-border);
+	background-color: var(--ph-surface-secondary);
+	border-bottom: 1px solid var(--ph-border-subtle);
 	color: var(--ph-text-muted);
 	font-size: var(--ph-text-xs);
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: 0.04em;
+	letter-spacing: var(--ph-tracking-caps);
 	text-transform: uppercase;
+	padding: var(--ph-row-padding);
+}
+
+#{$ph} .list-row-head .list-row-col,
+#{$ph} .list-row-head .list-count {
+	color: var(--ph-text-muted);
 }
 
 #{$ph} .list-row-container {
-	border-bottom: 1px solid var(--ph-border);
-	transition: background-color var(--ph-transition), box-shadow var(--ph-transition);
-}
-
-#{$ph} .list-row-container:hover {
-	background-color: var(--ph-surface-hover);
-	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
-}
-
-// Keyboard users get the same affordance as pointer users, plus the ring.
-#{$ph} .list-row-container:focus-within {
-	background-color: var(--ph-surface-hover);
-	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
+	background-color: var(--ph-surface-card);
+	border-bottom: 1px solid var(--ph-border-subtle);
+	box-shadow: none;
 }
 
 #{$ph} .list-row-container:last-child {
 	border-bottom: none;
 }
 
-// Density has to reach the list, or "Compact" is a setting that changes
-// nothing on the screen users look at most.
-#{$ph} .list-row {
-	min-height: var(--ph-row-height);
-	padding-block: var(--ph-space-2);
+// Hover: background only.
+#{$ph} .list-row-container:hover {
+	background-color: var(--ph-surface-secondary);
 }
 
-// The record link is the primary target in the row; give it the weight to be
-// found without reading, and reserve the accent for hover so a list of 200
-// links is not 200 teal shouts.
+// Row height is driven by row-padding so density is one variable.
+#{$ph} .list-row {
+	min-height: 0;
+	padding: var(--ph-row-padding);
+	font-size: var(--ph-text-md);
+	color: var(--ph-text-primary);
+}
+
+// The row title is text-primary at 500 — never teal at rest.
 #{$ph} .list-subject a,
-#{$ph} .list-row-col .ellipsis > a {
-	color: var(--ph-text);
+#{$ph} .list-row-col .ellipsis > a,
+#{$ph} .list-row .level-left a {
+	color: var(--ph-text-primary);
 	font-weight: var(--ph-weight-medium);
 	text-decoration: none;
-	transition: color var(--ph-transition);
 }
 
 #{$ph} .list-subject a:hover,
@@ -75,55 +85,63 @@
 	text-decoration: none;
 }
 
-// -- Selection ---------------------------------------------------------------
-// A selected row has to survive hover: bulk-editing forty invoices while the
-// pointer sweeps across them should not make the selection flicker.
-#{$ph} .list-row-container.level.selected {
-	background-color: var(--ph-surface-selected);
+// Secondary columns (Branch, timestamps) are text-secondary / text-muted.
+#{$ph} .list-row-col .text-muted,
+#{$ph} .list-row .list-row-modified,
+#{$ph} .list-row .comment-count {
+	color: var(--ph-text-muted);
+}
+
+// Identifiers: mono, 12px, text-secondary — recognisable, never competing with
+// the amount. VERIFY (Session 0): the class Frappe gives the ID column in
+// this build; `.list-id` is the candidate. If absent, leave the ID in sans.
+#{$ph} .list-row .list-id,
+#{$ph} .list-row-col .list-id {
+	font-family: var(--ph-font-mono);
+	font-size: var(--ph-text-sm);
+	color: var(--ph-text-secondary);
+}
+
+// -- Selection — the signature -----------------------------------------------
+#{$ph} .list-row-container.level.selected,
+#{$ph} .list-row-container.selected {
+	background-color: var(--ph-primary-soft);
 	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
 }
 
-// Kept in its own rule rather than appended to the list above: a browser that
-// does not understand :has() drops the entire selector list it appears in, and
-// that would take the .selected rule down with it.
+// Kept in its own rule: a browser that does not understand :has() drops the
+// entire selector list it appears in.
 #{$ph} .list-row-container:has(input[type="checkbox"]:checked) {
-	background-color: var(--ph-surface-selected);
+	background-color: var(--ph-primary-soft);
 	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
 }
 
-#{$ph} input[type="checkbox"] {
-	accent-color: var(--ph-primary);
-	cursor: pointer;
-}
-
-// -- Filter area -------------------------------------------------------------
-// VERIFY (Session 0): `.filter-section`, `.standard-filter-section`,
-// `.filter-selector`, `.list-count`.
+// -- Filter row --------------------------------------------------------------
 #{$ph} .standard-filter-section .form-control {
-	background-color: var(--ph-surface-raised);
-	border-color: var(--ph-border);
+	background-color: var(--ph-surface-secondary);
+	border-color: transparent;
 }
 
 #{$ph} .filter-selector .btn,
 #{$ph} .sort-selector .btn {
-	border-radius: var(--ph-radius);
-	color: var(--ph-text-muted);
+	border-radius: var(--ph-radius-sm);
+	color: var(--ph-text-primary);
 }
 
 #{$ph} .list-count {
-	color: var(--ph-text-light);
-	font-size: var(--ph-text-sm);
-	font-variant-numeric: tabular-nums;
+	color: var(--ph-text-muted);
+	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-caps);
+	font-variant-numeric: tabular-nums lining-nums;
 }
 
 // -- Empty state -------------------------------------------------------------
 #{$ph} .no-result {
-	color: var(--ph-text-light);
+	color: var(--ph-text-muted);
 }
 
 // -- Touch -------------------------------------------------------------------
-// Bedside tablets and ward workstations with touchscreens. Only under a coarse
-// pointer, so a desk user keeps the density they chose.
 @media (pointer: coarse) {
 	#{$ph} .list-row {
 		min-height: var(--ph-touch-target);

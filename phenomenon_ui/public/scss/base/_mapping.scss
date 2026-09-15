@@ -10,9 +10,9 @@
 // Frappe paints nearly its entire desk from CSS custom properties declared in
 // `apps/frappe/frappe/public/scss/common/css_variables.scss`. Re-pointing those
 // variables at `--ph-*` tokens themes every page in the product at once —
-// including the pages neither you nor I have ever opened, and including pages
-// that ship in a future ERPNext release. A component rule themes exactly one
-// surface and only until someone renames the class.
+// including pages nobody has opened, and pages that ship in a future release.
+// A component rule themes exactly one surface and only until someone renames
+// the class.
 //
 // So: before writing a rule in components/ or desk/, ask whether a variable
 // here would have done it. Usually one does.
@@ -22,79 +22,109 @@
 // `[data-theme="dark"]` (0,1,0). `html[data-ph='on']` is (0,1,1) and wins both
 // without a single !important.
 //
-// Note what that means: this file is mapped ONCE, for every theme and preset.
-// Dark mode and the clinical preset re-declare `--ph-*` in tokens/_colors.scss
-// at higher specificity, and these mappings pick the new values up for free.
-// If you ever find yourself writing a second copy of this block for a theme,
-// stop — the token layer is the thing that should have changed.
+// This file is mapped ONCE. Dark mode and light chrome re-declare `--ph-*` in
+// tokens/_colors.scss at higher specificity, and these mappings pick the new
+// values up for free. If you ever find yourself writing a second copy of this
+// block for a mode, stop — the token layer is the thing that should change.
 //
 // VERIFICATION STATUS
-// Every variable below is one I expect on a Frappe v15 build, but this app was
-// authored without a bench attached. Session 0 exists to confirm the list
-// against the installed source. Anything that turns out not to exist is dead
-// weight, not a bug — an unused custom property is inert — but delete it
-// anyway so this file stays an accurate description of the build.
-// The block at the bottom holds candidates I am *not* confident enough to map
-// blind; enable them once Session 0 confirms them.
+// Every variable below is one expected on a Frappe v15 build. Session 0
+// (scripts/session0.sh + Settings -> Run Diagnostics) confirms the list.
+// Anything that turns out not to exist is inert, not a bug — delete it so this
+// file stays an accurate description of the build.
 // ===========================================================================
 
 #{$ph} {
 	// -- Surfaces ----------------------------------------------------------
-	--bg-color: var(--ph-surface);
-	--fg-color: var(--ph-surface-raised);
-	--card-bg: var(--ph-surface-raised);
-	--control-bg: var(--ph-surface-raised);
-	--disabled-control-bg: var(--ph-surface-sunken);
-	--fg-hover-color: var(--ph-surface-hover);
-	--subtle-accent: var(--ph-surface-sunken);
-	--subtle-fg: var(--ph-surface-sunken);
-	--highlight-color: var(--ph-surface-hover);
-	--awesomplete-hover-bg: var(--ph-surface-selected);
+	--bg-color: var(--ph-surface-canvas); // page canvas
+	--fg-color: var(--ph-surface-card); // list sheet, form page
+	--card-bg: var(--ph-surface-card);
+	--control-bg: var(--ph-surface-secondary); // control at rest
+	--control-bg-on-gray: var(--ph-surface-raised); // control on a grey ground
+	--disabled-control-bg: var(--ph-surface-disabled);
+	--fg-hover-color: var(--ph-surface-secondary);
+	--subtle-accent: var(--ph-surface-secondary);
+	--subtle-fg: var(--ph-surface-secondary);
+	--highlight-color: var(--ph-primary-soft);
+	--awesomplete-hover-bg: var(--ph-primary-soft);
 
 	// -- Text --------------------------------------------------------------
-	--text-color: var(--ph-text);
-	--text-muted: var(--ph-text-muted);
-	--text-light: var(--ph-text-light);
-	--heading-color: var(--ph-text);
+	--text-color: var(--ph-text-primary);
+	--heading-color: var(--ph-text-primary);
+	--text-muted: var(--ph-text-secondary);
+	--text-light: var(--ph-text-muted);
 	--icon-stroke: currentColor;
 
 	// -- Borders -----------------------------------------------------------
-	--border-color: var(--ph-border);
+	--border-color: var(--ph-border-subtle);
 	--dark-border-color: var(--ph-border-strong);
 
 	// -- Accent ------------------------------------------------------------
 	// The single most load-bearing mapping in the file: this is what turns
-	// every stock primary button, active tab, focus ring and selected row
-	// teal without a component rule anywhere.
+	// every stock primary button, active tab and selected row teal without a
+	// component rule anywhere.
 	--primary: var(--ph-primary);
 	--primary-color: var(--ph-primary);
 
 	// -- Radius ------------------------------------------------------------
-	// Mapped to the attribute-driven tokens, which is how the Corner Radius
-	// setting reaches components this app never names.
+	// --border-radius-full is deliberately NOT mapped: Frappe uses it on
+	// avatars, which must stay round. Pills get radius-sm by component rule.
 	--border-radius-sm: var(--ph-radius-sm);
-	--border-radius: var(--ph-radius);
-	--border-radius-md: var(--ph-radius);
+	--border-radius: var(--ph-radius-sm);
+	--border-radius-md: var(--ph-radius-md);
 	--border-radius-lg: var(--ph-radius-lg);
-	--border-radius-full: var(--ph-radius-full);
 
 	// -- Elevation ---------------------------------------------------------
-	--shadow-base: var(--ph-shadow);
+	// Mapped so dismissible surfaces (dropdown, modal, toast) get the spec
+	// shadow. Anchored surfaces have their shadow removed by component rule.
+	--shadow-base: var(--ph-shadow-sm);
 	--shadow-sm: var(--ph-shadow-sm);
 	--shadow-md: var(--ph-shadow-md);
 	--shadow-lg: var(--ph-shadow-lg);
 
 	// -- Shell surfaces ----------------------------------------------------
-	// Mapped so the navbar and modal are under this app's control rather than
-	// inheriting whatever the build happens to default to. If these variables
-	// do not exist in your build the declarations are inert, and the component
-	// rules in desk/_navbar.scss cover the same ground.
 	// VERIFY (Session 0): --navbar-bg, --modal-bg, --sidebar-select-color.
-	--navbar-bg: var(--ph-surface-raised);
+	--navbar-bg: var(--ph-surface-chrome);
 	--modal-bg: var(--ph-surface-raised);
-	--sidebar-select-color: var(--ph-surface-selected);
-	--control-bg-on-gray: var(--ph-surface-raised);
+	--sidebar-select-color: var(--ph-surface-chrome-selected);
 	--scrollbar-thumb-color: var(--ph-border-strong);
+
+	// -- Status pills ------------------------------------------------------
+	// Frappe v15 paints `.indicator-pill.<colour>` from `--bg-<colour>` and
+	// `--text-on-<colour>`. Mapping those pairs is the whole status theme:
+	// no class targeting, no keying off status text.
+	//
+	//   green  = settled           -> success
+	//   orange, yellow = awaiting  -> warning
+	//   red    = failed / expired  -> danger
+	//   blue   = informational     -> info
+	//   everything else = neutral  -> surface-secondary / text-muted
+	//
+	// The theme never invents a sixth colour to accommodate a doctype.
+	// VERIFY (Session 0): the exact variable names in indicator.scss, and
+	// whether --bg-gray is used by any non-status surface in this build.
+	--bg-green: var(--ph-success-soft);
+	--text-on-green: var(--ph-success);
+	--bg-orange: var(--ph-warning-soft);
+	--text-on-orange: var(--ph-warning);
+	--bg-yellow: var(--ph-warning-soft);
+	--text-on-yellow: var(--ph-warning);
+	--bg-red: var(--ph-danger-soft);
+	--text-on-red: var(--ph-danger);
+	--bg-blue: var(--ph-info-soft);
+	--text-on-blue: var(--ph-info);
+	--bg-gray: var(--ph-surface-secondary);
+	--text-on-gray: var(--ph-text-muted);
+	--bg-light-gray: var(--ph-surface-secondary);
+	--text-on-light-gray: var(--ph-text-muted);
+	--bg-darkgrey: var(--ph-surface-secondary);
+	--text-on-darkgrey: var(--ph-text-muted);
+	--bg-purple: var(--ph-surface-secondary);
+	--text-on-purple: var(--ph-text-muted);
+	--bg-pink: var(--ph-surface-secondary);
+	--text-on-pink: var(--ph-text-muted);
+	--bg-cyan: var(--ph-surface-secondary);
+	--text-on-cyan: var(--ph-text-muted);
 
 	// -- Spacing -----------------------------------------------------------
 	// Density reaches stock components through these. Confirm the exact names
@@ -116,19 +146,7 @@
 // ---------------------------------------------------------------------------
 // CANDIDATES — verify in Session 0, then move up into the block above.
 // ---------------------------------------------------------------------------
-// Left commented on purpose. Mapping a variable that does not exist is
-// harmless but dishonest: this file is meant to double as documentation of
-// what the installed build actually exposes.
-//
-//   --navbar-height
-//   --page-head-height
-//   --error-bg / --error-border
-//   --alert-text-color
-//   --avatar-frame-bg
-//   --btn-height
-//   --input-height
-//   --checkbox-size
+//   --navbar-height   --page-head-height   --btn-height   --input-height
+//   --checkbox-size   --error-bg / --error-border   --alert-text-color
 //
 // Font-size variables (--text-xs … --text-4xl) are deliberately NOT mapped.
-// They are Frappe's type scale, and rescaling it globally reflows every list,
-// grid and report in ways no amount of spot-checking will catch.

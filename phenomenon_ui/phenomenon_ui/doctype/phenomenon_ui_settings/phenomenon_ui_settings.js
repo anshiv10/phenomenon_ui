@@ -12,28 +12,15 @@
 //    theme, and both are answerable from the live DOM. The app should answer
 //    for itself rather than asking anyone to paste console commands.
 
-const PREVIEW_FIELDS = [
-	"enabled",
-	"theme_preset",
-	"appearance",
-	"accent_color",
-	"density",
-	"corner_radius",
-	"sidebar_style",
-	"navbar_style",
-	"custom_css",
-];
+const PREVIEW_FIELDS = ["enabled", "appearance", "accent_color", "density", "chrome", "custom_css"];
 
 function settings_from_form(frm) {
 	return {
 		enabled: frm.doc.enabled ? 1 : 0,
-		theme_preset: frm.doc.theme_preset,
 		appearance: frm.doc.appearance,
 		accent_color: frm.doc.accent_color || "",
 		density: frm.doc.density,
-		corner_radius: frm.doc.corner_radius,
-		sidebar_style: frm.doc.sidebar_style,
-		navbar_style: frm.doc.navbar_style,
+		chrome: frm.doc.chrome,
 		custom_css: frm.doc.custom_css || "",
 	};
 }
@@ -57,21 +44,32 @@ function preview(frm) {
 // means the variable does not exist in this build and the mapping is dead
 // weight — an honest answer that source-grepping alone cannot give you.
 const PROBE_VARS = [
-	"--bg-color", "--fg-color", "--card-bg", "--control-bg", "--text-color",
-	"--text-muted", "--border-color", "--primary", "--primary-color",
-	"--navbar-bg", "--modal-bg", "--border-radius", "--shadow-base",
-	"--padding-md", "--navbar-height",
+	"--bg-color", "--fg-color", "--card-bg", "--control-bg", "--control-bg-on-gray",
+	"--disabled-control-bg", "--text-color", "--text-muted", "--text-light",
+	"--border-color", "--dark-border-color", "--primary", "--primary-color",
+	"--navbar-bg", "--modal-bg", "--sidebar-select-color", "--border-radius",
+	"--border-radius-md", "--shadow-base", "--padding-md", "--navbar-height",
+	"--bg-green", "--text-on-green", "--bg-orange", "--text-on-orange",
+	"--bg-yellow", "--text-on-yellow", "--bg-red", "--text-on-red",
+	"--bg-blue", "--text-on-blue", "--bg-gray", "--text-on-gray", "--icon-stroke",
 ];
 
 // Every class this theme styles. Count 0 means the rule can never match.
 const PROBE_SELECTORS = [
-	".navbar", ".standard-sidebar-item", ".standard-sidebar-item.selected",
-	".standard-sidebar-label", ".layout-side-section", ".list-row-container",
-	".list-row-head", ".list-row", ".list-subject", ".page-head", ".form-page",
-	".form-section", ".section-head", ".form-tabs-list", ".widget",
-	".widget-head", ".number-card", ".modal-content", ".grid-heading-row",
-	".grid-row", ".dt-row--header", ".dt-cell", ".indicator-pill",
-	".form-control", ".control-label", ".btn-primary", ".awesomplete",
+	".navbar", "#navbar-search", "#navbar-breadcrumbs", ".standard-sidebar-item",
+	".standard-sidebar-item.selected", ".standard-sidebar-label", ".sidebar-item-icon",
+	".layout-side-section", ".layout-main-section", ".list-sidebar", ".form-sidebar",
+	".sidebar-label", ".frappe-list", ".list-row-container", ".list-row-head",
+	".list-row", ".list-row-col.text-right", ".list-subject", ".list-id", ".list-count",
+	".page-head", ".title-text", ".page-actions .btn-secondary", ".form-page",
+	".form-tab-content", ".form-section", ".section-head", ".form-tabs-list",
+	".frappe-control[data-fieldtype='Currency']", ".control-label", ".form-control",
+	".like-disabled-input", ".widget", ".widget-head", ".shortcut-widget-box",
+	".links-widget-box", ".number-card", ".frappe-card", ".modal-content",
+	".form-grid", ".grid-heading-row", ".grid-row", ".grid-static-col.text-right",
+	".grid-footer", ".datatable", ".dt-row--header", ".dt-cell", ".dt-row--totalRow",
+	".indicator-pill", ".indicator-pill.red", ".btn-primary", ".btn-default",
+	".awesomplete", ".dropdown-menu", ".desk-alert",
 ];
 
 function build_report() {
@@ -90,7 +88,8 @@ function build_report() {
 	L.push("Theme engine loaded     : " + (window.phenomenon ? "YES" : "NO — JS bundle missing"));
 	L.push("Boot data present       : " + (frappe.boot && frappe.boot.phenomenon_ui ? "YES" : "NO"));
 	L.push("--ph-primary            : " + (get("--ph-primary") || "(not set)"));
-	L.push("--ph-surface            : " + (get("--ph-surface") || "(not set)"));
+	L.push("--ph-surface-chrome     : " + (get("--ph-surface-chrome") || "(not set)"));
+	L.push("--ph-surface-primary    : " + (get("--ph-surface-primary") || "(not set)"));
 
 	L.push("");
 	L.push("APP VERSION");
@@ -114,8 +113,7 @@ function build_report() {
 
 	L.push("");
 	L.push("<html> ATTRIBUTES");
-	["data-ph", "data-ph-preset", "data-ph-density", "data-ph-radius",
-		"data-ph-sidebar", "data-ph-navbar", "data-theme"].forEach((a) => {
+	["data-ph", "data-ph-density", "data-ph-chrome", "data-theme"].forEach((a) => {
 		L.push("  " + a + " = " + html.getAttribute(a));
 	});
 

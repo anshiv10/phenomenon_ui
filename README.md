@@ -4,18 +4,23 @@ A premium, modular and upgrade-safe UI layer for Frappe and ERPNext v15.
 
 Phenomenon UI re-themes the Frappe desk through CSS custom properties rather than by overriding templates or patching JavaScript. Everything it draws is scoped under a single attribute on `<html>`, so turning it off is a complete rollback rather than a partial one.
 
-- **Deep teal accent**, deliberately not blue — ERPNext already spends blue on "informational link", and reusing it for primary actions collapses two meanings into one colour.
-- **Configurable density and corner radius** from a Settings page, resolved through DOM attributes rather than a rebuild.
-- **Dark mode** that hooks Frappe's own theme attribute, so the built-in light/dark/automatic switcher keeps working.
-- **A Clinical preset** for healthcare deployments: calmer surfaces for long shifts, a low-luminance night palette for ward night shifts, five opt-in severity indicators, and 44px touch targets on bedside tablets. See [`docs/HEALTHCARE.md`](docs/HEALTHCARE.md).
+Phenomenon UI implements the **Instrument Panel** design system (Direction B, token specification v1): the chrome dims, the data field lights, and one teal accent is spent only on the answer to "where am I?". No DOM element moves.
+
+- **Dark chrome, lit content.** Navbar and sidebar form one dark frame; the content plane sits inside a 4-step luminance band so a six-hour shift reads text and status, not surfaces.
+- **The focus contract.** Teal appears in exactly four places: the focused control, the selected list row, the selected sidebar item, and the primary action. Each is drawn the same way — a 3px accent bar on the leading edge plus a soft accent wash.
+- **Radius encodes distance from the page** (3 / 6 / 10px) and **shadow is only permitted on a surface you can dismiss.** Cards, forms, lists, navbar and sidebar are flat.
+- **Status pills** are soft fill + solid uppercase text in four semantic colours and one neutral, mapped from Frappe's own indicator variables.
+- **Dark mode** is a token set, not an inversion: the frame goes near-black, the data plane stays a lifted slate, shadows become 1px rings. It hooks Frappe's own theme attribute, so the built-in switcher keeps working.
+- **Density** (compact / comfortable / spacious) changes three tokens and nothing else. Type never shrinks: 13px is the floor.
+- **Tokens:** [`docs/design-tokens.md`](docs/design-tokens.md).
 - **No webfonts, no CDN, no telemetry.** Zero outbound requests — air-gapped installs are a normal ERPNext deployment.
-- **WCAG AA throughout**, measured rather than asserted — `python3 scripts/contrast_audit.py` gates every palette pair in all four themes.
+- **WCAG AA throughout**, measured rather than asserted — `python3 scripts/contrast_audit.py` measures the 34 specification pairs in light and dark and fails the build if any drops below the floor.
 
 ---
 
-## Status: v0.2.0 — feature-complete, pending bench verification
+## Status: v0.3.0 — spec-complete, pending bench verification
 
-Everything described below is built, compiles, and is measured against its budgets. **What has not happened is verification against an installed Frappe build** — this app was authored without a bench attached, so no selector or variable name has been checked against real source.
+v0.3.0 rebuilds the token layer and every component rule to the Instrument Panel specification. Everything compiles and the 34 spec contrast pairs pass in both modes. **What has not happened is verification against an installed Frappe build** — no selector or variable name has been checked against real source.
 
 That is the one outstanding piece of work, and it needs a bench. Two commands do it:
 
@@ -34,7 +39,9 @@ grep -rn "VERIFY (Session 0)" phenomenon_ui/public/scss/     # 17 markers across
 
 An unmatched selector degrades to "not themed", never to "broken", so an unverified install is safe to run and look at. It is just not finished.
 
-**Known unresolved:** on at least one v15 build, `data-theme` is absent from `<html>`, which would mean dark mode never activates. `$ph-dark` in `tokens/_scope.scss` is a single line and changing it re-points the dark palette and the clinical night palette together — but the diagnostics report has to say what the attribute actually is first.
+**Known unresolved:** on at least one v15 build, `data-theme` is absent from `<html>`, which would mean dark mode never activates. `$ph-dark` in `tokens/_scope.scss` is a single line and changing it re-points the whole dark palette — but the diagnostics report has to say what the attribute actually is first.
+
+**Verify first on your bench (the rules that assume the most):** `.standard-sidebar-item.selected`, `.layout-side-section`, the `--bg-<colour>` / `--text-on-<colour>` indicator variables, `.page-actions .btn-secondary`, `.grid-footer`, `.dt-row--totalRow`, and the list ID column class (`.list-id` is a candidate, not a fact).
 
 ---
 
@@ -88,14 +95,13 @@ Frappe Cloud builds assets during deploy, so no manual `bench build` is needed.
 | Field | Effect |
 |-------|--------|
 | Enable Phenomenon UI | Master switch. Off = stock Frappe, no residue. |
-| Theme Preset | Default or **Clinical** — see [`docs/HEALTHCARE.md`](docs/HEALTHCARE.md). |
 | Appearance | Follow User Preference (recommended), Always Light, Always Dark. |
-| Accent Colour | Overrides the teal. Blank uses the default. |
-| Density | Compact / Comfortable / Spacious — changes row heights, not just padding. |
-| Corner Radius | Sharp / Small / Medium / Large. |
-| Sidebar Style | Standard / Flat / Floating. |
-| Navbar Style | Standard / Flat / Elevated / Contrast (dark chrome). |
+| Accent Colour | Overrides the teal in light mode. Blank uses the spec value. |
+| Density | Compact / Comfortable / Spacious. Changes control height, row padding and section gap. Type never changes. |
+| Chrome | Dark (the design system) or Light, the one deviation offered for a client who rejects a dark frame. |
 | Custom CSS | Injected into one `<style>` tag after the theme. Prefer changing a token. |
+
+Radius, elevation and the accent's four uses are fixed by the specification and are deliberately not settings.
 
 Saving clears the cache. Users pick it up on their next reload.
 
@@ -124,7 +130,7 @@ That greps installed Frappe/ERPNext source for the same variables and classes. T
 ### Testing from the console
 
 ```js
-phenomenon.apply({ enabled: 1, density: "Compact", corner_radius: "Sharp" });
+phenomenon.apply({ enabled: 1, density: "Compact", chrome: "Light" });
 phenomenon.refresh();   // back to saved settings
 ```
 
@@ -169,7 +175,7 @@ phenomenon_ui/
 ├── public/scss/
 │   ├── phenomenon_ui.bundle.scss     desk entry point
 │   ├── phenomenon_web.bundle.scss    website entry point (inert by design — see file header)
-│   ├── tokens/     palette (every literal), colors, geometry, typography, web
+│   ├── tokens/     palette (every literal), colors (light, dark, light-chrome), geometry, typography, web
 │   ├── base/       mapping (the important one), shell
 │   ├── components/ buttons, forms, cards, dialogs, tables, indicators, motion
 │   ├── desk/       navbar, sidebar, list-view, form-view

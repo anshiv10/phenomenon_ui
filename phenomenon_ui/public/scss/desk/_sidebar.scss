@@ -1,85 +1,171 @@
 @import "../tokens/scope";
 
 // ---------------------------------------------------------------------------
-// Sidebar — workspace navigation and the list-view filter panel.
+// Sidebar — the left half of the chrome frame.
 // ---------------------------------------------------------------------------
 //
-// VERIFY (Session 0): `.standard-sidebar-item`, `.standard-sidebar-label`,
-// `.layout-side-section`, `.sidebar-label`, `.list-sidebar`, and — the
-// important one — the class Frappe puts on the *selected* item. This file
-// assumes `.selected`. An active state that never matches is exactly the
-// half-styled look that reads worse than no theme at all.
+// Same chrome ground as the navbar so the two read as one frame. Covers the
+// workspace sidebar (PUBLIC / Home / Accounting ...), the list-view filter
+// panel (FILTER BY / SAVE FILTER) and the form sidebar (Assigned To /
+// Attachments / Tags / Share) — all three live in `.layout-side-section`.
+//
+//   item            surface-chrome, text-on-chrome, text-md/400, radius-sm
+//   item hover      surface-chrome-hover
+//   item selected   surface-chrome-selected + inset 3px primary leading bar,
+//                   weight 500 — the signature, the focus contract
+//   group label     text-xs/600/+0.07em caps, on-chrome-muted
+//
+// The content plane gets a 2px canvas-edge rule on its leading edge.
+//
+// VERIFY (Session 0): `.layout-side-section`, `.desk-sidebar`,
+// `.standard-sidebar-item`, `.standard-sidebar-item.selected`,
+// `.standard-sidebar-label`, `.sidebar-label`, `.list-sidebar`,
+// `.form-sidebar`, `.sidebar-menu`.
 
+// -- The frame ---------------------------------------------------------------
+#{$ph} .layout-side-section {
+	background-color: var(--ph-surface-chrome);
+	color: var(--ph-text-on-chrome);
+	--icon-stroke: var(--ph-text-on-chrome-muted);
+}
+
+#{$ph} .layout-main-section-wrapper,
+#{$ph} .layout-main-section {
+	border-left: 2px solid var(--ph-canvas-edge);
+}
+
+// -- Workspace items ---------------------------------------------------------
 #{$ph} .standard-sidebar-item {
-	border-radius: var(--ph-radius);
-	color: var(--ph-text-muted);
-	transition: background-color var(--ph-transition), color var(--ph-transition),
-		box-shadow var(--ph-transition);
+	background-color: transparent;
+	border-radius: var(--ph-radius-sm);
+	color: var(--ph-text-on-chrome);
+	font-size: var(--ph-text-md);
+	font-weight: var(--ph-weight-regular);
+	box-shadow: none;
+}
+
+#{$ph} .standard-sidebar-item a,
+#{$ph} .standard-sidebar-item .sidebar-item-label {
+	color: var(--ph-text-on-chrome);
+	text-decoration: none;
 }
 
 #{$ph} .standard-sidebar-item:hover {
-	background-color: var(--ph-surface-hover);
-	color: var(--ph-text);
+	background-color: var(--ph-surface-chrome-hover);
+	color: var(--ph-text-on-chrome);
 }
 
 #{$ph} .standard-sidebar-item.selected {
-	background-color: var(--ph-surface-selected);
-	color: var(--ph-primary);
+	background-color: var(--ph-surface-chrome-selected);
+	color: var(--ph-text-on-chrome);
 	font-weight: var(--ph-weight-medium);
+	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
 }
 
-// Group headings. Uppercase micro-type is the standard way to make a label
-// recede without making it illegible — but it needs the tracking, or the caps
-// jam together at 11px.
+#{$ph} .standard-sidebar-item.selected a,
+#{$ph} .standard-sidebar-item.selected .sidebar-item-label {
+	color: var(--ph-text-on-chrome);
+}
+
+// Icons in the chrome draw in on-chrome-muted. Under a dark ground an icon
+// that relies on a dark stroke disappears — this is what fixes the "empty
+// squares" beside each workspace item.
+#{$ph} .layout-side-section .icon,
+#{$ph} .layout-side-section svg,
+#{$ph} .standard-sidebar-item .sidebar-item-icon {
+	color: var(--ph-text-on-chrome-muted);
+	stroke: var(--ph-text-on-chrome-muted);
+}
+
+#{$ph} .standard-sidebar-item.selected .icon,
+#{$ph} .standard-sidebar-item.selected svg {
+	color: var(--ph-text-on-chrome);
+	stroke: var(--ph-text-on-chrome);
+}
+
+// -- Group labels (PUBLIC, FILTER BY, SAVE FILTER) ---------------------------
 #{$ph} .standard-sidebar-label,
-#{$ph} .sidebar-label {
-	color: var(--ph-text-light);
+#{$ph} .sidebar-label,
+#{$ph} .layout-side-section .sidebar-label,
+#{$ph} .layout-side-section h5,
+#{$ph} .layout-side-section h6 {
+	color: var(--ph-text-on-chrome-muted);
 	font-size: var(--ph-text-xs);
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: 0.06em;
+	letter-spacing: var(--ph-tracking-caps);
 	text-transform: uppercase;
 }
 
-// The list-view filter panel — bare in stock, and the thing on the left of
-// every list screen.
-#{$ph} .layout-side-section .sidebar-section,
-#{$ph} .list-sidebar .sidebar-section {
-	margin-bottom: var(--ph-space-5);
+// -- List-view filter panel and form sidebar ---------------------------------
+// Controls on chrome: chrome-hover fill, on-chrome text, quiet until touched.
+#{$ph} .layout-side-section .form-control,
+#{$ph} .layout-side-section .btn-default,
+#{$ph} .layout-side-section .btn-secondary,
+#{$ph} .layout-side-section .sidebar-menu .btn,
+#{$ph} .layout-side-section .dropdown-toggle {
+	background-color: var(--ph-surface-chrome-hover);
+	border: 1px solid transparent;
+	border-radius: var(--ph-radius-sm);
+	color: var(--ph-text-on-chrome);
 }
 
-#{$ph} .layout-side-section .form-control {
-	background-color: var(--ph-surface-raised);
-	border-color: var(--ph-border);
-	border-radius: var(--ph-radius);
+#{$ph} .layout-side-section .form-control::placeholder {
+	color: var(--ph-text-on-chrome-muted);
 }
 
-#{$ph} .layout-side-section a {
-	color: var(--ph-text-muted);
-	transition: color var(--ph-transition);
+#{$ph} .layout-side-section .form-control:hover:not(:focus),
+#{$ph} .layout-side-section .btn-default:hover,
+#{$ph} .layout-side-section .btn-secondary:hover {
+	border-color: var(--ph-border-strong);
+	background-color: var(--ph-surface-chrome-hover);
+	color: var(--ph-text-on-chrome);
 }
 
-#{$ph} .layout-side-section a:hover {
+#{$ph} .layout-side-section .form-control:focus {
+	background-color: var(--ph-surface-chrome-hover);
+	border-color: var(--ph-primary);
+	color: var(--ph-text-on-chrome);
+	box-shadow: 0 0 0 1px var(--ph-primary);
+}
+
+// Text and links on chrome. Links are targets, but teal on a dark ground at
+// 13px is a strain: they stay on-chrome and take primary only on hover.
+#{$ph} .layout-side-section,
+#{$ph} .layout-side-section .text-muted,
+#{$ph} .layout-side-section .sidebar-item-control,
+#{$ph} .form-sidebar .sidebar-menu,
+#{$ph} .form-sidebar .form-sidebar-items {
+	color: var(--ph-text-on-chrome);
+}
+
+#{$ph} .layout-side-section a,
+#{$ph} .layout-side-section .sidebar-action,
+#{$ph} .layout-side-section .add-list-group-by,
+#{$ph} .layout-side-section .edit-filters {
+	color: var(--ph-text-on-chrome);
+	text-decoration: none;
+}
+
+#{$ph} .layout-side-section a:hover,
+#{$ph} .layout-side-section .sidebar-action:hover {
 	color: var(--ph-primary);
 	text-decoration: none;
 }
 
-// -- Style variants ----------------------------------------------------------
-#{$ph}[data-ph-sidebar="flat"] .standard-sidebar-item {
-	border-radius: 0;
+#{$ph} .layout-side-section .text-muted,
+#{$ph} .layout-side-section small,
+#{$ph} .form-sidebar .modified-by,
+#{$ph} .form-sidebar .created-by {
+	color: var(--ph-text-on-chrome-muted);
 }
 
-#{$ph}[data-ph-sidebar="flat"] .standard-sidebar-item.selected {
-	background-color: transparent;
-	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
+#{$ph} .layout-side-section hr,
+#{$ph} .layout-side-section .sidebar-section {
+	border-color: var(--ph-surface-chrome-hover);
 }
 
-#{$ph}[data-ph-sidebar="floating"] .standard-sidebar-item {
-	border-radius: var(--ph-radius-lg);
-	margin-inline: var(--ph-space-2);
-}
-
-#{$ph}[data-ph-sidebar="floating"] .standard-sidebar-item.selected {
-	box-shadow: var(--ph-shadow-sm);
+#{$ph} .layout-side-section .sidebar-section {
+	margin-bottom: var(--ph-section-gap);
 }
 
 // -- Touch -------------------------------------------------------------------

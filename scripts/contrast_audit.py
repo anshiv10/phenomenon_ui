@@ -2,7 +2,8 @@
 """WCAG contrast audit for the Phenomenon UI palette.
 
 Reads tokens/_palette.scss and measures every foreground/background pair the
-theme actually puts on screen, in all four themes.
+theme actually renders — the 34 pairs in section 04 of the Instrument Panel
+spec, light and dark — computed by WCAG 2.1 relative luminance.
 
     python3 scripts/contrast_audit.py
 
@@ -12,10 +13,12 @@ Thresholds (WCAG 2.2 AA):
     4.5:1  body text
     3.0:1  large text, and UI component boundaries needed to identify a control
 
-Note which pairs are NOT checked: --ph-border is a decorative separator between
-rows, not a control boundary, and SC 1.4.11 does not apply to it. Holding a
-table divider to 3:1 produces a UI that looks like a spreadsheet grid from 1997.
---ph-border-strong is the control edge, and it is checked.
+One exclusion, stated rather than hidden: --ph-border-subtle against
+--ph-surface-primary is ~1.45:1 light and ~1.28:1 dark. It is a decorative row
+rule that never carries meaning on its own — every boundary it draws is also
+expressed by alignment or a background step. Any border that does carry
+meaning (control edge, checkbox, focus) uses --ph-border-strong or
+--ph-primary, both above 3:1. It is printed below for the record, not gated.
 """
 
 import re
@@ -52,79 +55,56 @@ def ratio(a: str, b: str) -> float:
 	return (hi + 0.05) / (lo + 0.05)
 
 
-# theme -> (page, card, ink, muted, light, accent, on-accent, control-border)
-THEMES = {
-	"Default light": {
-		"page": "grey-050", "card": "white", "ink": "grey-900",
-		"muted": "grey-600", "light": "grey-500", "accent": "teal-600",
-		"on_accent": "white", "control": "grey-450", "accent_soft": "teal-050",
-	},
-	"Default dark": {
-		"page": "ink-800", "card": "ink-700", "ink": "ink-100",
-		"muted": "ink-200", "light": "ink-300", "accent": "teal-400",
-		"on_accent": "teal-ink", "control": "ink-450", "accent_soft": "teal-950",
-	},
-	"Clinical day": {
-		"page": "clinical-050", "card": "white", "ink": "clinical-900",
-		"muted": "clinical-600", "light": "clinical-500", "accent": "clinical-accent",
-		"on_accent": "white", "control": "clinical-450", "accent_soft": "clinical-accent-soft",
-	},
-	"Clinical night": {
-		"page": "clinical-night-800", "card": "clinical-night-700", "ink": "clinical-night-100",
-		"muted": "clinical-night-200", "light": "clinical-night-300", "accent": "clinical-accent-night",
-		"on_accent": "clinical-night-900", "control": "clinical-night-450",
-		"accent_soft": "clinical-accent-night-soft",
-	},
-}
+# (label, foreground token, background token, floor) — spec section 04.
+PAIRS = [
+	("text-primary / surface-primary", "text-primary", "surface-primary", 4.5),
+	("text-primary / surface-secondary", "text-primary", "surface-secondary", 4.5),
+	("text-primary / surface-base", "text-primary", "surface-base", 4.5),
+	("text-primary / primary-soft", "text-primary", "primary-soft", 4.5),
+	("text-secondary / surface-primary", "text-secondary", "surface-primary", 4.5),
+	("text-muted / surface-primary", "text-muted", "surface-primary", 4.5),
+	("primary / surface-primary", "primary", "surface-primary", 4.5),
+	("primary-contrast / primary", "primary-contrast", "primary", 4.5),
+	("border-strong / surface-primary", "border-strong", "surface-primary", 3.0),
+	("focus frame (primary) / surface-secondary", "primary", "surface-secondary", 3.0),
+	("text-on-chrome / surface-chrome", "text-on-chrome", "surface-chrome", 4.5),
+	("on-chrome-muted / surface-chrome", "text-on-chrome-muted", "surface-chrome", 4.5),
+	("on-chrome / chrome-selected", "text-on-chrome", "surface-chrome-selected", 4.5),
+	("success / success-soft", "success", "success-soft", 4.5),
+	("warning / warning-soft", "warning", "warning-soft", 4.5),
+	("danger / danger-soft", "danger", "danger-soft", 4.5),
+	("info / info-soft", "info", "info-soft", 4.5),
+]
 
-STATES = ["critical", "urgent", "stable", "routine", "inactive"]
+# The dark set uses the same token names with a -dark suffix.
+MODES = {"Light": "", "Dark": "-dark"}
 
 
 def main() -> int:
 	p = load_palette()
 	failures = []
 
-	def check(theme: str, label: str, fg: str, bg: str, floor: float) -> None:
-		r = ratio(p[fg], p[bg])
-		ok = r >= floor
-		mark = "PASS" if ok else "FAIL"
-		print(f"  {mark}  {r:5.2f}:1  (>= {floor})  {label}")
-		if not ok:
-			failures.append(f"{theme}: {label} = {r:.2f}:1, needs {floor}:1")
+	for mode, suffix in MODES.items():
+		print(f"\n=== {mode} ===")
+		for label, fg, bg, floor in PAIRS:
+			r = ratio(p[fg + suffix], p[bg + suffix])
+			ok = r >= floor
+			print(f"  {'PASS' if ok else 'FAIL'}  {r:5.2f}:1  (>= {floor})  {label}")
+			if not ok:
+				failures.append(f"{mode}: {label} = {r:.2f}:1, needs {floor}:1")
 
-	for theme, t in THEMES.items():
-		print(f"\n=== {theme} ===")
-		check(theme, "body text on page", t["ink"], t["page"], 4.5)
-		check(theme, "body text on card", t["ink"], t["card"], 4.5)
-		check(theme, "muted text on page", t["muted"], t["page"], 4.5)
-		check(theme, "muted text on card", t["muted"], t["card"], 4.5)
-		# --ph-text-light is used for uppercase micro-labels and placeholders,
-		# both of which are large-text-equivalent or non-essential. 3:1.
-		check(theme, "light text on card (labels)", t["light"], t["card"], 3.0)
-		check(theme, "accent text on page", t["accent"], t["page"], 4.5)
-		check(theme, "accent text on card", t["accent"], t["card"], 4.5)
-		check(theme, "primary button label", t["on_accent"], t["accent"], 4.5)
-		check(theme, "accent on its soft fill", t["accent"], t["accent_soft"], 4.5)
-		check(theme, "control border on page", t["control"], t["page"], 3.0)
-		check(theme, "control border on card", t["control"], t["card"], 3.0)
-
-	print("\n=== Clinical states, day ===")
-	for s in STATES:
-		check("states-day", s, f"state-{s}", f"state-{s}-soft", 4.5)
-
-	print("\n=== Clinical states, night ===")
-	for s in STATES:
-		check("states-night", s, f"state-{s}-dark", f"state-{s}-soft-dark", 4.5)
+		# Stated exclusion — informational only.
+		r = ratio(p["border-subtle" + suffix], p["surface-primary" + suffix])
+		print(f"  info  {r:5.2f}:1  (decorative, not gated)  border-subtle / surface-primary")
 
 	print()
 	if failures:
-		print(f"{len(failures)} FAILURES:")
+		print("CONTRAST AUDIT FAILED")
 		for f in failures:
-			print(f"  - {f}")
-		print("\nFix the token in _palette.scss. Never add a one-off override.")
+			print(f"  {f}")
 		return 1
 
-	print("All pairs meet WCAG AA.")
+	print(f"CONTRAST AUDIT PASSED — {len(PAIRS) * len(MODES)} pairs measured")
 	return 0
 
 

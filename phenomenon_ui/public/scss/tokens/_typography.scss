@@ -2,12 +2,18 @@
 @import "palette";
 
 // ---------------------------------------------------------------------------
-// Typography.
+// Typography — system faces only.
 // ---------------------------------------------------------------------------
 //
-// The stacks themselves live in _palette.scss (and carry the reasoning for
-// shipping no webfont). This file only turns them into tokens, plus a size and
-// weight scale.
+//   xl  21 / 600 / -0.01em   page title only
+//   lg  15 / 600             section heading, tab label
+//   md  13 / 400             the workhorse — every control, field value, row
+//   sm  12 / 500             field labels, breadcrumb, meta
+//   xs  11 / 600 / +0.07em   column heads, pills, group labels (caps)
+//
+// Numerals: every numeric cell is tabular lining at 500 — one step heavier than
+// prose so a column of figures reads as a block. Not monospace: mono widens
+// lakh-grouped amounts by ~18%. Mono is for identifiers only.
 //
 // Note what is NOT here: any remapping of Frappe's own type scale
 // (--text-xs … --text-4xl). Rescaling that globally reflows every list, grid
@@ -20,20 +26,17 @@
 	--ph-text-xs: 11px;
 	--ph-text-sm: 12px;
 	--ph-text-md: 13px;
-	--ph-text-base: 14px;
-	--ph-text-lg: 16px;
-	--ph-text-xl: 20px;
-	--ph-text-2xl: 24px;
+	--ph-text-lg: 15px;
+	--ph-text-xl: 21px;
 
-	--ph-weight-normal: 400;
+	--ph-weight-regular: 400;
 	--ph-weight-medium: 500;
 	--ph-weight-semibold: 600;
-	--ph-weight-bold: 700;
 
 	--ph-leading-tight: 1.25;
 	--ph-leading: 1.5;
 
-	// Negative tracking on headings only. Body text at 13–14px does not
-	// benefit, and tightening it there costs legibility.
-	--ph-tracking-heading: -0.01em;
+	--ph-tracking-title: -0.01em; // xl only
+	--ph-tracking-caps: 0.07em; // column heads, group labels
+	--ph-tracking-pill: 0.06em; // status pills
 }

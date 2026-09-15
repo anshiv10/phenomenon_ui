@@ -4,9 +4,8 @@
 // Accessibility.
 // ---------------------------------------------------------------------------
 
-// Respect the OS motion preference. Transitions in this theme are all 120ms
-// cosmetic easing, so removing them costs nothing and prevents nausea for
-// users who asked not to see motion.
+// Respect the OS motion preference. Transitions in this theme are all short
+// cosmetic easing, so removing them costs nothing.
 @media (prefers-reduced-motion: reduce) {
 	#{$ph} *,
 	#{$ph} *::before,
@@ -18,28 +17,23 @@
 	}
 }
 // NOTE ON !important: this block is the sole permitted exception in the app.
-// A reduced-motion override must beat any inline or third-party transition,
-// and the W3C-recommended implementation of this rule is defined with them.
-// Nowhere else.
 
-// Forced colours (Windows high contrast): step out of the way entirely rather
-// than fight the user's own palette.
+// Forced colours (Windows high contrast): step out of the way entirely.
 @media (forced-colors: active) {
 	#{$ph} .btn,
 	#{$ph} .form-control,
-	#{$ph} .widget {
+	#{$ph} .widget,
+	#{$ph} .indicator-pill {
 		border: 1px solid CanvasText;
 	}
 }
 
-// Users who ask for more contrast get the stronger border and darker muted
-// text, which is where this palette is closest to the AA floor.
+// Users who ask for more contrast: the decorative row rule steps up to the
+// control edge and muted text steps up to secondary. Token changes only.
 @media (prefers-contrast: more) {
 	#{$ph} {
-		--ph-border: var(--ph-border-hc);
-		--ph-border-strong: var(--ph-border-strong-hc);
-		--ph-text-muted: var(--ph-text-muted-hc);
-		--ph-text-light: var(--ph-text-light-hc);
+		--ph-border-subtle: var(--ph-border-strong);
+		--ph-text-muted: var(--ph-text-secondary);
 	}
 }
 

@@ -1,33 +1,19 @@
 // ===========================================================================
-// Phenomenon UI — website bundle
+// Phenomenon UI — website / portal bundle
 // ===========================================================================
 //
-// Loaded via `web_include_css` on the portal / website side, where the desk
-// bundle is not present.
-//
-// Two things differ from the desk bundle and both are deliberate:
-//
-// 1. The website has no theme engine and no bootinfo, so there is no
-//    html[data-ph="on"] attribute to scope against. These rules scope to
-//    `body.phenomenon-web` instead — a class nothing sets yet, meaning this
-//    bundle currently paints nothing.
-//
-//    That is the correct v0.1 behaviour. Portal pages are public-facing and
-//    often carry a site's own branding; silently restyling them because
-//    someone enabled a desk theme would be a surprise, not a feature. Portal
-//    theming is a later milestone with its own opt-in.
-//
-// 2. No mapping layer. The website build does not expose the same variable set
-//    as the desk, so mapping it blind would be guesswork. Session 0 covers the
-//    desk variables only.
+// Loaded via `web_include_css`. Every rule is scoped under `body.phenomenon-web`
+// and nothing sets that class yet, so this bundle is INERT by design: the desk
+// theme ships first, and a portal restyle is a separate decision with its own
+// review. Enabling it is one class on <body> in a website template.
 
 @import "tokens/scope";
 @import "tokens/web";
 
 #{$ph-web} {
 	font-family: var(--ph-font-sans);
-	color: var(--ph-text);
-	background-color: var(--ph-surface);
+	color: var(--ph-text-primary);
+	background-color: var(--ph-surface-primary);
 }
 
 #{$ph-web} a {
@@ -41,8 +27,8 @@
 #{$ph-web} .btn-primary {
 	background-color: var(--ph-primary);
 	border-color: var(--ph-primary);
-	color: var(--ph-on-primary);
-	border-radius: var(--ph-radius);
+	color: var(--ph-primary-contrast);
+	border-radius: var(--ph-radius-sm);
 }
 
 #{$ph-web} .btn-primary:hover {
@@ -52,6 +38,6 @@
 
 #{$ph-web} .card {
 	background-color: var(--ph-surface-raised);
-	border: 1px solid var(--ph-border);
-	border-radius: var(--ph-radius-lg);
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-md);
 }

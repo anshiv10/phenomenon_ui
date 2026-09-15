@@ -1,50 +1,68 @@
 @import "../tokens/scope";
 
-// Widgets are the workspace building block (number cards, charts, shortcuts,
-// links). Only the shared container is styled here — per-widget treatment is
-// Milestone 2, on its own branch.
-// VERIFY (Session 0): `.widget`, `.widget-head`, `.number-card`.
+// Cards, widgets and the form page are ANCHORED surfaces: 1px border-subtle
+// at radius-md, no shadow, and they never lift on hover. Hover is a
+// border-strong edge only. Elevation is reserved for things you can dismiss.
+// VERIFY (Session 0): `.widget`, `.widget-head`, `.number-card`, `.card`.
 
-#{$ph} .widget {
-	background-color: var(--ph-surface-raised);
-	border: 1px solid var(--ph-border);
-	border-radius: var(--ph-radius-lg);
-	box-shadow: var(--ph-shadow-sm);
-	transition: box-shadow var(--ph-transition), border-color var(--ph-transition);
+#{$ph} .widget,
+#{$ph} .card,
+#{$ph} .frappe-card {
+	background-color: var(--ph-surface-card);
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-md);
+	box-shadow: none;
+	transition: border-color var(--ph-transition);
 }
 
-#{$ph} .widget:hover {
+#{$ph} .widget:hover,
+#{$ph} .card:hover,
+#{$ph} .frappe-card:hover {
 	border-color: var(--ph-border-strong);
-	box-shadow: var(--ph-shadow-md);
+	box-shadow: none;
+	transform: none;
 }
 
-#{$ph} .widget-head {
-	color: var(--ph-text);
+#{$ph} .widget-head,
+#{$ph} .widget-head .widget-title,
+#{$ph} .widget .widget-title {
+	color: var(--ph-text-primary);
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: var(--ph-tracking-heading);
 }
 
-// A number card's whole job is one figure read at a glance from across a desk.
-// Tabular numerals stop the digits jittering as the value updates.
-// VERIFY (Session 0): `.number-card`, `.widget-content .number`.
+// Workspace shortcut counts are tabular at 600 so 1,290 and 17 align.
+// VERIFY (Session 0): the count element inside `.shortcut-widget-box`.
+#{$ph} .shortcut-widget-box .indicator-pill,
+#{$ph} .shortcut-widget-box .widget-control {
+	font-variant-numeric: tabular-nums lining-nums;
+	font-weight: var(--ph-weight-semibold);
+}
+
+// A number card's whole job is one figure read at a glance.
 #{$ph} .number-card .widget-content .number,
 #{$ph} .number-card .number {
-	font-variant-numeric: tabular-nums;
+	font-variant-numeric: tabular-nums lining-nums;
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: var(--ph-tracking-heading);
 }
 
-#{$ph} .card {
-	background-color: var(--ph-surface-raised);
-	border: 1px solid var(--ph-border);
-	border-radius: var(--ph-radius-lg);
+// Workspace section headers ("Your Shortcuts", "Reports & Masters") reuse the
+// section heading style. Group labels (ACCOUNTING / STOCK / CRM) are caps.
+// VERIFY (Session 0): `.header-block`, `.links-widget-box .widget-title`.
+#{$ph} .codex-editor .ce-header,
+#{$ph} .workspace-header h4 {
+	font-size: var(--ph-text-lg);
+	font-weight: var(--ph-weight-semibold);
+	color: var(--ph-text-primary);
 }
 
-// Status pills. Colour carries meaning here, so only the shape and weight are
-// touched — hues stay Frappe's so a red indicator still reads as red.
-// VERIFY: `.indicator-pill`.
-#{$ph} .indicator-pill {
-	border-radius: var(--ph-radius-full);
-	font-weight: var(--ph-weight-medium);
+#{$ph} .links-widget-box .widget-head .widget-title {
+	color: var(--ph-text-muted);
 	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-caps);
+	text-transform: uppercase;
+}
+
+#{$ph} .links-widget-box .widget-head {
+	border-bottom: 1px solid var(--ph-border-subtle);
 }

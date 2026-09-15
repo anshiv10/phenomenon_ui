@@ -4,45 +4,16 @@
 // Motion.
 // ---------------------------------------------------------------------------
 //
-// The rule this file follows: motion is feedback, never decoration. Every
-// transition here answers a question the user just asked — "did that click
-// register?", "is this row the one I am on?", "where did this dialog come
-// from?" Nothing animates on its own, nothing loops, and nothing moves on
-// page load. An ERP that flourishes when you open a list is exhausting by the
-// fortieth list of the day.
-//
-// All of it is switched off wholesale by the prefers-reduced-motion block in
+// Motion is feedback, never decoration. Nothing animates on its own, nothing
+// loops, nothing moves on page load, and nothing anchored ever lifts. All of
+// it is switched off wholesale by the prefers-reduced-motion block in
 // themes/_accessibility.scss.
 
-// -- Press feedback ----------------------------------------------------------
-// The press is where an interface feels responsive or doesn't. 1px is enough
-// to read as "pressed" and small enough that a fast double-click does not look
-// like a bounce.
-#{$ph} .btn:active:not(:disabled),
-#{$ph} .btn.active:not(:disabled) {
-	transform: translateY(1px);
-}
-
-// -- Cards lift, rows do not -------------------------------------------------
-// A widget is an object you might pick up; lifting it on hover is honest. A
-// list row is a line of text — see the note in desk/_list-view.scss.
-#{$ph} .widget {
-	transition: box-shadow var(--ph-duration) var(--ph-ease),
-		border-color var(--ph-duration) var(--ph-ease),
-		transform var(--ph-duration) var(--ph-ease);
-}
-
-#{$ph} .widget:hover {
-	transform: translateY(-2px);
-}
-
-// -- Dialogs -----------------------------------------------------------------
-// Entry only. A dialog that animates out delays the user's next action by the
-// length of the animation, every time, for no information gained.
+// -- Dialogs — entry only ----------------------------------------------------
 #{$ph} .modal.fade .modal-dialog {
 	transition: transform var(--ph-duration-slow) var(--ph-ease-out),
 		opacity var(--ph-duration-slow) var(--ph-ease-out);
-	transform: translateY(-8px) scale(0.99);
+	transform: translateY(-8px);
 	opacity: 0;
 }
 
@@ -51,17 +22,17 @@
 	opacity: 1;
 }
 
-// -- Links and controls ------------------------------------------------------
+// -- Links, controls, pills, rows --------------------------------------------
 #{$ph} a,
 #{$ph} .form-control,
-#{$ph} .indicator-pill {
+#{$ph} .indicator-pill,
+#{$ph} .list-row-container,
+#{$ph} .standard-sidebar-item {
 	transition: color var(--ph-transition), background-color var(--ph-transition),
 		border-color var(--ph-transition), box-shadow var(--ph-transition);
 }
 
 // -- Skeletons ---------------------------------------------------------------
-// Frappe paints placeholder blocks while a list or report loads. A slow, low
-// contrast pulse reads as "working"; a fast one reads as "broken".
 // VERIFY (Session 0): the placeholder class name in this build.
 #{$ph} .skeleton-card,
 #{$ph} .placeholder-block {

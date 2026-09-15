@@ -1,90 +1,104 @@
 @import "../tokens/scope";
 
 // ---------------------------------------------------------------------------
-// Fields and controls — the surface a data-entry user lives in.
+// Fields and controls — the focus contract.
 // ---------------------------------------------------------------------------
 //
-// VERIFY (Session 0): `.form-control`, `.control-label`, `.control-input`,
-// `.form-section`, `.section-head`, `.form-tabs-list`, `.frappe-control`,
-// `.help-box`, `.like-disabled-input`, `.has-error`, `.reqd`.
+// Controls are quiet until touched. A field at rest is a flat filled tile with
+// a transparent border — no ring, no shadow, 3px radius. Hover reveals a 1px
+// border-strong edge. Focus replaces it with a 2px primary frame plus a 3px
+// primary leading bar and drops the fill to surface-raised, so the active
+// field is the brightest and hardest-edged thing on the screen.
 //
-// The governing idea: a form should tell you, without being read, which fields
-// you can type in, which you cannot, which you must, and which are wrong. Stock
-// Frappe distinguishes these mostly by subtle background shifts that fall apart
-// at a glance. Each rule below restores one of those distinctions.
+// The 2px frame is drawn as a 1px border plus a 1px outer ring so focusing a
+// field never shifts the layout by a pixel.
+//
+// VERIFY (Session 0): `.form-control`, `.control-label`, `.frappe-control`,
+// `.like-disabled-input`, `.form-section`, `.section-head`, `.form-tabs-list`,
+// `.has-error`, `.reqd`.
 
-// -- The editable field ------------------------------------------------------
+// -- Rest --------------------------------------------------------------------
 #{$ph} .form-control {
-	background-color: var(--ph-surface-raised);
-	border: 1px solid var(--ph-border-strong);
+	background-color: var(--ph-surface-secondary);
+	border: 1px solid transparent;
 	border-radius: var(--ph-radius-sm);
-	color: var(--ph-text);
+	color: var(--ph-text-primary);
+	font-size: var(--ph-text-md);
 	min-height: var(--ph-control-height);
+	box-shadow: none;
 	transition: border-color var(--ph-transition), box-shadow var(--ph-transition),
 		background-color var(--ph-transition);
 }
 
-// Hover is a real affordance on a dense form: it tells you which of forty
-// fields the pointer is actually over before you commit a click.
-#{$ph} .form-control:hover:not(:disabled):not([readonly]) {
-	border-color: var(--ph-text-light);
-}
-
-#{$ph} .form-control:focus {
-	background-color: var(--ph-surface-raised);
-	border-color: var(--ph-border-focus);
-	box-shadow: var(--ph-focus-ring);
-	outline: none;
+#{$ph} textarea.form-control,
+#{$ph} .form-control[multiple] {
+	min-height: calc(var(--ph-control-height) * 2);
+	line-height: var(--ph-leading);
 }
 
 #{$ph} .form-control::placeholder {
-	color: var(--ph-text-light);
+	color: var(--ph-text-muted);
 }
 
-// -- Read-only vs disabled: not the same thing -------------------------------
-// Read-only means "this has a value, you may read and copy it, the system owns
-// it". Disabled means "not applicable right now". Stock renders both as the
-// same grey box, so users try to click both and learn to trust neither.
+// -- Hover -------------------------------------------------------------------
+#{$ph} .form-control:hover:not(:disabled):not([readonly]):not(:focus) {
+	border-color: var(--ph-border-strong);
+}
 
+// -- Focus — the contract ----------------------------------------------------
+#{$ph} .form-control:focus {
+	background-color: var(--ph-surface-raised);
+	border-color: var(--ph-primary);
+	box-shadow: 0 0 0 1px var(--ph-primary), inset var(--ph-rail-width) 0 0 var(--ph-primary);
+	outline: 2px solid transparent; // keep an outline slot; never outline: none
+	outline-offset: 2px;
+}
+
+// The label shifts to primary while its control is focused.
+#{$ph} .frappe-control:focus-within > .form-group > .control-label,
+#{$ph} .frappe-control:focus-within .control-label {
+	color: var(--ph-primary);
+}
+
+// -- Read-only and disabled --------------------------------------------------
+// surface-base fill (light) / surface-chrome (dark), text-muted value, no
+// opacity change.
 #{$ph} .form-control[readonly],
+#{$ph} .form-control:disabled,
 #{$ph} .like-disabled-input {
-	background-color: var(--ph-surface-sunken);
+	background-color: var(--ph-surface-disabled);
 	border-color: transparent;
-	color: var(--ph-text);
+	color: var(--ph-text-muted);
+	box-shadow: none;
+	opacity: 1;
 	cursor: default;
 }
 
 #{$ph} .form-control:disabled {
-	background-color: var(--ph-surface-sunken);
-	border-color: var(--ph-border);
-	color: var(--ph-text-light);
 	cursor: not-allowed;
 }
 
 // -- Labels ------------------------------------------------------------------
 #{$ph} .control-label {
-	color: var(--ph-text-muted);
+	color: var(--ph-text-secondary);
 	font-size: var(--ph-text-sm);
 	font-weight: var(--ph-weight-medium);
+	margin-bottom: var(--ph-space-2);
 }
 
-// Mandatory fields. Frappe marks these with `.reqd`; the asterisk is the
-// convention and it belongs in the accent's danger channel, not the brand's —
-// "required" is not a promotion.
+// Required asterisks use danger — "required" is not a promotion.
 #{$ph} .control-label.reqd::after,
+#{$ph} .reqd > .form-group > .control-label::after,
 #{$ph} .reqd > .control-label::after {
 	content: " *";
 	color: var(--ph-danger);
-	font-weight: var(--ph-weight-bold);
 }
 
 // -- Validation --------------------------------------------------------------
-// An error state that only reddens the border is invisible to a red/green
-// colour deficiency. The heavier border weight carries it independently.
 #{$ph} .has-error .form-control,
 #{$ph} .form-control.invalid {
 	border-color: var(--ph-danger);
-	border-width: 2px;
+	box-shadow: 0 0 0 1px var(--ph-danger);
 }
 
 #{$ph} .has-error .control-label {
@@ -94,62 +108,87 @@
 // -- Help text ---------------------------------------------------------------
 #{$ph} .help-box,
 #{$ph} .field-description {
-	color: var(--ph-text-light);
+	color: var(--ph-text-muted);
 	font-size: var(--ph-text-sm);
 }
 
-// -- Selects, checkboxes, textareas ------------------------------------------
+// -- Selects, checkboxes -----------------------------------------------------
 #{$ph} select.form-control {
 	cursor: pointer;
 }
 
-#{$ph} textarea.form-control {
-	min-height: calc(var(--ph-control-height) * 2);
-	line-height: var(--ph-leading);
-}
-
-#{$ph} .checkbox .disp-area,
 #{$ph} input[type="checkbox"],
 #{$ph} input[type="radio"] {
 	accent-color: var(--ph-primary);
+	cursor: pointer;
+}
+
+// Frappe draws its own checkbox box; give it the control edge.
+// VERIFY (Session 0): `.checkbox .disp-area`, `input[type=checkbox]` styling.
+#{$ph} .checkbox input[type="checkbox"]:not(:checked) {
+	border-color: var(--ph-border-strong);
 }
 
 // -- Sections ----------------------------------------------------------------
+// Section headings are text-lg/600, separated by full-width border-subtle
+// rules with section-gap above and below. ERPNext only renders .section-head
+// when a label exists, so unlabelled sections cannot gain a rule (spec §15).
 #{$ph} .form-section {
-	background-color: var(--ph-surface-raised);
-	border-radius: var(--ph-radius);
+	background-color: transparent;
+	border-radius: 0;
+}
+
+#{$ph} .form-section + .form-section,
+#{$ph} .form-section:not(:first-child) {
+	border-top: 1px solid var(--ph-border-subtle);
+	margin-top: 0;
+	padding-top: var(--ph-section-gap);
+}
+
+#{$ph} .form-section .section-body {
+	padding-bottom: var(--ph-section-gap);
 }
 
 #{$ph} .section-head {
-	color: var(--ph-text);
+	color: var(--ph-text-primary);
+	font-size: var(--ph-text-lg);
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: var(--ph-tracking-heading);
 }
 
-// A collapsible section head is a button; it should say so on hover.
-#{$ph} .section-head.collapsible:hover {
-	color: var(--ph-primary);
+// The collapse chevron is text-muted; the heading never turns teal.
+#{$ph} .section-head .collapse-indicator,
+#{$ph} .section-head .octicon {
+	color: var(--ph-text-muted);
+}
+
+#{$ph} .section-head.collapsible {
 	cursor: pointer;
 }
 
 // -- Tabs --------------------------------------------------------------------
+// Active: text-lg/600 in primary with a 2px primary underline.
+// Inactive: text-secondary/500.
 #{$ph} .form-tabs-list {
-	border-bottom: 1px solid var(--ph-border);
+	background-color: transparent;
+	border-bottom: 1px solid var(--ph-border-subtle);
 }
 
 #{$ph} .form-tabs-list .nav-link {
-	color: var(--ph-text-muted);
+	color: var(--ph-text-secondary);
+	font-size: var(--ph-text-lg);
 	font-weight: var(--ph-weight-medium);
+	border-radius: var(--ph-radius-sm) var(--ph-radius-sm) 0 0;
 	border-bottom: 2px solid transparent;
 	transition: color var(--ph-transition), border-color var(--ph-transition);
 }
 
 #{$ph} .form-tabs-list .nav-link:hover {
-	color: var(--ph-text);
+	color: var(--ph-text-primary);
 }
 
 #{$ph} .form-tabs-list .nav-link.active {
 	color: var(--ph-primary);
+	font-weight: var(--ph-weight-semibold);
 	border-bottom-color: var(--ph-primary);
 }
 

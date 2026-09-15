@@ -1,36 +1,139 @@
 @import "../tokens/scope";
 
-// Child-table grids inside forms, plus plain Bootstrap tables.
-// Full datatable / report styling is Milestone 3 — deliberately not here.
-// VERIFY (Session 0): `.grid-heading-row`, `.grid-row`, `.dt-row--header`,
-// `.dt-cell` against frappe-datatable in apps/frappe.
+// ---------------------------------------------------------------------------
+// Grids (child tables inside forms) and the report datatable.
+// ---------------------------------------------------------------------------
+//
+// Grid — header surface-secondary + text-xs/600 caps; rows alternate
+// surface-raised / surface-secondary; every numeric column right-aligned
+// tabular at 500 with a border-subtle column rule.
+//
+// Report datatable — column rules, NOT stripes: a 1px rule plus tabular
+// alignment is enough, and stripes double the luminance edges per row. Group
+// totals get a 2px border-strong top rule: the only 2px rule inside content.
+//
+// VERIFY (Session 0): `.grid-heading-row`, `.grid-row`, `.grid-static-col`,
+// `.dt-row--header`, `.dt-cell`, `.dt-row--totalRow` (or `.dt-row-totalRow`).
 
+// -- Plain Bootstrap tables --------------------------------------------------
 #{$ph} .table {
-	color: var(--ph-text);
+	color: var(--ph-text-primary);
 }
 
 #{$ph} .table th {
 	color: var(--ph-text-muted);
-	font-weight: var(--ph-weight-medium);
-	font-size: var(--ph-text-sm);
-	border-bottom: 1px solid var(--ph-border);
+	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-caps);
+	text-transform: uppercase;
+	border-bottom: 1px solid var(--ph-border-subtle);
 }
 
 #{$ph} .table td {
-	border-top: 1px solid var(--ph-border);
+	border-top: 1px solid var(--ph-border-subtle);
+}
+
+// -- Form grid ---------------------------------------------------------------
+#{$ph} .form-grid {
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-md);
+	overflow: hidden;
 }
 
 #{$ph} .grid-heading-row {
-	background-color: var(--ph-surface-sunken);
+	background-color: var(--ph-surface-secondary);
 	color: var(--ph-text-muted);
-	font-weight: var(--ph-weight-medium);
-	border-bottom: 1px solid var(--ph-border);
+	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-caps);
+	text-transform: uppercase;
+	border-bottom: 1px solid var(--ph-border-subtle);
 }
 
 #{$ph} .grid-row {
-	border-bottom: 1px solid var(--ph-border);
+	background-color: var(--ph-surface-raised);
+	border-bottom: 1px solid var(--ph-border-subtle);
 }
 
-#{$ph} .grid-row:hover {
-	background-color: var(--ph-surface-hover);
+#{$ph} .grid-body .grid-row:nth-child(even) {
+	background-color: var(--ph-surface-secondary);
+}
+
+#{$ph} .grid-row:last-child {
+	border-bottom: none;
+}
+
+// Column rules.
+#{$ph} .grid-heading-row .grid-static-col,
+#{$ph} .grid-row .grid-static-col,
+#{$ph} .grid-heading-row .col,
+#{$ph} .grid-row .col {
+	border-left: 1px solid var(--ph-border-subtle);
+}
+
+#{$ph} .grid-heading-row .row-index,
+#{$ph} .grid-row .row-index {
+	color: var(--ph-text-muted);
+	font-variant-numeric: tabular-nums lining-nums;
+}
+
+// The editing row is the focus contract inside a cell: primary-soft row,
+// 3px primary leading bar. The editing control gets its 2px frame from
+// components/_forms.scss.
+#{$ph} .grid-row.grid-row-open,
+#{$ph} .grid-row:focus-within {
+	background-color: var(--ph-primary-soft);
+	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
+}
+
+#{$ph} .grid-row .row-check input[type="checkbox"] {
+	accent-color: var(--ph-primary);
+}
+
+// Grid totals row (Frappe adds one under some child tables).
+// VERIFY (Session 0): `.grid-footer`, `.grid-row.grid-total`.
+#{$ph} .form-grid .grid-footer,
+#{$ph} .grid-row.grid-total {
+	background-color: var(--ph-surface-secondary);
+	border-top: 2px solid var(--ph-border-strong);
+	font-weight: var(--ph-weight-semibold);
+}
+
+// -- Report datatable --------------------------------------------------------
+#{$ph} .datatable {
+	color: var(--ph-text-primary);
+}
+
+#{$ph} .dt-row--header .dt-cell,
+#{$ph} .dt-header .dt-cell {
+	background-color: var(--ph-surface-secondary);
+	color: var(--ph-text-muted);
+	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-caps);
+	text-transform: uppercase;
+	border-bottom: 1px solid var(--ph-border-subtle);
+}
+
+// Column rules, not stripes.
+#{$ph} .dt-cell {
+	background-color: var(--ph-surface-raised);
+	border-left: 1px solid var(--ph-border-subtle);
+	border-bottom: 1px solid var(--ph-border-subtle);
+	border-right: none;
+	border-top: none;
+}
+
+#{$ph} .dt-cell--focus,
+#{$ph} .dt-cell:focus-within {
+	box-shadow: inset 0 0 0 2px var(--ph-primary);
+	background-color: var(--ph-surface-raised);
+}
+
+// Group totals: surface-secondary, 600, 2px border-strong top.
+#{$ph} .dt-row--totalRow .dt-cell,
+#{$ph} .dt-row-totalRow .dt-cell {
+	background-color: var(--ph-surface-secondary);
+	font-weight: var(--ph-weight-semibold);
+	border-top: 2px solid var(--ph-border-strong);
 }

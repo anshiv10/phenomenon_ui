@@ -54,10 +54,13 @@ head1 "3. MAPPED VARIABLES — DO THEY EXIST?"
 echo "Each variable base/_mapping.scss re-points, checked against source."
 echo "ABSENT means the mapping is dead weight and should be deleted."
 echo
-for v in --bg-color --fg-color --card-bg --control-bg --disabled-control-bg \
+for v in --bg-color --fg-color --card-bg --control-bg --control-bg-on-gray --disabled-control-bg \
 	--fg-hover-color --subtle-accent --subtle-fg --highlight-color \
 	--awesomplete-hover-bg --text-color --text-muted --text-light \
 	--heading-color --icon-stroke --border-color --dark-border-color \
+	--bg-green --text-on-green --bg-orange --text-on-orange --bg-yellow --text-on-yellow \
+	--bg-red --text-on-red --bg-blue --text-on-blue --bg-gray --text-on-gray \
+	--bg-light-gray --text-on-light-gray --bg-darkgrey --bg-purple --bg-pink --bg-cyan \
 	--primary --primary-color --border-radius --border-radius-sm \
 	--border-radius-md --border-radius-lg --border-radius-full \
 	--shadow-base --shadow-sm --shadow-md --shadow-lg \

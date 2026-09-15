@@ -1,42 +1,37 @@
 @import "../tokens/scope";
 @import "../tokens/palette";
 
-// ---------------------------------------------------------------------------
-// Print.
-// ---------------------------------------------------------------------------
-//
-// Healthcare still runs on paper at the edges: prescriptions, discharge
-// summaries, consent forms, lab reports that go into a physical file. A theme
-// that only considers the screen produces a printout with grey-on-grey body
-// text and a table that breaks a patient's row across two pages.
-//
-// This block is deliberately small and does only things that are safe without
-// having read Frappe's own print stylesheet. It re-points tokens rather than
-// restyling components, so it cannot fight the print format's own layout.
+// Paper is not a screen. Every surface goes to paper, every text goes to ink,
+// chrome is not printed, shadows are off.
 
 @media print {
 	#{$ph} {
-		// Ink on white — values from _palette.scss like everything else.
-		--ph-surface: #{$print-paper};
+		--ph-surface-base: #{$print-paper};
+		--ph-surface-primary: #{$print-paper};
+		--ph-surface-secondary: #{$print-paper};
 		--ph-surface-raised: #{$print-paper};
-		--ph-surface-sunken: #{$print-paper};
-		--ph-surface-hover: #{$print-paper};
-		--ph-text: #{$print-ink};
-		--ph-text-muted: #{$print-ink};
-		--ph-text-light: #{$print-ink-light};
-		--ph-border: #{$print-rule};
+		--ph-surface-chrome: #{$print-paper};
+		--ph-surface-chrome-hover: #{$print-paper};
+		--ph-surface-chrome-selected: #{$print-paper};
+		--ph-chrome-edge: #{$print-rule-strong};
+		--ph-surface-canvas: #{$print-paper};
+		--ph-surface-card: #{$print-paper};
+		--ph-surface-disabled: #{$print-paper};
+
+		--ph-text-primary: #{$print-ink};
+		--ph-text-secondary: #{$print-ink};
+		--ph-text-muted: #{$print-ink-light};
+		--ph-text-on-chrome: #{$print-ink};
+		--ph-text-on-chrome-muted: #{$print-ink-light};
+
+		--ph-border-subtle: #{$print-rule};
 		--ph-border-strong: #{$print-rule-strong};
 
-		// Elevation is a screen idea. On paper it is a grey smear.
 		--ph-shadow-sm: none;
-		--ph-shadow: none;
 		--ph-shadow-md: none;
 		--ph-shadow-lg: none;
 	}
 
-	// A row split across a page break is a clinical safety problem, not a
-	// cosmetic one: half a medication line at the foot of page one is how a
-	// dose gets misread.
 	#{$ph} .list-row-container,
 	#{$ph} .grid-row,
 	#{$ph} tr {
@@ -44,18 +39,11 @@
 		page-break-inside: avoid;
 	}
 
-	// Keep a section heading with the content it introduces.
 	#{$ph} h1,
 	#{$ph} h2,
 	#{$ph} h3,
 	#{$ph} .section-head {
 		break-after: avoid;
 		page-break-after: avoid;
-	}
-
-	// Severity has to survive greyscale, so the rail carries it on paper too.
-	#{$ph} .ph-critical,
-	#{$ph} .ph-urgent {
-		border-left: 3px solid #{$print-ink};
 	}
 }

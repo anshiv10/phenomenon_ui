@@ -1,40 +1,44 @@
 @import "../tokens/scope";
 
-// VERIFY (Session 0): `.page-head`, `.page-title`, `.form-page` /
-// `.form-layout` container names in this build.
+// ---------------------------------------------------------------------------
+// Form view — the sheet the form sits on.
+// ---------------------------------------------------------------------------
+//
+// The form page is an anchored card: surface-card, 1px border-subtle,
+// radius-md, NO shadow. Toolbar secondary buttons are surface-secondary on a
+// transparent border; Create/Save is the only primary fill on the page.
+//
+// VERIFY (Session 0): `.form-page`, `.form-layout`, `.page-actions`,
+// `.form-dashboard-section`, `.form-footer`, `.comment-box`.
 
-#{$ph} .page-head {
-	background-color: var(--ph-surface);
-	border-bottom: 1px solid var(--ph-border);
+#{$ph} .form-page,
+#{$ph} .form-layout .form-page {
+	background-color: var(--ph-surface-card);
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-md);
+	box-shadow: none;
 }
 
-#{$ph} .page-head .title-text {
-	color: var(--ph-text);
-	font-weight: var(--ph-weight-semibold);
-	letter-spacing: var(--ph-tracking-heading);
-}
-
-// The form body reads as a sheet on the page background. This is the single
-// rule that makes a Sales Invoice look deliberate rather than stock.
-#{$ph} .form-page {
-	background-color: var(--ph-surface-raised);
-	border: 1px solid var(--ph-border);
-	border-radius: var(--ph-radius-lg);
-	box-shadow: var(--ph-shadow-sm);
-}
-
-// The document status sits at the top of every form and is the first thing a
-// user checks. VERIFY (Session 0): `.indicator-pill` inside `.page-head`.
-#{$ph} .page-head .indicator-pill {
-	font-weight: var(--ph-weight-semibold);
-}
-
-#{$ph} .form-section:not(:last-child) {
-	border-bottom: 1px solid var(--ph-border);
+// Tab content inside the form page carries no second border of its own.
+#{$ph} .form-tab-content {
+	background-color: transparent;
+	border: none;
 }
 
 // Dashboards / connections at the foot of a form.
-// VERIFY: `.form-dashboard`, `.form-dashboard-section`.
 #{$ph} .form-dashboard-section {
-	border-top: 1px solid var(--ph-border);
+	border-top: 1px solid var(--ph-border-subtle);
+	padding-top: var(--ph-section-gap);
 }
+
+// Comments and activity below the form.
+#{$ph} .form-footer .comment-box,
+#{$ph} .form-footer .timeline-item .timeline-content {
+	background-color: var(--ph-surface-card);
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-md);
+	box-shadow: none;
+}
+
+// The "unsaved" / "not saved" indicator in the page head keeps its place —
+// Frappe marks the document dirty, not the section (spec §15).

@@ -2,7 +2,7 @@
 @import "palette";
 
 // ---------------------------------------------------------------------------
-// Colour tokens — light and dark, both scopes, one file.
+// Colour tokens — light and dark, one file. Names follow the spec exactly.
 // ---------------------------------------------------------------------------
 //
 // Every value comes from `_palette.scss`. Nothing here is a literal.
@@ -12,38 +12,43 @@
 // reads --ph-* and never a literal, re-declaring these tokens is enough to
 // re-theme every mapped Frappe variable in dark mode without touching a single
 // component rule.
+//
+// Four DERIVED tokens sit at the end of each block. They exist because the
+// spec's usage table names a different token for light and dark on the same
+// surface (page canvas, card, disabled fill, canvas edge). Deriving them here
+// keeps the component rules to one declaration and zero hex.
 
 #{$ph} {
 	// -- Accent ------------------------------------------------------------
 	// --ph-primary is overridden inline by the theme engine when a site
 	// configures a custom accent, so everything downstream must read *this*
 	// variable and never the palette value behind it.
-	--ph-primary: #{$teal-600};
-	--ph-primary-hover: #{$teal-700};
-	--ph-primary-active: #{$teal-800};
-	--ph-primary-soft: #{$teal-050};
-	--ph-primary-border: #{$teal-200};
-	--ph-on-primary: #{$white};
+	--ph-primary: #{$primary};
+	--ph-primary-hover: #{$primary-hover};
+	--ph-primary-soft: #{$primary-soft};
+	--ph-primary-contrast: #{$primary-contrast};
 
 	// -- Surfaces ----------------------------------------------------------
-	--ph-surface: #{$grey-050}; // page background
-	--ph-surface-raised: #{$white}; // cards, form sections, modals
-	--ph-surface-sunken: #{$grey-100}; // wells, table headers, disabled controls
-	--ph-surface-hover: #{$grey-150};
-	--ph-surface-selected: var(--ph-primary-soft);
-	--ph-surface-inverse: #{$grey-900};
+	--ph-surface-base: #{$surface-base};
+	--ph-surface-primary: #{$surface-primary};
+	--ph-surface-secondary: #{$surface-secondary};
+	--ph-surface-raised: #{$surface-raised};
+	--ph-surface-chrome: #{$surface-chrome};
+	--ph-surface-chrome-hover: #{$surface-chrome-hover};
+	--ph-surface-chrome-selected: #{$surface-chrome-selected};
+	--ph-chrome-edge: #{$chrome-edge};
 
 	// -- Text --------------------------------------------------------------
-	--ph-text: #{$grey-900};
-	--ph-text-muted: #{$grey-600};
-	--ph-text-light: #{$grey-500};
-	--ph-text-inverse: #{$white};
-	--ph-text-link: var(--ph-primary);
+	--ph-text-primary: #{$text-primary};
+	--ph-text-secondary: #{$text-secondary};
+	--ph-text-muted: #{$text-muted};
+	--ph-text-inverse: #{$text-inverse};
+	--ph-text-on-chrome: #{$text-on-chrome};
+	--ph-text-on-chrome-muted: #{$text-on-chrome-muted};
 
 	// -- Borders -----------------------------------------------------------
-	--ph-border: #{$grey-200}; // separators — decorative, not a control edge
-	--ph-border-strong: #{$grey-450}; // control edges — measured >= 3:1
-	--ph-border-focus: var(--ph-primary);
+	--ph-border-subtle: #{$border-subtle};
+	--ph-border-strong: #{$border-strong};
 
 	// -- Semantic ----------------------------------------------------------
 	--ph-success: #{$success};
@@ -55,73 +60,53 @@
 	--ph-info: #{$info};
 	--ph-info-soft: #{$info-soft};
 
-	// -- Focus ring --------------------------------------------------------
-	// A visible ring is an accessibility requirement, not decoration. Defined
-	// once so every component uses the identical one.
-	--ph-focus-ring: 0 0 0 3px #{rgba($teal-600, 0.28)};
+	// -- Elevation ---------------------------------------------------------
+	--ph-shadow-sm: #{$shadow-sm};
+	--ph-shadow-md: #{$shadow-md};
+	--ph-shadow-lg: #{$shadow-lg};
 
-	// -- High-contrast variants --------------------------------------------
-	// Consumed by themes/_accessibility.scss under prefers-contrast: more.
-	// A contrast fix is a token change, never a one-off override.
-	--ph-border-hc: #{$grey-450};
-	--ph-border-strong-hc: #{$grey-600};
-	--ph-text-muted-hc: #{$grey-700};
-	--ph-text-light-hc: #{$grey-600};
-
-	// -- Clinical status semantics -----------------------------------------
-	// Available in every preset, painted by nothing automatically. See
-	// components/_indicators.scss for the opt-in utilities.
-	--ph-critical: #{$state-critical};
-	--ph-critical-soft: #{$state-critical-soft};
-	--ph-urgent: #{$state-urgent};
-	--ph-urgent-soft: #{$state-urgent-soft};
-	--ph-stable: #{$state-stable};
-	--ph-stable-soft: #{$state-stable-soft};
-	--ph-routine: #{$state-routine};
-	--ph-routine-soft: #{$state-routine-soft};
-	--ph-inactive: #{$state-inactive};
-	--ph-inactive-soft: #{$state-inactive-soft};
+	// -- Derived (usage table, light column) -------------------------------
+	--ph-surface-canvas: var(--ph-surface-primary); // page canvas
+	--ph-surface-card: var(--ph-surface-raised); // card, form page, list sheet
+	--ph-surface-disabled: var(--ph-surface-base); // disabled control fill
+	--ph-canvas-edge: var(--ph-chrome-edge); // 2px rule between chrome and field
 }
 
 // ---------------------------------------------------------------------------
 // Dark
 // ---------------------------------------------------------------------------
 // Hooks the attribute Frappe already toggles rather than introducing a switch
-// of its own: the built-in light/dark/automatic control keeps working, users
-// keep their existing preference, and there is no second source of truth.
+// of its own: the built-in light/dark/automatic control keeps working.
 //
 // VERIFY (Session 0): confirm the attribute is `data-theme` on <html> and the
 // value is exactly "dark". If this build differs, change $ph-dark in
 // tokens/_scope.scss — that one line is the only edit needed.
 
 #{$ph-dark} {
-	// -- Surfaces ----------------------------------------------------------
-	--ph-surface: #{$ink-800};
-	--ph-surface-raised: #{$ink-700};
-	--ph-surface-sunken: #{$ink-900};
-	--ph-surface-hover: #{$ink-600};
-	--ph-surface-selected: #{$teal-950};
-	--ph-surface-inverse: #{$grey-050};
+	--ph-primary: #{$primary-dark};
+	--ph-primary-hover: #{$primary-hover-dark};
+	--ph-primary-soft: #{$primary-soft-dark};
+	--ph-primary-contrast: #{$primary-contrast-dark};
 
-	// -- Text --------------------------------------------------------------
-	--ph-text: #{$ink-100};
-	--ph-text-muted: #{$ink-200};
-	--ph-text-light: #{$ink-300};
-	--ph-text-inverse: #{$ink-800};
+	--ph-surface-base: #{$surface-base-dark};
+	--ph-surface-primary: #{$surface-primary-dark};
+	--ph-surface-secondary: #{$surface-secondary-dark};
+	--ph-surface-raised: #{$surface-raised-dark};
+	--ph-surface-chrome: #{$surface-chrome-dark};
+	--ph-surface-chrome-hover: #{$surface-chrome-hover-dark};
+	--ph-surface-chrome-selected: #{$surface-chrome-selected-dark};
+	--ph-chrome-edge: #{$chrome-edge-dark};
 
-	// -- Borders -----------------------------------------------------------
-	--ph-border: #{$ink-500};
-	--ph-border-strong: #{$ink-450};
+	--ph-text-primary: #{$text-primary-dark};
+	--ph-text-secondary: #{$text-secondary-dark};
+	--ph-text-muted: #{$text-muted-dark};
+	--ph-text-inverse: #{$text-inverse-dark};
+	--ph-text-on-chrome: #{$text-on-chrome-dark};
+	--ph-text-on-chrome-muted: #{$text-on-chrome-muted-dark};
 
-	// -- Accent ------------------------------------------------------------
-	--ph-primary: #{$teal-400};
-	--ph-primary-hover: #{$teal-300};
-	--ph-primary-active: #{$teal-500};
-	--ph-primary-soft: #{$teal-950};
-	--ph-primary-border: #{$teal-900};
-	--ph-on-primary: #{$teal-ink};
+	--ph-border-subtle: #{$border-subtle-dark};
+	--ph-border-strong: #{$border-strong-dark};
 
-	// -- Semantic ----------------------------------------------------------
 	--ph-success: #{$success-dark};
 	--ph-success-soft: #{$success-soft-dark};
 	--ph-warning: #{$warning-dark};
@@ -131,123 +116,31 @@
 	--ph-info: #{$info-dark};
 	--ph-info-soft: #{$info-soft-dark};
 
-	// -- Elevation ---------------------------------------------------------
-	// Shadows barely read on dark surfaces; the border does the separating,
-	// so they are reduced rather than kept at light-mode strength.
-	--ph-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--ph-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
-	--ph-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.6);
+	// Shadow becomes ring.
+	--ph-shadow-sm: #{$shadow-sm-dark};
+	--ph-shadow-md: #{$shadow-md-dark};
+	--ph-shadow-lg: #{$shadow-lg-dark};
 
-	--ph-focus-ring: 0 0 0 3px #{rgba($teal-400, 0.35)};
-
-	// -- High contrast -----------------------------------------------------
-	--ph-border-hc: #{$ink-450};
-	--ph-border-strong-hc: #{$ink-200};
-	--ph-text-muted-hc: #{$ink-100};
-	--ph-text-light-hc: #{$ink-200};
-
-	// -- Clinical status semantics -----------------------------------------
-	--ph-critical: #{$state-critical-dark};
-	--ph-critical-soft: #{$state-critical-soft-dark};
-	--ph-urgent: #{$state-urgent-dark};
-	--ph-urgent-soft: #{$state-urgent-soft-dark};
-	--ph-stable: #{$state-stable-dark};
-	--ph-stable-soft: #{$state-stable-soft-dark};
-	--ph-routine: #{$state-routine-dark};
-	--ph-routine-soft: #{$state-routine-soft-dark};
-	--ph-inactive: #{$state-inactive-dark};
-	--ph-inactive-soft: #{$state-inactive-soft-dark};
+	// -- Derived (usage table, dark column) --------------------------------
+	--ph-surface-canvas: var(--ph-surface-base);
+	--ph-surface-card: var(--ph-surface-primary);
+	--ph-surface-disabled: var(--ph-surface-chrome);
+	--ph-canvas-edge: var(--ph-border-subtle);
 }
 
 // ---------------------------------------------------------------------------
-// Clinical preset — day
+// Chrome: light — the one deviation offered in Settings.
 // ---------------------------------------------------------------------------
-// Selected in Phenomenon UI Settings. Only tokens change; not one component
-// rule knows this preset exists. That is the test of whether the token layer
-// is carrying its weight — if adding a preset had required editing
-// desk/_list-view.scss, the architecture would have failed.
+// Re-points only the chrome family, at the same surfaces the content already
+// uses, so it works in light and dark without a second palette. Declared after
+// the dark block on purpose (equal specificity, later wins).
 
-#{$ph-clinical} {
-	--ph-primary: #{$clinical-accent};
-	--ph-primary-hover: #{$clinical-accent-hover};
-	--ph-primary-active: #{$clinical-accent-active};
-	--ph-primary-soft: #{$clinical-accent-soft};
-	--ph-primary-border: #{$clinical-accent-border};
-	--ph-on-primary: #{$white};
-
-	--ph-surface: #{$clinical-050};
-	--ph-surface-raised: #{$white};
-	--ph-surface-sunken: #{$clinical-100};
-	--ph-surface-hover: #{$clinical-150};
-	--ph-surface-selected: var(--ph-primary-soft);
-	--ph-surface-inverse: #{$clinical-900};
-
-	--ph-text: #{$clinical-900};
-	--ph-text-muted: #{$clinical-600};
-	--ph-text-light: #{$clinical-500};
-	--ph-text-inverse: #{$white};
-
-	--ph-border: #{$clinical-200};
-	--ph-border-strong: #{$clinical-450};
-
-	--ph-focus-ring: 0 0 0 3px #{rgba($clinical-accent, 0.26)};
-
-	--ph-border-hc: #{$clinical-450};
-	--ph-border-strong-hc: #{$clinical-700};
-	--ph-text-muted-hc: #{$clinical-700};
-	--ph-text-light-hc: #{$clinical-600};
-}
-
-// ---------------------------------------------------------------------------
-// Clinical preset — night
-// ---------------------------------------------------------------------------
-// Not "the dark theme, but greener". Night shift runs with ward lighting down,
-// so overall luminance drops further than the standard dark palette: bright
-// enough to read a chart, dim enough that the screen is not the brightest
-// thing in a sleeping bay at 3am.
-
-#{$ph-clinical-dark} {
-	--ph-primary: #{$clinical-accent-night};
-	--ph-primary-hover: #{$clinical-accent-night-hover};
-	--ph-primary-active: #{$clinical-accent};
-	--ph-primary-soft: #{$clinical-accent-night-soft};
-	--ph-primary-border: #{$clinical-night-400};
-	--ph-on-primary: #{$clinical-night-900};
-
-	--ph-surface: #{$clinical-night-800};
-	--ph-surface-raised: #{$clinical-night-700};
-	--ph-surface-sunken: #{$clinical-night-900};
-	--ph-surface-hover: #{$clinical-night-600};
-	--ph-surface-selected: #{$clinical-accent-night-soft};
-	--ph-surface-inverse: #{$clinical-night-100};
-
-	--ph-text: #{$clinical-night-100};
-	--ph-text-muted: #{$clinical-night-200};
-	--ph-text-light: #{$clinical-night-300};
-	--ph-text-inverse: #{$clinical-night-900};
-
-	--ph-border: #{$clinical-night-500};
-	--ph-border-strong: #{$clinical-night-450};
-
-	--ph-focus-ring: 0 0 0 3px #{rgba($clinical-accent-night, 0.32)};
-
-	--ph-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.45);
-	--ph-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
-	--ph-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.65);
-
-	--ph-border-hc: #{$clinical-night-450};
-	--ph-border-strong-hc: #{$clinical-night-200};
-	--ph-text-muted-hc: #{$clinical-night-100};
-	--ph-text-light-hc: #{$clinical-night-200};
-
-	--ph-critical: #{$state-critical-dark};
-	--ph-critical-soft: #{$state-critical-soft-dark};
-	--ph-urgent: #{$state-urgent-dark};
-	--ph-urgent-soft: #{$state-urgent-soft-dark};
-	--ph-stable: #{$state-stable-dark};
-	--ph-stable-soft: #{$state-stable-soft-dark};
-	--ph-routine: #{$state-routine-dark};
-	--ph-routine-soft: #{$state-routine-soft-dark};
-	--ph-inactive: #{$state-inactive-dark};
-	--ph-inactive-soft: #{$state-inactive-soft-dark};
+#{$ph-chrome-light} {
+	--ph-surface-chrome: var(--ph-surface-raised);
+	--ph-surface-chrome-hover: var(--ph-surface-secondary);
+	--ph-surface-chrome-selected: var(--ph-primary-soft);
+	--ph-chrome-edge: var(--ph-border-subtle);
+	--ph-text-on-chrome: var(--ph-text-primary);
+	--ph-text-on-chrome-muted: var(--ph-text-muted);
+	--ph-canvas-edge: var(--ph-border-subtle);
 }

@@ -58,7 +58,7 @@ tokens/_web.scss       the same values under the portal scope.
 base/_mapping.scss     Frappe var -> --ph-* token. The important one.
 base/_shell.scss       page-level rules.
 components/            generic UI: buttons, forms, cards, dialogs, tables,
-                       indicators (incl. clinical severity), motion.
+                       indicators, motion.
 desk/                  desk surfaces: navbar, sidebar, list, form.
 themes/                dark *rules*, accessibility, print. Imported last.
 ```
@@ -67,9 +67,10 @@ Two consequences of this layout worth stating outright:
 
 - **The dark palette lives in `tokens/_colors.scss`, not `themes/_dark.scss`.** A dark theme is a token set, not a pile of overrides. Because the mapping layer reads `--ph-*` and never a literal, re-declaring the tokens re-themes every mapped Frappe variable at once. `themes/_dark.scss` is only for rules that baked in a light assumption a token cannot reach — if it starts growing, the rule that forced each addition is the bug.
 - **`_palette.scss` holds every literal in the app.** Both scopes (desk and portal) read from it, so the two bundles cannot drift.
-- **A preset is a token swap, never a rule swap.** The Clinical preset re-declares `--ph-*` in `tokens/_colors.scss` and reaches every surface through the mapping layer. If adding a preset ever requires editing a file in `components/` or `desk/`, the token layer has failed and that is the bug to fix.
+- **A variant is a token swap, never a rule swap.** Light chrome re-declares the chrome family of `--ph-*` in `tokens/_colors.scss` and reaches every surface through the mapping layer. If adding a variant ever requires editing a file in `components/` or `desk/`, the token layer has failed and that is the bug to fix.
+- **Radius, elevation and the accent's four uses are fixed by the spec** (`docs/design-tokens.md`, and the Instrument Panel specification it is taken from). They are not Settings fields and must not become ones: radius encodes distance from the page, shadow is permitted only on a dismissible surface, and teal appears only on the focused control, the selected list row, the selected sidebar item and the primary action. A rule that puts teal on a heading, an icon row or a divider is a bug.
 
-Contrast is measured, not asserted: `python3 scripts/contrast_audit.py` checks every foreground/background pair in all four themes and exits non-zero on a failure. Run it after touching `_palette.scss`. Fix a failure by changing the token — never with a one-off override.
+Contrast is measured, not asserted: `python3 scripts/contrast_audit.py` checks the 34 spec pairs in both modes and exits non-zero on a failure. Run it after touching `_palette.scss`. Fix a failure by changing the token — never with a one-off override.
 
 **The mapping layer is the product.** Frappe paints its desk from CSS custom properties; re-pointing those properties themes every page at once, including ones nobody has opened and ones that ship in a future release. A component rule themes one surface until someone renames a class. Reach for `_mapping.scss` first, always.
 

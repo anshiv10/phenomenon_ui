@@ -1,47 +1,78 @@
 @import "../tokens/scope";
 
-// `.modal-content` / `.modal-header` / `.modal-footer` are Bootstrap's, used
-// by frappe.ui.Dialog. Low risk of renaming.
+// The modal is the one surface allowed shadow-md and radius-lg, because it is
+// the one surface you can dismiss. Its footer sits on surface-primary to
+// separate action from content without adding a border. Backdrop is
+// text-primary at 45%.
+// `.modal-*` are Bootstrap's, used by frappe.ui.Dialog. Low risk of renaming.
 
 #{$ph} .modal-content {
 	background-color: var(--ph-surface-raised);
-	border: 1px solid var(--ph-border);
+	border: none;
 	border-radius: var(--ph-radius-lg);
-	box-shadow: var(--ph-shadow-lg);
+	box-shadow: var(--ph-shadow-md);
+	overflow: hidden;
 }
 
 #{$ph} .modal-header {
-	border-bottom: 1px solid var(--ph-border);
-}
-
-#{$ph} .modal-footer {
-	border-top: 1px solid var(--ph-border);
-	background-color: var(--ph-surface);
-	border-bottom-left-radius: var(--ph-radius-lg);
-	border-bottom-right-radius: var(--ph-radius-lg);
+	background-color: var(--ph-surface-raised);
+	border-bottom: 1px solid var(--ph-border-subtle);
 }
 
 #{$ph} .modal-title {
+	color: var(--ph-text-primary);
+	font-size: var(--ph-text-lg);
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: var(--ph-tracking-heading);
+}
+
+#{$ph} .modal-body {
+	background-color: var(--ph-surface-raised);
+}
+
+#{$ph} .modal-footer {
+	background-color: var(--ph-surface-primary);
+	border-top: none;
+}
+
+#{$ph} .modal-backdrop {
+	background-color: var(--ph-text-primary);
 }
 
 #{$ph} .modal-backdrop.show {
-	opacity: 0.4;
+	opacity: 0.45;
 }
 
-// Awesomebar results and other dropdowns.
-// VERIFY (Session 0): `.awesomplete` markup in this build.
+// Dropdowns and the awesomebar result panel: dismissible, so shadow-sm and
+// radius-lg. VERIFY (Session 0): `.awesomplete > ul`.
 #{$ph} .dropdown-menu,
 #{$ph} .awesomplete > ul {
 	background-color: var(--ph-surface-raised);
-	border: 1px solid var(--ph-border);
-	border-radius: var(--ph-radius);
-	box-shadow: var(--ph-shadow-lg);
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-lg);
+	box-shadow: var(--ph-shadow-sm);
+	color: var(--ph-text-primary);
+}
+
+#{$ph} .dropdown-item {
+	color: var(--ph-text-primary);
+	border-radius: var(--ph-radius-sm);
 }
 
 #{$ph} .dropdown-item:hover,
-#{$ph} .dropdown-item:focus {
-	background-color: var(--ph-surface-hover);
-	color: var(--ph-text);
+#{$ph} .dropdown-item:focus,
+#{$ph} .awesomplete > ul > li:hover,
+#{$ph} .awesomplete > ul > li[aria-selected="true"] {
+	background-color: var(--ph-primary-soft);
+	color: var(--ph-text-primary);
+}
+
+// Toasts / alerts are dismissible too.
+// VERIFY (Session 0): `.desk-alert`, `#alert-container .alert`.
+#{$ph} .desk-alert,
+#{$ph} #alert-container .alert {
+	background-color: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-lg);
+	box-shadow: var(--ph-shadow-md);
+	color: var(--ph-text-primary);
 }

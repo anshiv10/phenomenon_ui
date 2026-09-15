@@ -1,13 +1,14 @@
 @import "../tokens/scope";
 
 // ---------------------------------------------------------------------------
-// Shell — page-level surfaces that sit above the mapping layer.
+// Shell — page-level rules that sit above the mapping layer.
 // ---------------------------------------------------------------------------
 
 #{$ph} body {
 	font-family: var(--ph-font-sans);
-	color: var(--ph-text);
-	background-color: var(--ph-surface);
+	font-size: var(--ph-text-md);
+	color: var(--ph-text-primary);
+	background-color: var(--ph-surface-canvas);
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -18,48 +19,90 @@
 #{$ph} h4,
 #{$ph} h5,
 #{$ph} h6 {
-	color: var(--ph-text);
+	color: var(--ph-text-primary);
 	font-weight: var(--ph-weight-semibold);
-	letter-spacing: var(--ph-tracking-heading);
 	line-height: var(--ph-leading-tight);
 }
 
+// Links inside content use primary because a link is a target — the one
+// non-target use of the accent the spec allows. Underline on hover only.
 #{$ph} a {
-	color: var(--ph-text-link);
+	color: var(--ph-primary);
+	text-decoration: none;
 }
 
+#{$ph} a:hover {
+	color: var(--ph-primary-hover);
+	text-decoration: underline;
+}
+
+// Mono is for identifiers only, never for amounts.
 #{$ph} code,
-#{$ph} pre {
+#{$ph} pre,
+#{$ph} kbd {
 	font-family: var(--ph-font-mono);
 }
 
-// -- Tabular numerals --------------------------------------------------------
-// Misaligned money columns are a usability defect in an ERP, not a nicety:
-// with proportional digits a reader cannot compare magnitudes down a column
-// without reading every figure. Applied to the field types that hold numbers
-// and to every datatable cell.
-//
-// VERIFY (Session 0): the `[data-fieldtype]` attribute and the datatable cell
-// class names. These are the selectors most likely to differ across builds.
-#{$ph} [data-fieldtype="Currency"],
-#{$ph} [data-fieldtype="Float"],
-#{$ph} [data-fieldtype="Int"],
-#{$ph} [data-fieldtype="Percent"],
-#{$ph} .dt-cell,
-#{$ph} .dt-cell__content {
-	font-variant-numeric: tabular-nums;
-	font-feature-settings: "tnum" 1;
+// -- Numerals ----------------------------------------------------------------
+// Every numeric cell, currency field and quantity input: tabular lining at
+// 500, so a column of figures reads as a block and the decimal points stack.
+// VERIFY (Session 0): the `[data-fieldtype]` attribute on `.frappe-control`
+// and `.text-right` on numeric list/grid cells.
+#{$ph} [data-fieldtype="Currency"] .form-control,
+#{$ph} [data-fieldtype="Float"] .form-control,
+#{$ph} [data-fieldtype="Int"] .form-control,
+#{$ph} [data-fieldtype="Percent"] .form-control,
+#{$ph} [data-fieldtype="Currency"] .like-disabled-input,
+#{$ph} [data-fieldtype="Float"] .like-disabled-input,
+#{$ph} [data-fieldtype="Int"] .like-disabled-input,
+#{$ph} [data-fieldtype="Percent"] .like-disabled-input,
+#{$ph} .list-row-col.text-right,
+#{$ph} .grid-static-col.text-right,
+#{$ph} .grid-row .col.text-right,
+#{$ph} .dt-cell--col-number,
+#{$ph} .dt-cell .dt-cell__content {
+	font-variant-numeric: tabular-nums lining-nums;
+	font-feature-settings: "tnum" 1, "lnum" 1;
+	font-weight: var(--ph-weight-medium);
 }
 
 // -- Focus -------------------------------------------------------------------
-// One ring, defined once, used everywhere. :focus-visible only, so mouse users
-// do not get a ring on every click while keyboard users always do.
+// One ring, defined once. :focus-visible only, so mouse users do not get a
+// ring on every click while keyboard users always do. Never outline: none.
 #{$ph} :focus-visible {
-	outline: 2px solid var(--ph-border-focus);
-	outline-offset: 1px;
+	outline: 2px solid var(--ph-primary);
+	outline-offset: 2px;
 }
 
 // -- Scrollbars --------------------------------------------------------------
 #{$ph} * {
 	scrollbar-color: var(--ph-border-strong) transparent;
+}
+
+// -- Page head ---------------------------------------------------------------
+// VERIFY (Session 0): `.page-head`, `.title-text`.
+#{$ph} .page-head {
+	background-color: var(--ph-surface-canvas);
+	border-bottom: none;
+}
+
+#{$ph} .page-head .title-text,
+#{$ph} .page-title .title-text {
+	color: var(--ph-text-primary);
+	font-size: var(--ph-text-xl);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-title);
+}
+
+// Breadcrumb sits in the chrome navbar: text-sm/500, on-chrome.
+// VERIFY (Session 0): `#navbar-breadcrumbs`.
+#{$ph} #navbar-breadcrumbs a,
+#{$ph} #navbar-breadcrumbs .breadcrumb-item {
+	color: var(--ph-text-on-chrome);
+	font-size: var(--ph-text-sm);
+	font-weight: var(--ph-weight-medium);
+}
+
+#{$ph} #navbar-breadcrumbs .breadcrumb-item + .breadcrumb-item::before {
+	color: var(--ph-text-on-chrome-muted);
 }

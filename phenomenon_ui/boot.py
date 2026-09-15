@@ -2,13 +2,10 @@ import frappe
 
 DEFAULTS = {
 	"enabled": 1,
-	"theme_preset": "Default",
 	"appearance": "Follow User Preference",
 	"accent_color": "",
 	"density": "Comfortable",
-	"corner_radius": "Medium",
-	"sidebar_style": "Standard",
-	"navbar_style": "Standard",
+	"chrome": "Dark",
 	"custom_css": "",
 }
 
@@ -16,12 +13,9 @@ DEFAULTS = {
 # these sets is dropped rather than passed through, so a bad Settings value can
 # never produce an attribute the SCSS does not have a rule for.
 ALLOWED = {
-	"theme_preset": {"Default", "Clinical"},
 	"appearance": {"Follow User Preference", "Always Light", "Always Dark"},
 	"density": {"Compact", "Comfortable", "Spacious"},
-	"corner_radius": {"Sharp", "Small", "Medium", "Large"},
-	"sidebar_style": {"Standard", "Flat", "Floating"},
-	"navbar_style": {"Standard", "Flat", "Elevated", "Contrast"},
+	"chrome": {"Dark", "Light"},
 }
 
 

@@ -1,77 +1,93 @@
 @import "../tokens/scope";
 
 // Bootstrap button classes, which Frappe uses directly. These are the safest
-// component selectors in the app — they are Bootstrap's, not Frappe's, so they
-// do not move between Frappe releases.
+// component selectors in the app — they are Bootstrap's, not Frappe's.
+//
+// Primary is the only solid fill on a page. Secondary buttons are a quiet
+// surface-secondary tile with a transparent border. Cancel gets border-strong
+// rather than red: destructive is not an error, and red stays with status.
+// No button ever carries a shadow; a button is anchored to the page.
 
 #{$ph} .btn {
-	border-radius: var(--ph-radius);
+	border-radius: var(--ph-radius-sm);
+	font-size: var(--ph-text-md);
 	font-weight: var(--ph-weight-medium);
+	box-shadow: none;
 	transition: background-color var(--ph-transition), border-color var(--ph-transition),
-		box-shadow var(--ph-transition);
+		color var(--ph-transition);
 }
 
-#{$ph} .btn:focus-visible {
-	box-shadow: var(--ph-focus-ring);
+#{$ph} .btn:focus,
+#{$ph} .btn:active,
+#{$ph} .btn.active {
+	box-shadow: none;
 }
 
 #{$ph} .btn-primary {
 	background-color: var(--ph-primary);
-	border-color: var(--ph-primary);
-	color: var(--ph-on-primary);
+	border: 1px solid var(--ph-primary);
+	color: var(--ph-primary-contrast);
 }
 
 #{$ph} .btn-primary:hover,
-#{$ph} .btn-primary:focus {
-	background-color: var(--ph-primary-hover);
-	border-color: var(--ph-primary-hover);
-	color: var(--ph-on-primary);
-	box-shadow: var(--ph-shadow-sm);
-}
-
+#{$ph} .btn-primary:focus,
 #{$ph} .btn-primary:active,
 #{$ph} .btn-primary.active {
-	background-color: var(--ph-primary-active);
-	border-color: var(--ph-primary-active);
+	background-color: var(--ph-primary-hover);
+	border-color: var(--ph-primary-hover);
+	color: var(--ph-primary-contrast);
 }
 
 #{$ph} .btn-default,
-#{$ph} .btn-secondary {
-	background-color: var(--ph-surface-raised);
-	border: 1px solid var(--ph-border-strong);
-	color: var(--ph-text);
+#{$ph} .btn-secondary,
+#{$ph} .btn-light {
+	background-color: var(--ph-surface-secondary);
+	border: 1px solid transparent;
+	color: var(--ph-text-primary);
 }
 
 #{$ph} .btn-default:hover,
-#{$ph} .btn-secondary:hover {
-	background-color: var(--ph-surface-hover);
+#{$ph} .btn-secondary:hover,
+#{$ph} .btn-light:hover,
+#{$ph} .btn-default:focus,
+#{$ph} .btn-secondary:focus,
+#{$ph} .btn-light:focus {
+	background-color: var(--ph-surface-base);
+	border-color: transparent;
+	color: var(--ph-text-primary);
+}
+
+// The page-level secondary action (Cancel on a submitted document) is
+// destructive but not an error: border-strong, not red.
+// VERIFY (Session 0): `.page-actions .btn-secondary` is the secondary action.
+#{$ph} .page-actions .btn-secondary {
 	border-color: var(--ph-border-strong);
-	color: var(--ph-text);
 }
 
 #{$ph} .btn-danger {
 	background-color: var(--ph-danger);
-	border-color: var(--ph-danger);
+	border: 1px solid var(--ph-danger);
 	color: var(--ph-text-inverse);
 }
 
-// Frappe's small icon-only buttons in list/form toolbars.
-// VERIFY (Session 0): `.btn-xs` is Bootstrap-era; confirm it is still emitted.
 #{$ph} .btn-xs,
 #{$ph} .btn-sm {
 	border-radius: var(--ph-radius-sm);
 }
 
+// Disabled: no opacity change — opacity kills tabular legibility and makes
+// a label unreadable. Colour does the job.
 #{$ph} .btn:disabled,
 #{$ph} .btn.disabled {
-	opacity: 0.55;
+	opacity: 1;
+	background-color: var(--ph-surface-disabled);
+	border-color: transparent;
+	color: var(--ph-text-muted);
 	box-shadow: none;
 	transform: none;
 }
 
 // -- Touch -------------------------------------------------------------------
-// Ward tablets. A 26px toolbar button is a mis-tap waiting to happen when the
-// next control along submits a document.
 @media (pointer: coarse) {
 	#{$ph} .btn {
 		min-height: var(--ph-touch-target);

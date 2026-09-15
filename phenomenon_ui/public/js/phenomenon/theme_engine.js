@@ -25,13 +25,10 @@ const ORIGINAL_THEME = (function () {
 
 const DEFAULTS = {
 	enabled: 1,
-	theme_preset: "Default",
 	appearance: "Follow User Preference",
 	accent_color: "",
 	density: "Comfortable",
-	corner_radius: "Medium",
-	sidebar_style: "Standard",
-	navbar_style: "Standard",
+	chrome: "Dark",
 	custom_css: "",
 };
 
@@ -41,12 +38,12 @@ const APPEARANCE = {
 	"always dark": "dark",
 };
 
+// Radius, navbar and sidebar are NOT settings: the spec fixes them because
+// each encodes meaning (distance from the page; the chrome frame). The one
+// deviation offered is light chrome, for a client who rejects a dark frame.
 const ALLOWED = {
-	theme_preset: ["default", "clinical"],
 	density: ["compact", "comfortable", "spacious"],
-	corner_radius: ["sharp", "small", "medium", "large"],
-	sidebar_style: ["standard", "flat", "floating"],
-	navbar_style: ["standard", "flat", "elevated", "contrast"],
+	chrome: ["dark", "light"],
 };
 
 // #abc, #aabbcc, #aabbccdd — anything else is ignored rather than written into
@@ -84,8 +81,11 @@ function apply(raw) {
 		// Full rollback. Every Phenomenon rule is scoped under html[data-ph="on"],
 		// so removing this one attribute returns the desk to stock appearance.
 		html.removeAttribute(ROOT_FLAG);
-		html.removeAttribute("data-ph-preset");
 		html.removeAttribute("data-ph-density");
+		html.removeAttribute("data-ph-chrome");
+		// Attributes written by pre-0.3 builds, stripped so an upgrade leaves
+		// no residue either.
+		html.removeAttribute("data-ph-preset");
 		html.removeAttribute("data-ph-radius");
 		html.removeAttribute("data-ph-sidebar");
 		html.removeAttribute("data-ph-navbar");
@@ -105,11 +105,12 @@ function apply(raw) {
 	}
 
 	html.setAttribute(ROOT_FLAG, "on");
-	html.setAttribute("data-ph-preset", s.theme_preset);
 	html.setAttribute("data-ph-density", s.density);
-	html.setAttribute("data-ph-radius", s.corner_radius);
-	html.setAttribute("data-ph-sidebar", s.sidebar_style);
-	html.setAttribute("data-ph-navbar", s.navbar_style);
+	html.setAttribute("data-ph-chrome", s.chrome);
+	html.removeAttribute("data-ph-preset");
+	html.removeAttribute("data-ph-radius");
+	html.removeAttribute("data-ph-sidebar");
+	html.removeAttribute("data-ph-navbar");
 
 	if (s.accent_color) {
 		html.style.setProperty("--ph-primary", s.accent_color);
