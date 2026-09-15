@@ -61,6 +61,13 @@ for v in --bg-color --fg-color --card-bg --control-bg --control-bg-on-gray --dis
 	--bg-green --text-on-green --bg-orange --text-on-orange --bg-yellow --text-on-yellow \
 	--bg-red --text-on-red --bg-blue --text-on-blue --bg-gray --text-on-gray \
 	--bg-light-gray --text-on-light-gray --bg-darkgrey --bg-purple --bg-pink --bg-cyan \
+	--surface-white --surface-menu-bar --surface-modal --surface-cards --surface-selected \
+	--surface-gray-1 --surface-gray-2 --surface-gray-3 --surface-gray-4 \
+	--ink-gray-4 --ink-gray-5 --ink-gray-6 --ink-gray-7 --ink-gray-8 --ink-gray-9 \
+	--ink-blue-link --outline-gray-1 --outline-gray-2 --outline-gray-3 \
+	--sidebar-hover-color --sidebar-active-color --sidebar-border-color --divider-color \
+	--focus-default --checkbox-focus-shadow --btn-height --input-height \
+	--disabled-text-color --border-radius-tiny --border-radius-xl --card-shadow \
 	--primary --primary-color --border-radius --border-radius-sm \
 	--border-radius-md --border-radius-lg --border-radius-full \
 	--shadow-base --shadow-sm --shadow-md --shadow-lg \
@@ -96,7 +103,11 @@ head1 "5. SELECTORS"
 echo "Every class Phenomenon UI styles, checked against installed source."
 echo "0 files means the rule can never match — delete it."
 echo
-for c in navbar navbar-brand standard-sidebar-item standard-sidebar-label \
+for c in body-sidebar body-sidebar-container sidebar-header header-title \
+	header-subtitle header-logo-container item-anchor sidebar-item-label \
+	sidebar-item-icon active-sidebar sidebar-user-button onboarding-sidebar \
+	sidebar-toggle-btn page-actions grid-footer dt-row--totalRow list-id \
+	navbar navbar-brand standard-sidebar-item standard-sidebar-label \
 	layout-side-section list-sidebar sidebar-label list-row-container \
 	list-row-head list-row list-subject list-count form-section section-head \
 	form-tabs-list form-page form-dashboard-section page-head widget \

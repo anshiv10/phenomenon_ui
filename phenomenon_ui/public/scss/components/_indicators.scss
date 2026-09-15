@@ -29,8 +29,16 @@
 	font-variant-numeric: tabular-nums lining-nums;
 }
 
-// The dot-style indicator (used in sidebars and comments) keeps its dot but
-// takes the same semantic colour as its pill.
+// v16 puts a coloured dot inside the pill as well. The spec pill carries its
+// meaning in an uppercase word plus a soft fill; the dot repeats the colour a
+// third time and costs 12px of a dense row, so it is hidden on the pill only.
+// The standalone `.indicator` (sidebars, comments, connections) keeps its dot,
+// because there the dot IS the indicator.
+#{$ph} .indicator-pill::before,
+#{$ph} .indicator-pill-right::after {
+	display: none;
+}
+
 #{$ph} .indicator::before {
 	width: 6px;
 	height: 6px;

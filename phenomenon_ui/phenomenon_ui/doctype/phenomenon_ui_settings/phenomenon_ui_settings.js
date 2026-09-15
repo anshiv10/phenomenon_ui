@@ -52,6 +52,12 @@ const PROBE_VARS = [
 	"--bg-green", "--text-on-green", "--bg-orange", "--text-on-orange",
 	"--bg-yellow", "--text-on-yellow", "--bg-red", "--text-on-red",
 	"--bg-blue", "--text-on-blue", "--bg-gray", "--text-on-gray", "--icon-stroke",
+	// v16 espresso family — empty here on a v15 build, which is the answer.
+	"--surface-white", "--surface-menu-bar", "--surface-modal", "--surface-gray-1",
+	"--surface-gray-2", "--ink-gray-9", "--ink-gray-6", "--ink-gray-4",
+	"--outline-gray-1", "--outline-gray-3", "--sidebar-hover-color",
+	"--sidebar-active-color", "--sidebar-border-color", "--focus-default",
+	"--btn-height", "--input-height",
 ];
 
 // Every class this theme styles. Count 0 means the rule can never match.
@@ -70,6 +76,11 @@ const PROBE_SELECTORS = [
 	".grid-footer", ".datatable", ".dt-row--header", ".dt-cell", ".dt-row--totalRow",
 	".indicator-pill", ".indicator-pill.red", ".btn-primary", ".btn-default",
 	".awesomplete", ".dropdown-menu", ".desk-alert",
+	// v16 shell
+	".body-sidebar", ".body-sidebar-container", ".sidebar-header", ".header-title",
+	".header-subtitle", ".header-logo-container", ".standard-sidebar-item .item-anchor",
+	".sidebar-item-label", ".sidebar-item-icon", ".active-sidebar", ".sidebar-user-button",
+	".onboarding-sidebar", ".sidebar-toggle-btn",
 ];
 
 function build_report() {

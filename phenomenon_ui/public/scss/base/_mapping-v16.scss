@@ -1,0 +1,203 @@
+@import "../tokens/scope";
+
+// ===========================================================================
+// THE v16 MAPPING LAYER
+// ===========================================================================
+//
+// Frappe v16 kept the v15 custom properties (--bg-color, --control-bg,
+// --text-color, --bg-red ...) for its older components, and base/_mapping.scss
+// still themes all of those. What it ADDED is a second, semantic token family
+// borrowed from frappe-ui / espresso:
+//
+//   --surface-<name>   backgrounds        (surface-gray-1..7, surface-white,
+//                                          surface-menu-bar, surface-modal,
+//                                          surface-cards, surface-selected,
+//                                          surface-red-1..7, green, amber, blue)
+//   --ink-<name>       foregrounds        (ink-gray-1..9, ink-red-*, ink-green-*,
+//                                          ink-amber-*, ink-blue-*, ink-blue-link)
+//   --outline-<name>   borders            (outline-gray-1..5, outline-red-*, ...)
+//
+// Definitions: apps/frappe/frappe/public/scss/espresso/_colors.scss.
+//
+// The new desk shell — the collapsible left sidebar, the sidebar header, the
+// settings dialog, the command palette, breadcrumbs, menus — paints from THAT
+// family and never touches the v15 one. That is the whole reason a v15-era
+// theme looks half-applied on v16: the content is themed and the shell is not.
+//
+// So this file is the same idea as _mapping.scss, one version later. It is
+// imported after it, at identical specificity, so the two never fight: they
+// name disjoint sets of variables.
+//
+// DIRECTION, not identity. Frappe's ink/surface ramps run light to dark; so do
+// ours. Each mapping below preserves that ordering rather than matching a hex,
+// which is why it also works in dark mode: tokens/_colors.scss re-declares
+// --ph-* under $ph-dark and every line here follows.
+//
+// VERIFY (Session 0, v16): --surface-gray-*, --ink-gray-*, --outline-gray-*,
+// --sidebar-hover-color, --sidebar-active-color, --sidebar-border-color,
+// --focus-default, --surface-cards, --surface-selected.
+
+#{$ph} {
+	// -- Surfaces ----------------------------------------------------------
+	--surface-white: var(--ph-surface-card);
+	--surface-modal: var(--ph-surface-raised);
+	--surface-cards: var(--ph-surface-card);
+	--surface-selected: var(--ph-primary-soft);
+
+	--surface-gray-1: var(--ph-surface-primary);
+	--surface-gray-2: var(--ph-surface-secondary);
+	--surface-gray-3: var(--ph-surface-secondary);
+	--surface-gray-4: var(--ph-surface-base);
+	// gray-5/6/7 are deliberately NOT mapped: v16 uses them as *inverted*
+	// solids (a dark fill in light mode, a light fill in dark mode). Our
+	// surface ramp does not invert, so mapping them would produce a dark
+	// label on a dark fill in dark mode. Left stock.
+
+	// --surface-menu-bar is not mapped globally either: it paints the sidebar
+	// AND the settings dialog, which are opposite surfaces in this system.
+	// The sidebar gets it locally, in the chrome block at the foot of
+	// desk/_sidebar.scss.
+
+	// -- Ink (foregrounds) -------------------------------------------------
+	--ink-gray-9: var(--ph-text-primary);
+	--ink-gray-8: var(--ph-text-primary);
+	--ink-gray-7: var(--ph-text-secondary);
+	--ink-gray-6: var(--ph-text-secondary);
+	--ink-gray-5: var(--ph-text-muted);
+	--ink-gray-4: var(--ph-text-muted);
+	--ink-gray-3: var(--ph-border-strong);
+	--ink-gray-2: var(--ph-border-subtle);
+	--ink-gray-1: var(--ph-border-subtle);
+	--ink-white: var(--ph-surface-raised);
+
+	// A link is a target, so it is the one non-target use of the accent.
+	--ink-blue-link: var(--ph-primary);
+
+	// -- Outlines (borders) ------------------------------------------------
+	--outline-gray-1: var(--ph-border-subtle);
+	--outline-gray-2: var(--ph-border-subtle);
+	--outline-gray-3: var(--ph-border-strong);
+	--outline-gray-4: var(--ph-border-strong);
+	--outline-gray-5: var(--ph-border-strong);
+	--outline-gray-modals: var(--ph-border-subtle);
+	--outline-white: var(--ph-surface-raised);
+
+	// -- Semantic, espresso names ------------------------------------------
+	// Same rule as v15: green = settled, amber = awaiting action, red =
+	// failed or expired, blue = informational. Soft fills, solid text.
+	--surface-red-1: var(--ph-danger-soft);
+	--surface-red-2: var(--ph-danger-soft);
+	--surface-red-3: var(--ph-danger-soft);
+	--surface-red-4: var(--ph-danger-soft);
+	--surface-red-5: var(--ph-danger);
+	--surface-red-6: var(--ph-danger);
+	--surface-red-7: var(--ph-danger);
+	--ink-red-1: var(--ph-danger-soft);
+	--ink-red-2: var(--ph-danger);
+	--ink-red-3: var(--ph-danger);
+	--ink-red-4: var(--ph-danger);
+	--outline-red-1: var(--ph-danger);
+	--outline-red-2: var(--ph-danger);
+	--outline-red-3: var(--ph-danger);
+
+	--surface-green-1: var(--ph-success-soft);
+	--surface-green-2: var(--ph-success-soft);
+	--surface-green-3: var(--ph-success);
+	--ink-green-1: var(--ph-success-soft);
+	--ink-green-2: var(--ph-success);
+	--ink-green-3: var(--ph-success);
+	--outline-green-1: var(--ph-success);
+	--outline-green-2: var(--ph-success);
+
+	--surface-amber-1: var(--ph-warning-soft);
+	--surface-amber-2: var(--ph-warning-soft);
+	--surface-amber-3: var(--ph-warning);
+	--surface-orange-1: var(--ph-warning-soft);
+	--ink-amber-1: var(--ph-warning-soft);
+	--ink-amber-2: var(--ph-warning);
+	--ink-amber-3: var(--ph-warning);
+	--outline-amber-1: var(--ph-warning);
+	--outline-amber-2: var(--ph-warning);
+	--outline-orange-1: var(--ph-warning);
+
+	--surface-blue-1: var(--ph-info-soft);
+	--surface-blue-2: var(--ph-info-soft);
+	--surface-blue-3: var(--ph-info);
+	--ink-blue-1: var(--ph-info-soft);
+	--ink-blue-2: var(--ph-info);
+	--ink-blue-3: var(--ph-info);
+	--outline-blue-1: var(--ph-info);
+
+	// No fifth or sixth hue. Violet, cyan and pink go neutral rather than
+	// inventing a colour the status system does not have a meaning for.
+	--surface-violet-1: var(--ph-surface-secondary);
+	--surface-cyan-1: var(--ph-surface-secondary);
+	--surface-pink-1: var(--ph-surface-secondary);
+	--ink-violet-1: var(--ph-text-muted);
+	--ink-cyan-1: var(--ph-text-muted);
+	--ink-pink-1: var(--ph-text-muted);
+
+	// -- The neutral ramp --------------------------------------------------
+	// v16 still resolves several legacy variables through --gray-*, and a few
+	// rules use it directly. Mapped in the same direction, light to dark, so
+	// the neutral grey stops fighting our blue-grey. gray-800/900 stay text.
+	--gray-50: var(--ph-surface-primary);
+	--gray-100: var(--ph-surface-secondary);
+	--gray-200: var(--ph-border-subtle);
+	--gray-300: var(--ph-border-subtle);
+	--gray-400: var(--ph-border-strong);
+	--gray-500: var(--ph-text-muted);
+	--gray-600: var(--ph-text-muted);
+	--gray-700: var(--ph-text-secondary);
+	--gray-800: var(--ph-text-primary);
+	--gray-900: var(--ph-text-primary);
+
+	// -- The sidebar's own variables ---------------------------------------
+	// Declared on :root in desk/sidebar.scss (0,1,0); this scope is (0,1,1).
+	--sidebar-hover-color: var(--ph-surface-chrome-hover);
+	--sidebar-active-color: var(--ph-surface-chrome-selected);
+	--sidebar-border-color: var(--ph-chrome-edge);
+	--divider-color: var(--ph-surface-chrome-hover);
+
+	// -- Focus -------------------------------------------------------------
+	// v16 gives buttons, checkboxes and the datatable a grey focus ring from
+	// one variable. One line turns every one of them into the contract.
+	--focus-default: 0 0 0 2px var(--ph-primary);
+	--checkbox-focus-shadow: 0 0 0 2px var(--ph-primary);
+
+	// -- Radius ------------------------------------------------------------
+	// v16's defaults are much rounder than v15's (sm and base are both 8px,
+	// lg 12, xl 16, 2xl 20). Radius encodes distance from the page here, so
+	// the whole ramp is re-pointed, not just the three _mapping.scss names.
+	--border-radius-tiny: var(--ph-radius-sm);
+	--border-radius-xl: var(--ph-radius-lg);
+	--border-radius-2xl: var(--ph-radius-lg);
+	--card-border-radius: var(--ph-radius-md);
+
+	// -- Elevation ---------------------------------------------------------
+	// Anchored surfaces are flat. --card-shadow is what v16 puts on a resting
+	// card, so it goes to none rather than to a smaller shadow.
+	--shadow-xs: none;
+	--shadow-xl: var(--ph-shadow-md);
+	--shadow-2xl: var(--ph-shadow-lg);
+	--card-shadow: none;
+	--modal-shadow: var(--ph-shadow-md);
+	--btn-shadow: none;
+
+	// -- Controls ----------------------------------------------------------
+	--input-height: var(--ph-control-height);
+	--btn-height: var(--ph-control-height);
+	--disabled-text-color: var(--ph-text-muted);
+	--input-disabled-bg: var(--ph-surface-disabled);
+	--text-dark: var(--ph-text-primary);
+	--text-neutral: var(--ph-text-secondary);
+	--neutral: var(--ph-surface-raised);
+}
+
+// ---------------------------------------------------------------------------
+// One v16 rule this theme cannot reach, recorded rather than worked around:
+// common/buttons.scss sets `.btn:active { background-color: var(--control-bg)
+// !important }`. A pressed primary button therefore flashes the control fill
+// for the duration of the press. Beating it would need !important, which
+// CLAUDE.md forbids everywhere except the reduced-motion block. Left alone.
+// ---------------------------------------------------------------------------

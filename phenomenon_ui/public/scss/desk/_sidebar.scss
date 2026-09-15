@@ -176,3 +176,178 @@
 		align-items: center;
 	}
 }
+
+// ===========================================================================
+// FRAPPE v16 — THE BODY SIDEBAR
+// ===========================================================================
+//
+// v16 replaced the desk shell. The workspace list moved out of
+// `.layout-side-section` into a collapsible `.body-sidebar` that paints from
+// the espresso family (--surface-menu-bar, --ink-gray-*, --sidebar-*), and the
+// top navbar is gone from most pages — which makes this sidebar the entire
+// chrome frame. Everything above still applies on v15 and to the list filter
+// panel and form sidebar, which v16 kept.
+//
+// Markup (apps/frappe/frappe/public/js/frappe/ui/sidebar/sidebar.html):
+//   .body-sidebar-container > .body-sidebar
+//     .sidebar-header  .header-logo-container  .header-title  .header-subtitle
+//     .body-sidebar-top > .sidebar-items > .standard-sidebar-item
+//       > .item-anchor > .sidebar-item-icon + .sidebar-item-label
+//     .standard-sidebar-item.active-sidebar  (the selected state)
+//     .body-sidebar-bottom > .onboarding-sidebar, .sidebar-user-button
+//
+// The whole block below is one idea: re-declare the espresso variables INSIDE
+// the chrome container so every descendant repaints itself, then add the four
+// rules a variable could not express (the ground, the edge, the selected
+// rail, the radius).
+
+#{$ph} .body-sidebar,
+#{$ph} .sidebar-header {
+	// Foregrounds invert inside the frame.
+	--ink-gray-9: var(--ph-text-on-chrome);
+	--ink-gray-8: var(--ph-text-on-chrome);
+	--ink-gray-7: var(--ph-text-on-chrome);
+	--ink-gray-6: var(--ph-text-on-chrome);
+	--ink-gray-5: var(--ph-text-on-chrome-muted);
+	--ink-gray-4: var(--ph-text-on-chrome-muted);
+	--ink-gray-3: var(--ph-text-on-chrome-muted);
+	--ink-gray-2: var(--ph-surface-chrome-hover);
+	--ink-gray-1: var(--ph-surface-chrome-hover);
+
+	// Backgrounds inside the frame are chrome, not content.
+	--surface-menu-bar: var(--ph-surface-chrome);
+	--surface-white: var(--ph-surface-chrome);
+	--surface-gray-1: var(--ph-surface-chrome-hover);
+	--surface-gray-2: var(--ph-surface-chrome-hover);
+	--surface-gray-3: var(--ph-surface-chrome-hover);
+	--surface-gray-4: var(--ph-surface-chrome-hover);
+
+	--outline-gray-1: var(--ph-surface-chrome-hover);
+	--outline-gray-2: var(--ph-surface-chrome-hover);
+	--outline-gray-3: var(--ph-text-on-chrome-muted);
+
+	// Legacy names, for anything inside the frame that still reads them.
+	--text-color: var(--ph-text-on-chrome);
+	--text-muted: var(--ph-text-on-chrome-muted);
+	--text-light: var(--ph-text-on-chrome-muted);
+	--icon-stroke: var(--ph-text-on-chrome-muted);
+	--control-bg: var(--ph-surface-chrome-hover);
+	--border-color: var(--ph-surface-chrome-hover);
+	--fg-color: var(--ph-surface-chrome);
+	--bg-color: var(--ph-surface-chrome);
+
+	color: var(--ph-text-on-chrome);
+}
+
+// The ground and the 2px edge that separates chrome from the lit field.
+#{$ph} .body-sidebar {
+	background: var(--ph-surface-chrome);
+	border-right: 2px solid var(--ph-chrome-edge);
+}
+
+#{$ph} .body-sidebar-placeholder {
+	background: var(--ph-surface-chrome);
+}
+
+// Items. Radius drops from v16's 8px to radius-sm: an anchored thing is
+// nearly square.
+#{$ph} .body-sidebar .standard-sidebar-item {
+	border-radius: var(--ph-radius-sm);
+}
+
+#{$ph} .body-sidebar .standard-sidebar-item .item-anchor,
+#{$ph} .body-sidebar .standard-sidebar-item .sidebar-item-label,
+#{$ph} .body-sidebar .onboarding-sidebar,
+#{$ph} .body-sidebar .collapse-sidebar-link,
+#{$ph} .body-sidebar .sidebar-user-button {
+	color: var(--ph-text-on-chrome);
+	text-decoration: none;
+}
+
+#{$ph} .body-sidebar .standard-sidebar-item:hover,
+#{$ph} .body-sidebar .standard-sidebar-item .item-anchor:hover,
+#{$ph} .body-sidebar .onboarding-sidebar:hover,
+#{$ph} .body-sidebar .dropdown-navbar-user:hover,
+#{$ph} .body-sidebar .hover {
+	background-color: var(--ph-surface-chrome-hover);
+	border-radius: var(--ph-radius-sm);
+	color: var(--ph-text-on-chrome);
+}
+
+// The selected item — the signature. v16 draws it as a white fill plus a
+// shadow; here it is the chrome-selected wash plus the 3px leading bar, and
+// no shadow, because the sidebar is anchored.
+#{$ph} .body-sidebar .active-sidebar,
+#{$ph} .active-sidebar {
+	background: var(--ph-surface-chrome-selected);
+	border-radius: var(--ph-radius-sm);
+	box-shadow: inset var(--ph-rail-width) 0 0 var(--ph-primary);
+}
+
+#{$ph} .active-sidebar .item-anchor,
+#{$ph} .active-sidebar .sidebar-item-label {
+	color: var(--ph-text-on-chrome);
+	font-weight: var(--ph-weight-medium);
+}
+
+// Icons draw in on-chrome-muted, on-chrome when selected. Without this an
+// icon that assumes a dark stroke is invisible against the frame — the
+// "empty squares beside every item" symptom.
+#{$ph} .body-sidebar .sidebar-item-icon,
+#{$ph} .body-sidebar .sidebar-item-icon svg,
+#{$ph} .body-sidebar .icon,
+#{$ph} .body-sidebar svg,
+#{$ph} .sidebar-header .icon,
+#{$ph} .sidebar-header svg {
+	color: var(--ph-text-on-chrome-muted);
+	stroke: var(--ph-text-on-chrome-muted);
+}
+
+#{$ph} .active-sidebar .sidebar-item-icon,
+#{$ph} .active-sidebar .sidebar-item-icon svg {
+	color: var(--ph-text-on-chrome);
+	stroke: var(--ph-text-on-chrome);
+}
+
+// Header: workspace name and app name sit at the top of the frame.
+#{$ph} .sidebar-header .header-title {
+	color: var(--ph-text-on-chrome);
+	font-size: var(--ph-text-md);
+	font-weight: var(--ph-weight-medium);
+}
+
+#{$ph} .sidebar-header .header-subtitle {
+	color: var(--ph-text-on-chrome-muted);
+	font-size: var(--ph-text-xs);
+	font-weight: var(--ph-weight-semibold);
+	letter-spacing: var(--ph-tracking-caps);
+	text-transform: uppercase;
+}
+
+#{$ph} .sidebar-header .header-logo-container {
+	background-color: var(--ph-surface-chrome-hover);
+	border-radius: var(--ph-radius-sm);
+}
+
+// The user block at the foot of the frame.
+#{$ph} .body-sidebar .sidebar-user-button .avatar-name-email .text-secondary,
+#{$ph} .body-sidebar .avatar-name-email span:last-child {
+	color: var(--ph-text-on-chrome-muted);
+}
+
+#{$ph} .body-sidebar .divider {
+	border-top-color: var(--ph-surface-chrome-hover);
+}
+
+#{$ph} .body-sidebar .sidebar-toggle-btn {
+	background: var(--ph-surface-chrome-hover);
+	border-color: var(--ph-chrome-edge);
+	box-shadow: none;
+}
+
+// The in-sidebar Search row opens the command palette — a dismissible panel,
+// so it keeps the soft corner the awesomebar has.
+#{$ph} .body-sidebar .standard-sidebar-item[data-name="Search"] .item-anchor,
+#{$ph} .body-sidebar .sidebar-search .item-anchor {
+	border-radius: var(--ph-radius-lg);
+}

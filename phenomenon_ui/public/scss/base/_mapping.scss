@@ -63,6 +63,14 @@
 	// The single most load-bearing mapping in the file: this is what turns
 	// every stock primary button, active tab and selected row teal without a
 	// component rule anywhere.
+	//
+	// --primary is worth a note. Session 0 reports it ABSENT on v16, and the
+	// usual conclusion would be "delete the dead mapping". The opposite is
+	// true here: v16 still READS var(--primary) in 28 rules (checkbox and
+	// radio fills, the control focus border, the grid tab underline) while
+	// only ever defining it as a compile-time SCSS value. Declaring it is
+	// therefore not dead weight, it is the thing that makes those rules
+	// resolve to the accent at all. Keep it.
 	--primary: var(--ph-primary);
 	--primary-color: var(--ph-primary);
 

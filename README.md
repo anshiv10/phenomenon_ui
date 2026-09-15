@@ -18,9 +18,11 @@ Phenomenon UI implements the **Instrument Panel** design system (Direction B, to
 
 ---
 
-## Status: v0.3.0 — spec-complete, pending bench verification
+## Status: v0.3.1 — spec-complete, verified against v16 source
 
-v0.3.0 rebuilds the token layer and every component rule to the Instrument Panel specification. Everything compiles and the 34 spec contrast pairs pass in both modes. **What has not happened is verification against an installed Frappe build** — no selector or variable name has been checked against real source.
+v0.3.0 rebuilt the token layer and every component rule to the Instrument Panel specification. v0.3.1 adds the v16 mapping layer and shell rules, written against Frappe `version-16` source rather than guessed. The 34 spec contrast pairs pass in both modes.
+
+Session 0 on a v16 bench confirmed every mapped v15 variable is still present. Remaining unverified: the espresso mappings and the v16 sidebar selectors, which are read from source but not yet observed in a running DOM. Re-run **Run Diagnostics** after installing to close that gap.
 
 That is the one outstanding piece of work, and it needs a bench. Two commands do it:
 
@@ -199,7 +201,11 @@ See [`CLAUDE.md`](CLAUDE.md) for the full contribution rules.
 | ERPNext | v15 |
 | Python | ≥ 3.10 |
 
-**v16 is not supported.** The CSS custom property set changes between v15 and v16, and the mapping layer is written against v15 names. Verify before attempting it.
+**Both are supported, through two mapping files.** v16 kept the v15 custom properties for its older components and added a second, semantic family borrowed from frappe-ui / espresso (`--surface-*`, `--ink-*`, `--outline-*`). Its new desk shell — the collapsible left sidebar, the sidebar header, the settings dialog, the command palette — paints from that family alone, which is why a v15-era theme renders content correctly and leaves the shell stock.
+
+`base/_mapping.scss` covers the v15 names, `base/_mapping-v16.scss` covers the espresso family and the sidebar's own variables. Both are imported on every build: a variable a given version does not define is inert, so neither file needs a version switch. v16 shell rules live at the foot of `desk/_sidebar.scss`.
+
+One v16 rule this theme cannot reach: `common/buttons.scss` sets `.btn:active` with `!important`, so a pressed button briefly shows the stock control fill. Beating it would need `!important`, which `CLAUDE.md` forbids.
 
 ---
 
