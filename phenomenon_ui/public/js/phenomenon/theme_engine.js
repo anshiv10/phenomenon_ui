@@ -9,6 +9,8 @@
  * Console API: window.phenomenon.apply(settings) / window.phenomenon.refresh()
  */
 
+import { derive, HEX_RE } from "./palette.js";
+
 const ROOT_FLAG = "data-ph";
 const STYLE_ID = "phenomenon-custom-css";
 
@@ -27,6 +29,7 @@ const DEFAULTS = {
 	enabled: 1,
 	appearance: "Follow User Preference",
 	accent_color: "",
+	chrome_color: "",
 	density: "Comfortable",
 	chrome: "Dark",
 	custom_css: "",
@@ -46,9 +49,21 @@ const ALLOWED = {
 	chrome: ["dark", "light"],
 };
 
-// #abc, #aabbcc, #aabbccdd — anything else is ignored rather than written into
-// an inline style, so a malformed value cannot inject a declaration.
-const HEX_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i;
+// Every custom property this engine may write. Listed once so that clearing
+// them is exhaustive: a token left behind after a colour is cleared is the
+// kind of residue that makes "reset to default" a lie.
+const DERIVED_VARS = [
+	"--ph-primary",
+	"--ph-primary-hover",
+	"--ph-primary-soft",
+	"--ph-primary-contrast",
+	"--ph-surface-chrome",
+	"--ph-surface-chrome-hover",
+	"--ph-surface-chrome-selected",
+	"--ph-chrome-edge",
+	"--ph-text-on-chrome",
+	"--ph-text-on-chrome-muted",
+];
 
 function normalise(raw) {
 	const settings = Object.assign({}, DEFAULTS, raw || {});
@@ -66,6 +81,8 @@ function normalise(raw) {
 
 	const accent = String(settings.accent_color || "").trim();
 	clean.accent_color = HEX_RE.test(accent) ? accent : "";
+	const chromeColor = String(settings.chrome_color || "").trim();
+	clean.chrome_color = HEX_RE.test(chromeColor) ? chromeColor : "";
 	clean.custom_css = typeof settings.custom_css === "string" ? settings.custom_css : "";
 
 	return clean;
@@ -89,7 +106,7 @@ function apply(raw) {
 		html.removeAttribute("data-ph-radius");
 		html.removeAttribute("data-ph-sidebar");
 		html.removeAttribute("data-ph-navbar");
-		html.style.removeProperty("--ph-primary");
+		clearDerived();
 		restoreTheme();
 		removeCustomCSS();
 		return;
@@ -112,13 +129,62 @@ function apply(raw) {
 	html.removeAttribute("data-ph-sidebar");
 	html.removeAttribute("data-ph-navbar");
 
-	if (s.accent_color) {
-		html.style.setProperty("--ph-primary", s.accent_color);
-	} else {
-		html.style.removeProperty("--ph-primary");
+	paintPalette(s);
+	injectCustomCSS(s.custom_css);
+}
+
+// ---------------------------------------------------------------------------
+// Palette
+// ---------------------------------------------------------------------------
+//
+// A site picks one or two colours; palette.js derives the ten tokens that
+// depend on them and this writes the result inline on <html>, above the
+// stylesheet's own declarations.
+//
+// Inline rather than a generated stylesheet because it is the only way the
+// values can change with the mode without a round trip: dark mode needs a
+// different accent to stay legible against a dark page, and the mode can
+// change at any moment from Frappe's own switcher.
+//
+// Setting nothing is the correct outcome when nothing is chosen. The
+// specification palette lives in SCSS, and an engine that wrote it back out
+// inline would make every future palette change a two-file edit.
+
+let LAST_SETTINGS = null;
+
+function isDarkNow() {
+	return document.documentElement.getAttribute("data-theme") === "dark";
+}
+
+function clearDerived() {
+	const html = document.documentElement;
+	DERIVED_VARS.forEach((v) => html.style.removeProperty(v));
+}
+
+function paintPalette(s) {
+	const html = document.documentElement;
+	LAST_SETTINGS = s;
+
+	if (!s.accent_color && !s.chrome_color) {
+		clearDerived();
+		return;
 	}
 
-	injectCustomCSS(s.custom_css);
+	const vars = derive(s.accent_color, s.chrome_color, isDarkNow());
+	clearDerived();
+	Object.keys(vars).forEach((k) => html.style.setProperty(k, vars[k]));
+}
+
+// The mode can change without a reload, and the derived palette depends on it.
+// This observes one attribute on <html> that this app already reads, not any
+// Frappe component, so it cannot break when a component is rewritten.
+if (typeof MutationObserver !== "undefined") {
+	new MutationObserver(() => {
+		if (LAST_SETTINGS && LAST_SETTINGS.enabled) paintPalette(LAST_SETTINGS);
+	}).observe(document.documentElement, {
+		attributes: true,
+		attributeFilter: ["data-theme"],
+	});
 }
 
 // Put data-theme back exactly as it was found at load — including absent, if

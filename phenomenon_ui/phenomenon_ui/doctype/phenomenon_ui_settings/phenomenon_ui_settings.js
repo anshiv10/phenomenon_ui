@@ -12,13 +12,38 @@
 //    theme, and both are answerable from the live DOM. The app should answer
 //    for itself rather than asking anyone to paste console commands.
 
-const PREVIEW_FIELDS = ["enabled", "appearance", "accent_color", "density", "chrome", "custom_css"];
+const PREVIEW_FIELDS = [
+	"enabled",
+	"appearance",
+	"palette_preset",
+	"accent_color",
+	"chrome_color",
+	"density",
+	"chrome",
+	"custom_css",
+];
+
+// Mirrors PRESETS in public/js/phenomenon/palette.js. Duplicated rather than
+// imported because this form script is not part of that bundle; the engine
+// remains the single authority on what the colours DO, this list only fills
+// two fields.
+const PRESETS = {
+	"Phenomenon Default": { accent: "", chrome: "" },
+	Indigo: { accent: "#3b4cb8", chrome: "#1c2340" },
+	Forest: { accent: "#1f6b44", chrome: "#1b2a24" },
+	Plum: { accent: "#7a3b73", chrome: "#2a1f2e" },
+	Copper: { accent: "#9a4f1c", chrome: "#2b2119" },
+	Steel: { accent: "#2b6ca3", chrome: "#222d38" },
+	Graphite: { accent: "#4a5a6b", chrome: "#242a30" },
+	"Light Chrome": { accent: "#0b5f68", chrome: "#eef1f3" },
+};
 
 function settings_from_form(frm) {
 	return {
 		enabled: frm.doc.enabled ? 1 : 0,
 		appearance: frm.doc.appearance,
 		accent_color: frm.doc.accent_color || "",
+		chrome_color: frm.doc.chrome_color || "",
 		density: frm.doc.density,
 		chrome: frm.doc.chrome,
 		custom_css: frm.doc.custom_css || "",
@@ -376,6 +401,116 @@ function show_diagnostics() {
 	d.show();
 }
 
+// ---------------------------------------------------------------------------
+// Palette preview — the derived colours and what they measure
+// ---------------------------------------------------------------------------
+//
+// Two pickers produce ten tokens, so the person choosing cannot see what they
+// have done from the two swatches alone. This renders the derived set and the
+// contrast of every pair that has to stay readable, recomputed on each edit
+// and in whichever mode the desk is currently in.
+//
+// It is deliberately a readout, not a gate. A site can save a palette that
+// fails; it just cannot do so without having been told. The derivation already
+// pushes each derived text colour until it clears the floor, so a FAIL here
+// normally means the two chosen colours are too close to each other to be
+// rescued, and one of them has to move.
+
+function palette_rgb(hex) {
+	const m = String(hex || "").trim();
+	if (!/^#(?:[0-9a-f]{3}|[0-9a-f]{6})$/i.test(m)) return null;
+	let h = m.slice(1);
+	if (h.length === 3) h = h.split("").map((c) => c + c).join("");
+	return { r: parseInt(h.slice(0, 2), 16), g: parseInt(h.slice(2, 4), 16), b: parseInt(h.slice(4, 6), 16) };
+}
+
+function palette_ratio(a, b) {
+	const lum = (c) => {
+		const ch = (v) => {
+			v /= 255;
+			return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+		};
+		return 0.2126 * ch(c.r) + 0.7152 * ch(c.g) + 0.0722 * ch(c.b);
+	};
+	const la = lum(a);
+	const lb = lum(b);
+	return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+}
+
+// Read the tokens back off <html> after the engine has painted them, rather
+// than recomputing the derivation here. Two implementations of the same maths
+// drift; one source and a reader cannot.
+function read_token(name) {
+	return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+const PALETTE_SWATCHES = [
+	["Accent", "--ph-primary"],
+	["Accent hover", "--ph-primary-hover"],
+	["Selected wash", "--ph-primary-soft"],
+	["Button label", "--ph-primary-contrast"],
+	["Chrome", "--ph-surface-chrome"],
+	["Chrome hover", "--ph-surface-chrome-hover"],
+	["Chrome selected", "--ph-surface-chrome-selected"],
+	["Chrome edge", "--ph-chrome-edge"],
+	["Chrome text", "--ph-text-on-chrome"],
+	["Chrome text muted", "--ph-text-on-chrome-muted"],
+];
+
+const PALETTE_CHECKS = [
+	["Button label on accent", "--ph-primary-contrast", "--ph-primary", 4.5],
+	["Accent text on page", "--ph-primary", "--ph-surface-primary", 4.5],
+	["Row text on selected wash", "--ph-text-primary", "--ph-primary-soft", 4.5],
+	["Sidebar label on chrome", "--ph-text-on-chrome", "--ph-surface-chrome", 4.5],
+	["Muted chrome text", "--ph-text-on-chrome-muted", "--ph-surface-chrome", 4.5],
+	["Selected item label", "--ph-text-on-chrome", "--ph-surface-chrome-selected", 4.5],
+];
+
+function render_palette_preview(frm) {
+	const field = frm.get_field("palette_preview");
+	if (!field || !field.$wrapper) return;
+
+	const mode = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+
+	const swatches = PALETTE_SWATCHES.map(([label, token]) => {
+		const value = read_token(token) || "-";
+		return `<div style="display:flex;align-items:center;gap:8px;min-width:170px;margin:0 12px 6px 0">
+			<span style="width:18px;height:18px;border-radius:3px;border:1px solid var(--border-color);
+				background:${frappe.utils.escape_html(value)}"></span>
+			<span style="font-size:12px">${__(label)}
+				<code style="font-size:11px;opacity:.7">${frappe.utils.escape_html(value)}</code></span>
+		</div>`;
+	}).join("");
+
+	let fails = 0;
+	const checks = PALETTE_CHECKS.map(([label, fgToken, bgToken, floor]) => {
+		const fg = palette_rgb(read_token(fgToken));
+		const bg = palette_rgb(read_token(bgToken));
+		if (!fg || !bg) return "";
+		const ratio = palette_ratio(fg, bg);
+		const ok = ratio >= floor;
+		if (!ok) fails += 1;
+		return `<div style="font-size:12px;margin-bottom:3px">
+			<b style="color:${ok ? "var(--ph-success, green)" : "var(--ph-danger, #b3261e)"}">
+				${ok ? "PASS" : "FAIL"}</b>
+			<span style="font-variant-numeric:tabular-nums">&nbsp;${ratio.toFixed(2)}:1</span>
+			<span style="opacity:.6">&nbsp;(min ${floor})</span>&nbsp; ${__(label)}
+		</div>`;
+	}).join("");
+
+	field.$wrapper.html(`
+		<div style="border:1px solid var(--border-color);border-radius:6px;padding:12px">
+			<div style="display:flex;flex-wrap:wrap">${swatches}</div>
+			<hr style="margin:10px 0">
+			${checks}
+			<div style="font-size:11px;opacity:.7;margin-top:8px">
+				${__("Measured in {0} mode, on the colours currently previewing. Switch the desk to the other mode to check both.", [mode])}
+				${fails ? "<br><b>" + __("A FAIL means those two colours are too close to each other. Move one of them.") + "</b>" : ""}
+			</div>
+		</div>
+	`);
+}
+
 frappe.ui.form.on("Phenomenon UI Settings", {
 	refresh(frm) {
 		frm.add_custom_button(__("Run Diagnostics"), show_diagnostics);
@@ -385,6 +520,8 @@ frappe.ui.form.on("Phenomenon UI Settings", {
 			window.phenomenon && window.phenomenon.refresh();
 			frappe.show_alert({ message: __("Preview reset to saved settings."), indicator: "blue" });
 		});
+
+		render_palette_preview(frm);
 
 		frm.dashboard.clear_comment();
 		frm.dashboard.add_comment(
@@ -396,12 +533,33 @@ frappe.ui.form.on("Phenomenon UI Settings", {
 		);
 	},
 
-	// Live preview: one handler per appearance field.
-	...Object.fromEntries(PREVIEW_FIELDS.map((f) => [f, preview])),
+	// Live preview: one handler per appearance field. Each paints the desk,
+	// then re-reads the painted tokens back for the swatch panel.
+	...Object.fromEntries(
+		PREVIEW_FIELDS.map((f) => [
+			f,
+			(frm) => {
+				preview(frm);
+				render_palette_preview(frm);
+			},
+		])
+	),
+
+	// A preset only fills the two colour fields. It is not stored as a mode,
+	// so there is no second source of truth about what colour the desk is:
+	// the two fields are always the answer, whether a preset filled them or
+	// somebody typed them.
+	palette_preset(frm) {
+		const preset = PRESETS[frm.doc.palette_preset];
+		if (!preset) return;
+		frm.set_value("accent_color", preset.accent);
+		frm.set_value("chrome_color", preset.chrome);
+	},
 
 	after_save(frm) {
 		// Re-assert from the form rather than from frappe.boot, which is still
 		// the pre-save copy until the cache clear propagates.
 		preview(frm);
+		render_palette_preview(frm);
 	},
 });

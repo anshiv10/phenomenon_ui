@@ -4,6 +4,7 @@ DEFAULTS = {
 	"enabled": 1,
 	"appearance": "Follow User Preference",
 	"accent_color": "",
+	"chrome_color": "",
 	"density": "Comfortable",
 	"chrome": "Dark",
 	"custom_css": "",

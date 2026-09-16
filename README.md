@@ -18,7 +18,7 @@ Phenomenon UI implements the **Instrument Panel** design system (Direction B, to
 
 ---
 
-## Status: v0.3.3 — spec-complete, verified against v16 source
+## Status: v0.4.0 — derived palette, spec-complete, verified against v16 source
 
 v0.3.0 rebuilt the token layer and every component rule to the Instrument Panel specification. v0.3.1 adds the v16 mapping layer and shell rules, written against Frappe `version-16` source rather than guessed. The 34 spec contrast pairs pass in both modes.
 
@@ -98,12 +98,23 @@ Frappe Cloud builds assets during deploy, so no manual `bench build` is needed.
 |-------|--------|
 | Enable Phenomenon UI | Master switch. Off = stock Frappe, no residue. |
 | Appearance | Follow User Preference (recommended), Always Light, Always Dark. |
-| Accent Colour | Overrides the teal in light mode. Blank uses the spec value. |
+| Palette | Eight starting points. Picking one fills the two colour fields below, which stay editable. Not stored as a mode. |
+| Accent Colour | The accent. Blank uses the spec value. |
+| Chrome Colour | The navbar and sidebar ground. Blank uses the spec value. |
+| Derived Palette | Read-only. The ten tokens derived from those two colours, and the contrast of every pair that has to stay readable. |
 | Density | Compact / Comfortable / Spacious. Changes control height, row padding and section gap. Type never changes. |
 | Chrome | Dark (the design system) or Light, the one deviation offered for a client who rejects a dark frame. |
 | Custom CSS | Injected into one `<style>` tag after the theme. Prefer changing a token. |
 
 Radius, elevation and the accent's four uses are fixed by the specification and are deliberately not settings.
+
+### How two colours become ten
+
+An accent is not one colour. It is a resting value, a hover value, a soft wash behind a selected row, and an ink that stays legible on the solid fill. A chrome colour is a ground, a hover step, a selected step, a hard edge, and two text values. Asking a site to pick eleven colours by hand guarantees an unreadable combination eventually; asking for two and deriving the rest cannot.
+
+`public/js/phenomenon/palette.js` does the derivation and `theme_engine.js` writes the result inline on `<html>`, above the stylesheet. Inline, because the values have to change with the mode without a round trip: a brand colour chosen against white is usually too dark to read on a dark desk, so the accent is lifted per mode until it clears 4.5:1 against that mode's page. Hue is kept; only lightness moves, and only as far as the floor requires.
+
+Every derived text colour is pushed away from its background until it clears the floor, and the chrome selected colour is pushed away from the sidebar ink for the same reason. 240 combinations, including pure red on pure green and white on white, pass the audit. That is what makes "pick any colour" a safe promise rather than a marketing one.
 
 Saving clears the cache. Users pick it up on their next reload.
 

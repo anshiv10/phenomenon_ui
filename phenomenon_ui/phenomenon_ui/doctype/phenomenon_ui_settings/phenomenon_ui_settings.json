@@ -9,7 +9,10 @@
   "enabled",
   "appearance_section",
   "appearance",
+  "palette_preset",
   "accent_color",
+  "chrome_color",
+  "palette_preview",
   "column_break_appearance",
   "density",
   "chrome",
@@ -38,10 +41,30 @@
    "options": "Follow User Preference\nAlways Light\nAlways Dark"
   },
   {
-   "description": "Leave blank to use the spec accent (deep teal #0b5f68). An override changes the light-mode primary only; dark mode keeps the spec value.",
+   "fieldname": "palette_preset",
+   "fieldtype": "Select",
+   "label": "Palette",
+   "default": "Phenomenon Default",
+   "options": "Phenomenon Default\nIndigo\nForest\nPlum\nCopper\nSteel\nGraphite\nLight Chrome\nCustom",
+   "description": "A starting point only. Picking one fills the two colours below, which stay editable."
+  },
+  {
+   "description": "Blank uses the specification accent. Any colour is safe: the theme derives the hover, the selected wash and the button label from it, and lifts it automatically in dark mode so it stays legible against a dark page.",
    "fieldname": "accent_color",
    "fieldtype": "Color",
    "label": "Accent Colour"
+  },
+  {
+   "fieldname": "chrome_color",
+   "fieldtype": "Color",
+   "label": "Chrome Colour",
+   "description": "The navbar and sidebar ground. Blank uses the specification chrome. The hover step, the selected item, the edge and both text colours are derived from it, so a light chrome gets dark labels automatically."
+  },
+  {
+   "fieldname": "palette_preview",
+   "fieldtype": "HTML",
+   "label": "Derived Palette",
+   "options": ""
   },
   {
    "fieldname": "column_break_appearance",
@@ -80,7 +103,7 @@
  "index_web_pages_for_search": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-15 00:00:00.000000",
+ "modified": "2026-09-16 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Phenomenon UI",
  "name": "Phenomenon UI Settings",
