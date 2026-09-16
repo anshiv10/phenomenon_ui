@@ -226,6 +226,13 @@
 	--outline-gray-2: var(--ph-surface-chrome-hover);
 	--outline-gray-3: var(--ph-text-on-chrome-muted);
 
+	// The chrome exception to the content-plane defaults set in
+	// base/_mapping-v16.scss. Inside the frame these four mean chrome.
+	--sidebar-hover-color: var(--ph-surface-chrome-hover);
+	--sidebar-active-color: var(--ph-surface-chrome-selected);
+	--sidebar-border-color: var(--ph-chrome-edge);
+	--divider-color: var(--ph-surface-chrome-hover);
+
 	// Legacy names, for anything inside the frame that still reads them.
 	--text-color: var(--ph-text-on-chrome);
 	--text-muted: var(--ph-text-on-chrome-muted);
@@ -368,6 +375,8 @@
 #{$ph} .body-sidebar .dropdown-menu,
 #{$ph} .sidebar-header .dropdown-menu,
 #{$ph} .layout-side-section .dropdown-menu,
+#{$ph} .sidebar-header-menu,
+#{$ph} .frappe-menu,
 #{$ph} .body-sidebar .modal,
 #{$ph} .sidebar-header .modal,
 #{$ph} .layout-side-section .modal,
@@ -375,6 +384,9 @@
 #{$ph} .layout-side-section .popover,
 #{$ph} .body-sidebar .notifications-list,
 #{$ph} .body-sidebar .awesomplete > ul {
+	--sidebar-hover-color: var(--ph-primary-soft);
+	--sidebar-active-color: var(--ph-primary-soft);
+	--divider-color: var(--ph-border-subtle);
 	--ink-gray-9: var(--ph-text-primary);
 	--ink-gray-8: var(--ph-text-primary);
 	--ink-gray-7: var(--ph-text-secondary);
@@ -500,4 +512,85 @@
 #{$ph} .form-sidebar .modified-by .frappe-timestamp,
 #{$ph} .form-sidebar .created-by .frappe-timestamp {
 	color: var(--ph-text-on-chrome-muted);
+}
+
+// ===========================================================================
+// MENU PANELS — `.frappe-menu` and `.sidebar-header-menu`
+// ===========================================================================
+//
+// Two panels, one component. `frappe.ui.create_menu` builds `.frappe-menu` and
+// appends it to `document.body` (ui/menu.js), so nested menus — Workspaces ▸
+// Accounting, Buying, Stock — render on the content plane. The workspace
+// switcher's own panel, `.sidebar-header-menu`, is built into the sidebar
+// header instead and has no background of its own in Frappe's CSS, so it
+// showed the chrome straight through and inherited chrome text with it.
+//
+// Both are dismissible, so both are content surfaces with a shadow and a soft
+// corner — which also makes the two levels of the same menu finally look like
+// the same menu.
+//
+// VERIFY (Session 0): `.frappe-menu`, `.sidebar-header-menu`,
+// `.dropdown-menu-item`, `.menu-item-title`, `.menu-item-shortcut`.
+
+#{$ph} .frappe-menu,
+#{$ph} .sidebar-header-menu {
+	background: var(--ph-surface-raised);
+	border: 1px solid var(--ph-border-subtle);
+	border-radius: var(--ph-radius-lg);
+	box-shadow: var(--ph-shadow-md);
+	color: var(--ph-text-primary);
+}
+
+#{$ph} .dropdown-menu-item {
+	border-radius: var(--ph-radius-sm);
+	color: var(--ph-text-primary);
+}
+
+#{$ph} .dropdown-menu-item a,
+#{$ph} .dropdown-menu-item .menu-item-title {
+	color: var(--ph-text-primary);
+	text-decoration: none;
+}
+
+// Hover sets the background AND the label colour, in the same rule.
+//
+// Leaving the colour to inherit is exactly how this broke: the background
+// changed, the text did not, and the row went unreadable. Any rule in this
+// theme that changes a row's background on hover states its text colour too,
+// so the pair can never drift apart again.
+#{$ph} .dropdown-menu-item:hover,
+#{$ph} .dropdown-menu-item:hover:has(a),
+#{$ph} .dropdown-menu-item:focus-within {
+	background-color: var(--ph-primary-soft);
+}
+
+#{$ph} .dropdown-menu-item:hover a,
+#{$ph} .dropdown-menu-item:hover .menu-item-title,
+#{$ph} .dropdown-menu-item:focus-within a,
+#{$ph} .dropdown-menu-item:focus-within .menu-item-title {
+	color: var(--ph-text-primary);
+	text-decoration: none;
+}
+
+#{$ph} .dropdown-menu-item .menu-item-shortcut {
+	color: var(--ph-text-muted);
+}
+
+#{$ph} .dropdown-menu-item .frappe-menu-item-icon,
+#{$ph} .dropdown-menu-item .frappe-menu-item-icon svg,
+#{$ph} .sidebar-header-menu .sidebar-item-icon svg {
+	color: var(--ph-text-secondary);
+	stroke: var(--ph-text-secondary);
+}
+
+#{$ph} .dropdown-menu-item .dropdown-divider {
+	border-top-color: var(--ph-border-subtle);
+}
+
+// Bootstrap's own menus get the same guarantee: background and label move
+// together, never one without the other.
+#{$ph} .dropdown-item:hover,
+#{$ph} .dropdown-item:focus {
+	background-color: var(--ph-primary-soft);
+	color: var(--ph-text-primary);
 }

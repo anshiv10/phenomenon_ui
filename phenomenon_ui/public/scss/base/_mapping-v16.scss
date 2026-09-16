@@ -154,10 +154,26 @@
 
 	// -- The sidebar's own variables ---------------------------------------
 	// Declared on :root in desk/sidebar.scss (0,1,0); this scope is (0,1,1).
-	--sidebar-hover-color: var(--ph-surface-chrome-hover);
-	--sidebar-active-color: var(--ph-surface-chrome-selected);
-	--sidebar-border-color: var(--ph-chrome-edge);
-	--divider-color: var(--ph-surface-chrome-hover);
+	//
+	// These four are deliberately given CONTENT values here, not chrome ones,
+	// and re-pointed to chrome inside the frame (desk/_sidebar.scss).
+	//
+	// The reason is a trap worth remembering: --sidebar-hover-color is not
+	// only the sidebar's. desk/menu.scss uses it for the hover row of
+	// `.dropdown-menu-item`, and that component is also used by menus that
+	// frappe.ui.create_menu appends to document.body — panels that sit on a
+	// white surface, far outside the frame. Mapping it globally to
+	// chrome-hover therefore painted a near-black hover bar under dark text
+	// on every one of those menus: the row highlighted and the label vanished.
+	//
+	// The rule this encodes: a variable named after one component is only
+	// safe to map globally once you have checked who else reads it. When it
+	// is shared, the global value belongs to the content plane and the frame
+	// takes the exception, because content is where most of it renders.
+	--sidebar-hover-color: var(--ph-primary-soft);
+	--sidebar-active-color: var(--ph-primary-soft);
+	--sidebar-border-color: var(--ph-border-subtle);
+	--divider-color: var(--ph-border-subtle);
 
 	// -- Focus -------------------------------------------------------------
 	// v16 gives buttons, checkboxes and the datatable a grey focus ring from

@@ -194,6 +194,10 @@ const CONTRAST_PROBES = [
 	["Command palette input", ".modal #navbar-search", 4.5],
 	["Navbar search input", ".navbar #navbar-search", 4.5],
 	["Dropdown item", ".dropdown-menu .dropdown-item", 4.5],
+	["Menu panel item", ".frappe-menu .menu-item-title", 4.5],
+	["Workspace menu item", ".sidebar-header-menu .menu-item-title", 4.5],
+	["Menu shortcut", ".menu-item-shortcut", 3.0],
+	["Notification panel", ".notifications-list", 4.5],
 	["Form sidebar action", ".form-sidebar .form-sidebar-items a", 4.5],
 	["Form sidebar label", ".form-sidebar .sidebar-label", 4.5],
 	["Filter panel label", ".layout-side-section .sidebar-label", 4.5],
@@ -300,6 +304,12 @@ function build_visual_report() {
 	L.push("A FAIL means that text is hard or impossible to read where it sits.");
 	L.push("Run this on a list, a form, a workspace, with the command palette");
 	L.push("open, and with a sidebar menu open — each renders a different set.");
+	L.push("");
+	L.push("NOT COVERED: hover and focus states. CSS cannot be forced from");
+	L.push("script, so a row that only goes unreadable under the pointer will");
+	L.push("pass here. Check those by hovering: every row in this theme changes");
+	L.push("its background and its text colour together, so if a label fades or");
+	L.push("disappears on hover, that is a bug worth reporting.");
 
 	return L.join("\n");
 }
