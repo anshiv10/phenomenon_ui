@@ -23,20 +23,13 @@ const PREVIEW_FIELDS = [
 	"custom_css",
 ];
 
-// Mirrors PRESETS in public/js/phenomenon/palette.js. Duplicated rather than
-// imported because this form script is not part of that bundle; the engine
-// remains the single authority on what the colours DO, this list only fills
-// two fields.
-const PRESETS = {
-	"Phenomenon Default": { accent: "", chrome: "" },
-	Indigo: { accent: "#3b4cb8", chrome: "#1c2340" },
-	Forest: { accent: "#1f6b44", chrome: "#1b2a24" },
-	Plum: { accent: "#7a3b73", chrome: "#2a1f2e" },
-	Copper: { accent: "#9a4f1c", chrome: "#2b2119" },
-	Steel: { accent: "#2b6ca3", chrome: "#222d38" },
-	Graphite: { accent: "#4a5a6b", chrome: "#242a30" },
-	"Light Chrome": { accent: "#0b5f68", chrome: "#eef1f3" },
-};
+// Palettes are records (Phenomenon UI Palette), not a list in this file.
+//
+// The earlier version kept the eight presets here as a constant and mirrored
+// them in palette.js. Two copies of the same table is one copy too many, and
+// it also meant a site could not add a ninth without editing the app. As
+// records, "create your own" is the Link field's own Create action and needs
+// no code at all.
 
 function settings_from_form(frm) {
 	return {
@@ -466,6 +459,21 @@ const PALETTE_CHECKS = [
 	["Selected item label", "--ph-text-on-chrome", "--ph-surface-chrome-selected", 4.5],
 ];
 
+// Once a colour is edited by hand, the palette name above it is no longer
+// true. Leaving a stale name in a Link field is how somebody later reports
+// that "Forest looks nothing like Forest". Clearing it costs nothing; the
+// colours are already copied in.
+function clear_stale_palette(frm) {
+	if (!frm.doc.palette_preset || frm.__ph_applying_palette) return;
+
+	frappe.db.get_doc("Phenomenon UI Palette", frm.doc.palette_preset).then((palette) => {
+		const same =
+			(palette.accent_color || "") === (frm.doc.accent_color || "") &&
+			(palette.chrome_color || "") === (frm.doc.chrome_color || "");
+		if (!same) frm.set_value("palette_preset", "");
+	});
+}
+
 function render_palette_preview(frm) {
 	const field = frm.get_field("palette_preview");
 	if (!field || !field.$wrapper) return;
@@ -535,25 +543,37 @@ frappe.ui.form.on("Phenomenon UI Settings", {
 
 	// Live preview: one handler per appearance field. Each paints the desk,
 	// then re-reads the painted tokens back for the swatch panel.
+	//
+	// palette_preset has its own handler below and is excluded here so it is
+	// not bound twice.
 	...Object.fromEntries(
-		PREVIEW_FIELDS.map((f) => [
+		PREVIEW_FIELDS.filter((f) => f !== "palette_preset").map((f) => [
 			f,
 			(frm) => {
 				preview(frm);
 				render_palette_preview(frm);
+				if (f === "accent_color" || f === "chrome_color") clear_stale_palette(frm);
 			},
 		])
 	),
 
-	// A preset only fills the two colour fields. It is not stored as a mode,
-	// so there is no second source of truth about what colour the desk is:
-	// the two fields are always the answer, whether a preset filled them or
-	// somebody typed them.
+	// Choosing a palette COPIES its two colours in. The link is a label, not a
+	// live reference: the two colour fields are always the answer to "what
+	// colour is this desk", whether a palette filled them or somebody typed
+	// them. That is why editing a palette record later does not silently
+	// re-theme every site that once chose it.
 	palette_preset(frm) {
-		const preset = PRESETS[frm.doc.palette_preset];
-		if (!preset) return;
-		frm.set_value("accent_color", preset.accent);
-		frm.set_value("chrome_color", preset.chrome);
+		const name = frm.doc.palette_preset;
+		if (!name || frm.__ph_applying_palette) return;
+
+		frappe.db.get_doc("Phenomenon UI Palette", name).then((palette) => {
+			frm.__ph_applying_palette = true;
+			frm.set_value("accent_color", palette.accent_color || "");
+			frm.set_value("chrome_color", palette.chrome_color || "");
+			frm.__ph_applying_palette = false;
+			preview(frm);
+			render_palette_preview(frm);
+		});
 	},
 
 	after_save(frm) {

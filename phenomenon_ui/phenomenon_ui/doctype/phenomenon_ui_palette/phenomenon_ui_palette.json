@@ -1,0 +1,71 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "field:palette_name",
+ "creation": "2026-09-16 00:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "palette_name",
+  "accent_color",
+  "chrome_color",
+  "is_standard"
+ ],
+ "fields": [
+  {
+   "fieldname": "palette_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Palette Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "The accent. Blank uses the specification accent. Any colour is safe: the hover, the selected wash and the button label are derived from it, and it is lifted in dark mode so it stays legible against a dark page.",
+   "fieldname": "accent_color",
+   "fieldtype": "Color",
+   "in_list_view": 1,
+   "label": "Accent Colour"
+  },
+  {
+   "description": "The navbar and sidebar ground. Blank uses the specification chrome. The hover step, the selected item, the edge and both text colours are derived from it, so a light chrome gets dark labels automatically.",
+   "fieldname": "chrome_color",
+   "fieldtype": "Color",
+   "in_list_view": 1,
+   "label": "Chrome Colour"
+  },
+  {
+   "default": "0",
+   "description": "Shipped with the app. Standard palettes are restored on every migrate, so edits to them are overwritten. Duplicate one instead.",
+   "fieldname": "is_standard",
+   "fieldtype": "Check",
+   "label": "Standard",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2026-09-16 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Phenomenon UI",
+ "name": "Phenomenon UI Palette",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "quick_entry": 1,
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

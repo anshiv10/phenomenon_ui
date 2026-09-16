@@ -245,17 +245,6 @@ export function audit(accent, chrome, isDark) {
 	return { vars, rows, pass: rows.every((r) => r.ratio >= r.floor) };
 }
 
-/**
- * Starting points, not a cage. Each is an accent plus a chrome that suits it;
- * both fields stay editable afterwards.
- */
-export const PRESETS = {
-	"Phenomenon Default": { accent: "#0b5f68", chrome: "#1e2a35" },
-	"Indigo": { accent: "#3b4cb8", chrome: "#1c2340" },
-	"Forest": { accent: "#1f6b44", chrome: "#1b2a24" },
-	"Plum": { accent: "#7a3b73", chrome: "#2a1f2e" },
-	"Copper": { accent: "#9a4f1c", chrome: "#2b2119" },
-	"Steel": { accent: "#2b6ca3", chrome: "#222d38" },
-	"Graphite": { accent: "#4a5a6b", chrome: "#242a30" },
-	"Light Chrome": { accent: "#0b5f68", chrome: "#eef1f3" },
-};
+// The standard palettes are NOT here. They live as Phenomenon UI Palette
+// records, seeded by phenomenon_ui/install.py, so a site can add its own
+// without editing the app and there is only one copy of the list.

@@ -25,3 +25,8 @@ web_include_css = "phenomenon_web.bundle.css"
 # needs to paint the first frame must be here — no round trip on page load.
 
 extend_bootinfo = "phenomenon_ui.boot.boot_session"
+
+# Standard palettes are records, not a hard-coded list, so that a site can add
+# its own and have it appear in the Settings dropdown with no code change.
+after_install = "phenomenon_ui.install.after_install"
+after_migrate = "phenomenon_ui.install.after_migrate"

@@ -42,11 +42,10 @@
   },
   {
    "fieldname": "palette_preset",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Palette",
-   "default": "Phenomenon Default",
-   "options": "Phenomenon Default\nIndigo\nForest\nPlum\nCopper\nSteel\nGraphite\nLight Chrome\nCustom",
-   "description": "A starting point only. Picking one fills the two colours below, which stay editable."
+   "options": "Phenomenon UI Palette",
+   "description": "Picking a palette copies its two colours into the fields below, which stay editable. To make your own, type a name and choose Create a new Phenomenon UI Palette: it is saved and appears here from then on."
   },
   {
    "description": "Blank uses the specification accent. Any colour is safe: the theme derives the hover, the selected wash and the button label from it, and lifts it automatically in dark mode so it stays legible against a dark page.",

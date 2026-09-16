@@ -18,7 +18,7 @@ Phenomenon UI implements the **Instrument Panel** design system (Direction B, to
 
 ---
 
-## Status: v0.4.0 — derived palette, spec-complete, verified against v16 source
+## Status: v0.4.1 — derived palette, spec-complete, verified against v16 source
 
 v0.3.0 rebuilt the token layer and every component rule to the Instrument Panel specification. v0.3.1 adds the v16 mapping layer and shell rules, written against Frappe `version-16` source rather than guessed. The 34 spec contrast pairs pass in both modes.
 
@@ -98,7 +98,7 @@ Frappe Cloud builds assets during deploy, so no manual `bench build` is needed.
 |-------|--------|
 | Enable Phenomenon UI | Master switch. Off = stock Frappe, no residue. |
 | Appearance | Follow User Preference (recommended), Always Light, Always Dark. |
-| Palette | Eight starting points. Picking one fills the two colour fields below, which stay editable. Not stored as a mode. |
+| Palette | Link to a **Phenomenon UI Palette** record. Picking one copies its two colours into the fields below, which stay editable. Type a new name to create your own; it appears in the list from then on. |
 | Accent Colour | The accent. Blank uses the spec value. |
 | Chrome Colour | The navbar and sidebar ground. Blank uses the spec value. |
 | Derived Palette | Read-only. The ten tokens derived from those two colours, and the contrast of every pair that has to stay readable. |
@@ -111,6 +111,8 @@ Radius, elevation and the accent's four uses are fixed by the specification and 
 ### How two colours become ten
 
 An accent is not one colour. It is a resting value, a hover value, a soft wash behind a selected row, and an ink that stays legible on the solid fill. A chrome colour is a ground, a hover step, a selected step, a hard edge, and two text values. Asking a site to pick eleven colours by hand guarantees an unreadable combination eventually; asking for two and deriving the rest cannot.
+
+Palettes are records, not a hard-coded list. Eight standard ones are seeded on install and re-asserted on migrate (`phenomenon_ui/install.py`); anything a site creates is never touched, and a standard one a site deletes is not resurrected. Choosing a palette copies its colours into Settings rather than referencing it, so editing a palette later does not silently re-theme a site that once chose it.
 
 `public/js/phenomenon/palette.js` does the derivation and `theme_engine.js` writes the result inline on `<html>`, above the stylesheet. Inline, because the values have to change with the mode without a round trip: a brand colour chosen against white is usually too dark to read on a dark desk, so the accent is lifted per mode until it clears 4.5:1 against that mode's page. Hue is kept; only lightness moves, and only as far as the floor requires.
 
