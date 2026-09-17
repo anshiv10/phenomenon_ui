@@ -24,12 +24,54 @@ STANDARD_PALETTES = (
 )
 
 
+MANAGER_ROLE = "Phenomenon UI Manager"
+
+
 def after_install():
+	ensure_manager_role()
 	sync_standard_palettes(create_missing=True)
 
 
 def after_migrate():
+	ensure_manager_role()
 	sync_standard_palettes(create_missing=False)
+
+
+def ensure_manager_role():
+	"""Create the role, and make sure at least one person holds it.
+
+	Theme control is deliberately not tied to System Manager, so that a client
+	can hand it to one person without making them an administrator. But a role
+	nobody holds is a locked door with the key thrown away, so on first install
+	it is granted to Administrator, who can then pass it on.
+
+	Never raises: a missing role is a permissions inconvenience, not a reason to
+	fail a migrate.
+	"""
+	try:
+		if not frappe.db.exists("Role", MANAGER_ROLE):
+			frappe.get_doc(
+				{
+					"doctype": "Role",
+					"role_name": MANAGER_ROLE,
+					"desk_access": 1,
+				}
+			).insert(ignore_permissions=True)
+
+		holders = frappe.get_all(
+			"Has Role",
+			filters={"role": MANAGER_ROLE, "parenttype": "User"},
+			pluck="parent",
+			limit=1,
+		)
+		if not holders and frappe.db.exists("User", "Administrator"):
+			admin = frappe.get_doc("User", "Administrator")
+			admin.append("roles", {"role": MANAGER_ROLE})
+			admin.save(ignore_permissions=True)
+
+		frappe.db.commit()
+	except Exception:
+		frappe.log_error(title="Phenomenon UI: role setup failed")
 
 
 def sync_standard_palettes(create_missing: bool = False):

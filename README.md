@@ -18,7 +18,7 @@ Phenomenon UI implements the **Instrument Panel** design system (Direction B, to
 
 ---
 
-## Status: v0.4.1 — derived palette, spec-complete, verified against v16 source
+## Status: v0.5.0 — role-gated themes, per-user assignment, derived palette
 
 v0.3.0 rebuilt the token layer and every component rule to the Instrument Panel specification. v0.3.1 adds the v16 mapping layer and shell rules, written against Frappe `version-16` source rather than guessed. The 34 spec contrast pairs pass in both modes.
 
@@ -107,6 +107,20 @@ Frappe Cloud builds assets during deploy, so no manual `bench build` is needed.
 | Custom CSS | Injected into one `<style>` tag after the theme. Prefer changing a token. |
 
 Radius, elevation and the accent's four uses are fixed by the specification and are deliberately not settings.
+
+### Who may change the theme
+
+Write access to Settings, palettes and assignments belongs to the **Phenomenon UI Manager** role, not to System Manager. A client can hand theme control to one person without making them an administrator, and an administrator who was never given the role cannot quietly restyle everybody's desk. System Manager keeps read access. Administrator bypasses permission checks in Frappe by design, so a site can never lock itself out of its own theme; on install the role is created and granted to Administrator so that somebody holds it from the start.
+
+### Per-user themes
+
+**Assign to Users** on the Settings form gives named users a different palette or density from the site default. Pick users individually, or narrow by role and select the whole list at once. The dialog also lists who is currently assigned, and **Reset to Site Theme** removes an assignment rather than blanking it.
+
+Only palette and density are assignable. Light and dark are deliberately not: that is an eyesight and lighting matter, so Frappe's own switcher stays the user's to control.
+
+A blank field on an assignment means inherit, so assigning "compact only" does not freeze that user's palette when the site palette changes later. Assignments store the palette *name* and resolve its colours at boot, which means editing the Forest palette updates everybody assigned Forest. Settings stores colours directly instead, because it also accepts hand-typed colours belonging to no palette.
+
+Changes reach a user on their next page load. Their cached boot is cleared when the assignment is saved, so a hard refresh is enough and nobody is logged out.
 
 ### How two colours become ten
 

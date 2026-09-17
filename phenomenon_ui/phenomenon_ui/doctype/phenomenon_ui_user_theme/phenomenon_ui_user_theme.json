@@ -1,0 +1,65 @@
+{
+ "actions": [],
+ "allow_rename": 0,
+ "autoname": "field:user",
+ "creation": "2026-09-17 00:00:00.000000",
+ "description": "Assigns a palette and density to one user. Managed from Phenomenon UI Settings; users do not see or edit their own row.",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "user",
+  "palette",
+  "density"
+ ],
+ "fields": [
+  {
+   "fieldname": "user",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "User",
+   "options": "User",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "Blank inherits the site palette.",
+   "fieldname": "palette",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Palette",
+   "options": "Phenomenon UI Palette"
+  },
+  {
+   "description": "Blank inherits the site density.",
+   "fieldname": "density",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Density",
+   "options": "\nCompact\nComfortable\nSpacious"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "links": [],
+ "modified": "2026-09-17 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Phenomenon UI",
+ "name": "Phenomenon UI User Theme",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "Phenomenon UI Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

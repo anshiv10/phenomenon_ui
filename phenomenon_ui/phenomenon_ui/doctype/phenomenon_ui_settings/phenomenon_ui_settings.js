@@ -519,8 +519,190 @@ function render_palette_preview(frm) {
 	`);
 }
 
+// ---------------------------------------------------------------------------
+// Assigning themes to users
+// ---------------------------------------------------------------------------
+//
+// The site palette is the default for everybody. This assigns a different one
+// to named users, either a few at a time or a whole role at once.
+//
+// Only palette and density are assignable. Light and dark are not, on purpose:
+// that is an eyesight and lighting matter, so Frappe's own switcher stays the
+// user's to control. An assignment that also seized light and dark would be
+// the kind of well-meant control people quietly work around.
+//
+// Every call is gated server-side on the Phenomenon UI Manager role. The
+// button being visible is a convenience, not the security boundary.
+
+const API = "phenomenon_ui.api.";
+
+function show_assign_dialog(frm) {
+	let selected = [];
+
+	const d = new frappe.ui.Dialog({
+		title: __("Assign Theme to Users"),
+		size: "large",
+		fields: [
+			{
+				fieldtype: "HTML",
+				fieldname: "intro",
+				options: `<p class="text-muted small">${__(
+					"Assigned users see this palette instead of the site palette. Each keeps their own light or dark choice. Changes apply on their next page load."
+				)}</p>`,
+			},
+			{
+				fieldtype: "Link",
+				fieldname: "role",
+				label: __("Narrow by Role"),
+				options: "Role",
+				description: __("Optional. Leave blank to choose from all enabled users."),
+				onchange: () => load_users(),
+			},
+			{
+				fieldtype: "MultiSelectList",
+				fieldname: "users",
+				label: __("Users"),
+				reqd: 1,
+				get_data: (txt) =>
+					(d.__users || [])
+						.filter(
+							(u) =>
+								!txt ||
+								u.value.toLowerCase().includes(txt.toLowerCase()) ||
+								(u.description || "").toLowerCase().includes(txt.toLowerCase())
+						)
+						.slice(0, 99),
+			},
+			{ fieldtype: "Column Break" },
+			{
+				fieldtype: "Button",
+				fieldname: "select_all",
+				label: __("Select All Listed"),
+				click: () => {
+					d.set_value(
+						"users",
+						(d.__users || []).map((u) => u.value)
+					);
+				},
+			},
+			{ fieldtype: "Section Break" },
+			{
+				fieldtype: "Link",
+				fieldname: "palette",
+				label: __("Palette"),
+				options: "Phenomenon UI Palette",
+				description: __("Blank inherits the site palette."),
+			},
+			{
+				fieldtype: "Select",
+				fieldname: "density",
+				label: __("Density"),
+				options: ["", "Compact", "Comfortable", "Spacious"],
+				description: __("Blank inherits the site density."),
+			},
+			{ fieldtype: "Section Break" },
+			{ fieldtype: "HTML", fieldname: "current" },
+		],
+		primary_action_label: __("Assign"),
+		primary_action(values) {
+			const users = values.users || [];
+			if (!users.length) {
+				frappe.msgprint(__("Choose at least one user."));
+				return;
+			}
+			frappe
+				.call(API + "assign_theme", {
+					users: users,
+					palette: values.palette || "",
+					density: values.density || "",
+				})
+				.then((r) => {
+					const n = (r.message || {}).applied || 0;
+					frappe.show_alert({
+						message: __("Theme assigned to {0} user(s). They see it on their next page load.", [n]),
+						indicator: "green",
+					});
+					render_current();
+					d.set_value("users", []);
+				});
+		},
+		secondary_action_label: __("Reset to Site Theme"),
+		secondary_action() {
+			const users = d.get_value("users") || [];
+			if (!users.length) {
+				frappe.msgprint(__("Choose the users to reset."));
+				return;
+			}
+			frappe.confirm(
+				__("Remove the assignment for {0} user(s)? They return to the site theme.", [users.length]),
+				() => {
+					frappe.call(API + "reset_theme", { users: users }).then((r) => {
+						const n = (r.message || {}).removed || 0;
+						frappe.show_alert({
+							message: __("{0} user(s) returned to the site theme.", [n]),
+							indicator: "blue",
+						});
+						render_current();
+						d.set_value("users", []);
+					});
+				}
+			);
+		},
+	});
+
+	function load_users() {
+		frappe.call(API + "list_users", { role: d.get_value("role") || "" }).then((r) => {
+			d.__users = (r.message || []).map((u) => ({
+				value: u.name,
+				description: u.full_name || "",
+			}));
+			d.set_value("users", []);
+			d.get_field("users").refresh();
+		});
+	}
+
+	// What is already assigned. Without this the dialog can only add, and the
+	// only way to find out who has what is to read a doctype list the client
+	// was never told exists.
+	function render_current() {
+		frappe.call(API + "get_assignments").then((r) => {
+			const rows = r.message || [];
+			const field = d.get_field("current");
+			if (!rows.length) {
+				field.$wrapper.html(
+					`<p class="text-muted small">${__("No users are assigned. Everybody sees the site theme.")}</p>`
+				);
+				return;
+			}
+			const body = rows
+				.map(
+					(row) => `<tr>
+						<td>${frappe.utils.escape_html(row.user)}</td>
+						<td>${frappe.utils.escape_html(row.palette || __("Site palette"))}</td>
+						<td>${frappe.utils.escape_html(row.density || __("Site density"))}</td>
+					</tr>`
+				)
+				.join("");
+			field.$wrapper.html(`
+				<p class="text-muted small">${__("Currently assigned")}</p>
+				<table class="table table-bordered" style="font-size:12px">
+					<thead><tr>
+						<th>${__("User")}</th><th>${__("Palette")}</th><th>${__("Density")}</th>
+					</tr></thead>
+					<tbody>${body}</tbody>
+				</table>
+			`);
+		});
+	}
+
+	load_users();
+	render_current();
+	d.show();
+}
+
 frappe.ui.form.on("Phenomenon UI Settings", {
 	refresh(frm) {
+		frm.add_custom_button(__("Assign to Users"), () => show_assign_dialog(frm));
 		frm.add_custom_button(__("Run Diagnostics"), show_diagnostics);
 		frm.add_custom_button(__("Run Visual Check"), show_visual_check);
 
