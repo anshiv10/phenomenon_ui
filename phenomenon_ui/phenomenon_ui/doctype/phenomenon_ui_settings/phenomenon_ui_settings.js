@@ -18,8 +18,8 @@ const PREVIEW_FIELDS = [
 	"palette_preset",
 	"accent_color",
 	"chrome_color",
+	"canvas_color",
 	"density",
-	"chrome",
 	"custom_css",
 ];
 
@@ -37,8 +37,8 @@ function settings_from_form(frm) {
 		appearance: frm.doc.appearance,
 		accent_color: frm.doc.accent_color || "",
 		chrome_color: frm.doc.chrome_color || "",
+		canvas_color: frm.doc.canvas_color || "",
 		density: frm.doc.density,
-		chrome: frm.doc.chrome,
 		custom_css: frm.doc.custom_css || "",
 	};
 }
@@ -438,6 +438,13 @@ function read_token(name) {
 }
 
 const PALETTE_SWATCHES = [
+	["Page", "--ph-surface-primary"],
+	["Card", "--ph-surface-raised"],
+	["Control fill", "--ph-surface-secondary"],
+	["Disabled fill", "--ph-surface-base"],
+	["Body text", "--ph-text-primary"],
+	["Muted text", "--ph-text-muted"],
+	["Control edge", "--ph-border-strong"],
 	["Accent", "--ph-primary"],
 	["Accent hover", "--ph-primary-hover"],
 	["Selected wash", "--ph-primary-soft"],
@@ -457,6 +464,12 @@ const PALETTE_CHECKS = [
 	["Sidebar label on chrome", "--ph-text-on-chrome", "--ph-surface-chrome", 4.5],
 	["Muted chrome text", "--ph-text-on-chrome-muted", "--ph-surface-chrome", 4.5],
 	["Selected item label", "--ph-text-on-chrome", "--ph-surface-chrome-selected", 4.5],
+	["Body text on page", "--ph-text-primary", "--ph-surface-primary", 4.5],
+	["Body text on card", "--ph-text-primary", "--ph-surface-raised", 4.5],
+	["Body text on control fill", "--ph-text-primary", "--ph-surface-secondary", 4.5],
+	["Body text on disabled fill", "--ph-text-primary", "--ph-surface-base", 4.5],
+	["Muted text on page", "--ph-text-muted", "--ph-surface-primary", 4.5],
+	["Control edge on page", "--ph-border-strong", "--ph-surface-primary", 3.0],
 ];
 
 // Once a colour is edited by hand, the palette name above it is no longer
@@ -469,7 +482,8 @@ function clear_stale_palette(frm) {
 	frappe.db.get_doc("Phenomenon UI Palette", frm.doc.palette_preset).then((palette) => {
 		const same =
 			(palette.accent_color || "") === (frm.doc.accent_color || "") &&
-			(palette.chrome_color || "") === (frm.doc.chrome_color || "");
+			(palette.chrome_color || "") === (frm.doc.chrome_color || "") &&
+			(palette.canvas_color || "") === (frm.doc.canvas_color || "");
 		if (!same) frm.set_value("palette_preset", "");
 	});
 }
@@ -680,6 +694,10 @@ function show_assign_dialog(frm) {
 						<td>${frappe.utils.escape_html(row.user)}</td>
 						<td>${frappe.utils.escape_html(row.palette || __("Site palette"))}</td>
 						<td>${frappe.utils.escape_html(row.density || __("Site density"))}</td>
+						<td style="text-align:right">
+							<button class="btn btn-xs btn-default ph-remove-assignment"
+								data-user="${frappe.utils.escape_html(row.user)}">${__("Remove")}</button>
+						</td>
 					</tr>`
 				)
 				.join("");
@@ -688,10 +706,30 @@ function show_assign_dialog(frm) {
 				<table class="table table-bordered" style="font-size:12px">
 					<thead><tr>
 						<th>${__("User")}</th><th>${__("Palette")}</th><th>${__("Density")}</th>
+						<th style="width:90px"></th>
 					</tr></thead>
 					<tbody>${body}</tbody>
 				</table>
 			`);
+
+			// Remove where the assignment is actually visible. Clearing one
+			// used to mean finding that user again in a list of everybody,
+			// which is the wrong way round when the row is right there.
+			field.$wrapper.find(".ph-remove-assignment").on("click", function () {
+				const user = $(this).data("user");
+				frappe.confirm(
+					__("Remove the theme assigned to {0}? They return to the site theme.", [user]),
+					() => {
+						frappe.call(API + "reset_theme", { users: [user] }).then(() => {
+							frappe.show_alert({
+								message: __("{0} returned to the site theme.", [user]),
+								indicator: "blue",
+							});
+							render_current();
+						});
+					}
+				);
+			});
 		});
 	}
 
@@ -734,7 +772,9 @@ frappe.ui.form.on("Phenomenon UI Settings", {
 			(frm) => {
 				preview(frm);
 				render_palette_preview(frm);
-				if (f === "accent_color" || f === "chrome_color") clear_stale_palette(frm);
+					if (["accent_color", "chrome_color", "canvas_color"].includes(f)) {
+					clear_stale_palette(frm);
+				}
 			},
 		])
 	),
@@ -752,6 +792,7 @@ frappe.ui.form.on("Phenomenon UI Settings", {
 			frm.__ph_applying_palette = true;
 			frm.set_value("accent_color", palette.accent_color || "");
 			frm.set_value("chrome_color", palette.chrome_color || "");
+			frm.set_value("canvas_color", palette.canvas_color || "");
 			frm.__ph_applying_palette = false;
 			preview(frm);
 			render_palette_preview(frm);

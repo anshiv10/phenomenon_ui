@@ -9,6 +9,7 @@
   "palette_name",
   "accent_color",
   "chrome_color",
+  "canvas_color",
   "is_standard"
  ],
  "fields": [
@@ -35,6 +36,13 @@
    "label": "Chrome Colour"
   },
   {
+   "fieldname": "canvas_color",
+   "fieldtype": "Color",
+   "in_list_view": 1,
+   "label": "Canvas Colour",
+   "description": "The content plane between the sidebars. Blank keeps the specification canvas, which is the current near-white. The card, control fill, disabled fill, all text and both borders are derived from it, so text flips to light on a dark canvas. A canvas too close to mid-tone to host readable text is nudged toward the nearer end, keeping its hue."
+  },
+  {
    "default": "0",
    "description": "Shipped with the app. Standard palettes are restored on every migrate, so edits to them are overwritten. Duplicate one instead.",
    "fieldname": "is_standard",
@@ -45,7 +53,7 @@
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2026-09-17 00:00:00.000000",
+ "modified": "2026-09-18 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Phenomenon UI",
  "name": "Phenomenon UI Palette",

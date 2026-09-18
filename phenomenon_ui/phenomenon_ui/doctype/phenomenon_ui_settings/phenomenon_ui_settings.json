@@ -12,10 +12,10 @@
   "palette_preset",
   "accent_color",
   "chrome_color",
+  "canvas_color",
   "palette_preview",
   "column_break_appearance",
   "density",
-  "chrome",
   "advanced_section",
   "custom_css"
  ],
@@ -60,6 +60,12 @@
    "description": "The navbar and sidebar ground. Blank uses the specification chrome. The hover step, the selected item, the edge and both text colours are derived from it, so a light chrome gets dark labels automatically."
   },
   {
+   "fieldname": "canvas_color",
+   "fieldtype": "Color",
+   "label": "Canvas Colour",
+   "description": "The content plane between the sidebars. Blank keeps the specification canvas, which is the current near-white. The card, control fill, disabled fill, all text and both borders are derived from it, so text flips to light on a dark canvas. A canvas too close to mid-tone to host readable text is nudged toward the nearer end, keeping its hue."
+  },
+  {
    "fieldname": "palette_preview",
    "fieldtype": "HTML",
    "label": "Derived Palette",
@@ -78,14 +84,6 @@
    "description": "Changes control height, row padding and section gap only. Type sizes never change: 13px is the floor at every density."
   },
   {
-   "default": "Dark",
-   "description": "Dark chrome is the design system: navbar and sidebar form a dark frame around the lit content plane. Light is the one deviation offered, for a client who rejects a dark frame.",
-   "fieldname": "chrome",
-   "fieldtype": "Select",
-   "label": "Chrome",
-   "options": "Dark\nLight"
-  },
-  {
    "collapsible": 1,
    "fieldname": "advanced_section",
    "fieldtype": "Section Break",
@@ -102,7 +100,7 @@
  "index_web_pages_for_search": 0,
  "issingle": 1,
  "links": [],
- "modified": "2026-09-17 00:00:00.000000",
+ "modified": "2026-09-18 00:00:00.000000",
  "modified_by": "Administrator",
  "module": "Phenomenon UI",
  "name": "Phenomenon UI Settings",

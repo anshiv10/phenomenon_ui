@@ -9,6 +9,7 @@ class PhenomenonUIPalette(Document):
 		for field, label, example in (
 			("accent_color", "Accent Colour", "#0b5f68"),
 			("chrome_color", "Chrome Colour", "#1e2a35"),
+			("canvas_color", "Canvas Colour", "#f7f9fa"),
 		):
 			value = (self.get(field) or "").strip()
 			self.set(field, value)

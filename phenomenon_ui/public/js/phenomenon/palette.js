@@ -112,11 +112,24 @@ const PAGE_DARK = { r: 24, g: 33, b: 43 };
  * against that mode's page requires. A colour that already clears it is
  * returned untouched, so a deliberate choice is never overridden for taste.
  */
-function fitAccent(a, isDark) {
-	const page = isDark ? PAGE_DARK : PAGE_LIGHT;
-	const towards = isDark ? WHITE : BLACK;
+function fitAccent(a, page, isDark) {
+	// Direction follows the PAGE, not the mode. Light mode with a dark canvas
+	// is a real combination, and darkening the accent there drove it straight
+	// into the background.
+	const towards = luminance(page) < 0.4 ? WHITE : BLACK;
+	const darkInk = { r: 22, g: 32, b: 43 };
+
+	// Two conditions, not one. The accent has to be readable AS text on the
+	// page, and it has to be able to carry a label ON TOP of it as a solid
+	// button fill. An accent stranded mid-tone satisfies the first and fails
+	// the second, which is how a primary button ends up with an unreadable
+	// label on a very dark or very light canvas.
+	//
+	// Both improve in the same direction, so one loop serves both.
+	const canCarryLabel = (c) => Math.max(contrast(c, WHITE), contrast(c, darkInk)) >= 4.55;
+
 	let out = a;
-	for (let i = 0; i < 40 && contrast(page, out) < 4.55; i++) {
+	for (let i = 0; i < 40 && (contrast(page, out) < 4.55 || !canCarryLabel(out)); i++) {
 		out = mix(out, towards, 0.07);
 	}
 	return out;
@@ -125,15 +138,134 @@ function fitAccent(a, isDark) {
 // --- derivation ------------------------------------------------------------
 
 /**
+ * Derive the content ramp from one canvas colour.
+ *
+ * A canvas is not one token either. It sits under the page, the card, the
+ * control fill, the disabled fill, three text colours and two borders. Setting
+ * only the page background would leave white cards floating on a coloured
+ * page, so the whole ramp moves together or none of it does.
+ *
+ * Direction is decided by the canvas itself. A pale canvas steps DOWN for
+ * controls and UP for cards; a dark canvas does the opposite, so a card stays
+ * lighter than the page rather than disappearing into it.
+ *
+ * Text flips on its own. Every text and border value is then checked against
+ * all four surfaces, not just the page, because the worst case is usually the
+ * darkest surface in a light ramp and nobody notices it until a disabled field
+ * is unreadable.
+ *
+ * Light mode only. Dark mode already has a designed plane, and one colour
+ * cannot serve both.
+ */
+/**
+ * Move a chosen canvas only as far as legibility requires.
+ *
+ * A mid-tone canvas is the one case the derivation cannot rescue from the
+ * outside: around the middle of the range neither light nor dark ink reaches
+ * 4.5:1, so no choice of text colour saves it. Every other token can be fitted
+ * to the canvas; the canvas can only be fitted to itself.
+ *
+ * So it is pushed toward whichever end it is already nearer, keeping its hue,
+ * until it can host readable text with enough headroom left for the darker
+ * surfaces derived below it. A canvas that already works is returned
+ * untouched, so an ordinary choice is never altered.
+ */
+function fitCanvas(c) {
+	const goLight = luminance(c) >= 0.4;
+	const ink = goLight ? { r: 22, g: 32, b: 43 } : WHITE;
+	const towards = goLight ? WHITE : BLACK;
+
+	let out = c;
+	// 6.5 rather than 4.5: the control fill and disabled fill step away from
+	// the page, and they need to clear the floor too.
+	for (let i = 0; i < 40 && contrast(out, ink) < 6.5; i++) {
+		out = mix(out, towards, 0.06);
+	}
+	return out;
+}
+
+function deriveCanvas(out, chosen) {
+	const canvas = fitCanvas(chosen);
+	const canvasIsDark = luminance(canvas) < 0.35;
+
+	const primaryInk = readableInk(canvas, 7, WHITE, { r: 22, g: 32, b: 43 });
+	const awayFromInk = luminance(primaryInk) > luminance(canvas) ? BLACK : WHITE;
+
+	// Each surface steps away from the page for its own reason, then is pushed
+	// back until the body ink clears 4.5:1 ON IT. The step is an aesthetic
+	// preference; the floor is not, so the floor wins when they disagree.
+	//
+	// This is the guard that fixes disabled fields. The disabled fill is the
+	// darkest surface in a light ramp, so it is always the first to fail and
+	// the last place anyone looks.
+	const settle = (surface) => {
+		let s = surface;
+		for (let i = 0; i < 24 && contrast(s, primaryInk) < 4.55; i++) {
+			s = mix(s, awayFromInk, 0.06);
+		}
+		return s;
+	};
+
+	const raised = settle(canvasIsDark ? tint(canvas, 0.1) : tint(canvas, 0.55));
+	const secondary = settle(canvasIsDark ? tint(canvas, 0.05) : shade(canvas, 0.06));
+	const base = settle(canvasIsDark ? shade(canvas, 0.35) : shade(canvas, 0.13));
+
+	out["--ph-surface-primary"] = toHex(canvas);
+	out["--ph-surface-raised"] = toHex(raised);
+	out["--ph-surface-secondary"] = toHex(secondary);
+	out["--ph-surface-base"] = toHex(base);
+
+	const surfaces = [canvas, raised, secondary, base];
+
+	// The surface that is hardest for a given ink is the one closest to it in
+	// luminance. Enforcing against that one covers the other three.
+	const hardest = (ink) =>
+		surfaces.reduce((worst, s) => (contrast(s, ink) < contrast(worst, ink) ? s : worst));
+
+	out["--ph-text-primary"] = toHex(primaryInk);
+
+	const pullBack = (amount, floor) => {
+		let ink = mix(primaryInk, canvas, amount);
+		for (let i = 0; i < 20 && contrast(hardest(ink), ink) < floor; i++) {
+			ink = mix(ink, primaryInk, 0.12);
+		}
+		return ink;
+	};
+
+	out["--ph-text-secondary"] = toHex(pullBack(0.26, 4.55));
+	out["--ph-text-muted"] = toHex(pullBack(0.4, 4.55));
+
+	// A decorative rule needs no contrast floor; a control edge does, and 3:1
+	// is what makes a field findable at all.
+	out["--ph-border-subtle"] = toHex(mix(canvas, primaryInk, 0.18));
+
+	let strong = mix(canvas, primaryInk, 0.45);
+	for (let i = 0; i < 20 && contrast(hardest(strong), strong) < 3.05; i++) {
+		strong = mix(strong, primaryInk, 0.08);
+	}
+	out["--ph-border-strong"] = toHex(strong);
+
+	return { canvas, raised, secondary, base, primaryInk };
+}
+
+/**
  * @param {string} accent  hex, or falsy for the specification accent
  * @param {string} chrome  hex, or falsy for the specification chrome
+ * @param {string} canvas  hex, or falsy for the specification content plane
  * @param {boolean} isDark whether the desk is currently in dark mode
  * @returns {Object} map of --ph-* custom property to value
  */
-export function derive(accent, chrome, isDark) {
+export function derive(accent, chrome, canvas, isDark) {
 	const out = {};
+
+	// Canvas is light mode only, so in dark mode the page stays the designed
+	// dark plane and everything below fits itself to that instead.
+	const canvasRgb = isDark ? null : toRgb(canvas);
+	const content = canvasRgb ? deriveCanvas(out, canvasRgb) : null;
+	const page = content ? content.canvas : isDark ? PAGE_DARK : PAGE_LIGHT;
+
 	const raw = toRgb(accent);
-	const a = raw ? fitAccent(raw, isDark) : null;
+	const a = raw ? fitAccent(raw, page, isDark) : null;
 	const c = toRgb(chrome);
 
 	if (a) {
@@ -146,7 +278,21 @@ export function derive(accent, chrome, isDark) {
 		// page for the row to read as selected, and close enough for the row
 		// text to stay legible on it, which is why it is a mix toward the
 		// surface rather than a fixed opacity.
-		out["--ph-primary-soft"] = toHex(isDark ? mix(a, PAGE_DARK, 0.78) : tint(a, 0.86));
+		// The wash behind a selected row mixes toward the PAGE, not toward
+		// white. Mixing toward white on a coloured canvas produced a pale
+		// stripe that belonged to no surface in the ramp.
+		let soft = isDark ? mix(a, page, 0.78) : mix(a, page, 0.86);
+		// The row's own text sits on this wash, so it is checked against it.
+		const rowInk = out["--ph-text-primary"]
+			? toRgb(out["--ph-text-primary"])
+			: isDark
+				? { r: 232, g: 237, b: 242 }
+				: { r: 22, g: 32, b: 43 };
+		const awaySoft = luminance(rowInk) > luminance(soft) ? BLACK : WHITE;
+		for (let i = 0; i < 20 && contrast(soft, rowInk) < 4.55; i++) {
+			soft = mix(soft, awaySoft, 0.06);
+		}
+		out["--ph-primary-soft"] = toHex(soft);
 
 		// The label on a solid accent button.
 		out["--ph-primary-contrast"] = toHex(
@@ -196,10 +342,15 @@ export function derive(accent, chrome, isDark) {
  * What the Settings form reports back to the person choosing. Same numbers the
  * contrast audit gates on, measured on the values they just picked.
  */
-export function audit(accent, chrome, isDark) {
-	const vars = derive(accent, chrome, isDark);
+export function audit(accent, chrome, canvas, isDark) {
+	const vars = derive(accent, chrome, canvas, isDark);
 	const rows = [];
 	const get = (k) => toRgb(vars[k]);
+	const page = vars["--ph-surface-primary"]
+		? get("--ph-surface-primary")
+		: isDark
+			? PAGE_DARK
+			: PAGE_LIGHT;
 
 	if (vars["--ph-primary"]) {
 		rows.push({
@@ -209,12 +360,15 @@ export function audit(accent, chrome, isDark) {
 		});
 		rows.push({
 			label: "Accent text on page",
-			ratio: contrast(get("--ph-primary"), isDark ? PAGE_DARK : PAGE_LIGHT),
+			ratio: contrast(get("--ph-primary"), page),
 			floor: 4.5,
 		});
 		rows.push({
 			label: "Row text on selected wash",
-			ratio: contrast(get("--ph-primary-soft"), toRgb(isDark ? "#e8edf2" : "#16202b")),
+			ratio: contrast(
+				get("--ph-primary-soft"),
+				vars["--ph-text-primary"] ? get("--ph-text-primary") : toRgb(isDark ? "#e8edf2" : "#16202b")
+			),
 			floor: 4.5,
 		});
 	}
@@ -239,6 +393,34 @@ export function audit(accent, chrome, isDark) {
 			label: "Chrome hover step",
 			ratio: contrast(get("--ph-surface-chrome"), get("--ph-surface-chrome-hover")),
 			floor: 1.1,
+		});
+	}
+
+	if (vars["--ph-surface-primary"]) {
+		const ink = get("--ph-text-primary");
+		[
+			["Body text on page", "--ph-surface-primary", ink, 4.5],
+			["Body text on card", "--ph-surface-raised", ink, 4.5],
+			["Body text on control fill", "--ph-surface-secondary", ink, 4.5],
+			["Body text on disabled fill", "--ph-surface-base", ink, 4.5],
+			["Secondary text on page", "--ph-surface-primary", get("--ph-text-secondary"), 4.5],
+			["Muted text on page", "--ph-surface-primary", get("--ph-text-muted"), 4.5],
+			["Muted text on disabled fill", "--ph-surface-base", get("--ph-text-muted"), 4.5],
+			["Control edge on page", "--ph-surface-primary", get("--ph-border-strong"), 3.0],
+			["Control edge on control fill", "--ph-surface-secondary", get("--ph-border-strong"), 3.0],
+		].forEach(([label, surface, fg, floor]) => {
+			rows.push({ label, ratio: contrast(get(surface), fg), floor });
+		});
+
+		// Status pills carry their own fill, so they are checked against it
+		// rather than against the canvas.
+		[
+			["Success pill", "#dff0e5", "#0f7a43"],
+			["Warning pill", "#f7ebd2", "#8a5a00"],
+			["Danger pill", "#f8e3e1", "#b3261e"],
+			["Info pill", "#e1ecf8", "#1b5fa8"],
+		].forEach(([label, bg, fg]) => {
+			rows.push({ label, ratio: contrast(toRgb(bg), toRgb(fg)), floor: 4.5 });
 		});
 	}
 

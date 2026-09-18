@@ -128,19 +128,7 @@
 	--ph-canvas-edge: var(--ph-border-subtle);
 }
 
-// ---------------------------------------------------------------------------
-// Chrome: light — the one deviation offered in Settings.
-// ---------------------------------------------------------------------------
-// Re-points only the chrome family, at the same surfaces the content already
-// uses, so it works in light and dark without a second palette. Declared after
-// the dark block on purpose (equal specificity, later wins).
-
-#{$ph-chrome-light} {
-	--ph-surface-chrome: var(--ph-surface-raised);
-	--ph-surface-chrome-hover: var(--ph-surface-secondary);
-	--ph-surface-chrome-selected: var(--ph-primary-soft);
-	--ph-chrome-edge: var(--ph-border-subtle);
-	--ph-text-on-chrome: var(--ph-text-primary);
-	--ph-text-on-chrome-muted: var(--ph-text-muted);
-	--ph-canvas-edge: var(--ph-border-subtle);
-}
+// The light-chrome block that used to live here was removed in v0.6.0. See
+// tokens/_scope.scss: it lost to the inline custom properties the palette
+// engine writes, so it was dead code pretending to be a feature. A light frame
+// is now a light Chrome Colour, and the Light Chrome palette ships one.

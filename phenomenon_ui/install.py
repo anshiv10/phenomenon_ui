@@ -12,15 +12,16 @@ that a site has deleted is not resurrected, because deleting it was a decision.
 import frappe
 
 STANDARD_PALETTES = (
-	# name, accent, chrome
-	("Phenomenon Default", "#0b5f68", "#1e2a35"),
-	("Indigo", "#3b4cb8", "#1c2340"),
-	("Forest", "#1f6b44", "#1b2a24"),
-	("Plum", "#7a3b73", "#2a1f2e"),
-	("Copper", "#9a4f1c", "#2b2119"),
-	("Steel", "#2b6ca3", "#222d38"),
-	("Graphite", "#4a5a6b", "#242a30"),
-	("Light Chrome", "#0b5f68", "#eef1f3"),
+	# name, accent, chrome, canvas ("" keeps the specification canvas)
+	("Phenomenon Default", "#0b5f68", "#1e2a35", ""),
+	("Indigo", "#3b4cb8", "#1c2340", ""),
+	("Forest", "#1f6b44", "#1b2a24", ""),
+	("Plum", "#7a3b73", "#2a1f2e", ""),
+	("Copper", "#9a4f1c", "#2b2119", ""),
+	("Steel", "#2b6ca3", "#222d38", ""),
+	("Graphite", "#4a5a6b", "#242a30", ""),
+	("Light Chrome", "#0b5f68", "#eef1f3", ""),
+	("Warm Paper", "#0b5f68", "#2b2119", "#fdf8ef"),
 )
 
 
@@ -85,16 +86,21 @@ def sync_standard_palettes(create_missing: bool = False):
 		# what keeps a deliberate deletion deleted.
 		first_run = create_missing or not frappe.db.exists("Phenomenon UI Palette", {"is_standard": 1})
 
-		for name, accent, chrome in STANDARD_PALETTES:
+		for name, accent, chrome, canvas in STANDARD_PALETTES:
 			if frappe.db.exists("Phenomenon UI Palette", name):
 				doc = frappe.get_doc("Phenomenon UI Palette", name)
 				if not doc.is_standard:
 					# A site has taken this name for its own palette. Theirs wins.
 					continue
-				if (doc.accent_color, doc.chrome_color) == (accent, chrome):
+				if (doc.accent_color, doc.chrome_color, doc.canvas_color or "") == (
+					accent,
+					chrome,
+					canvas,
+				):
 					continue
 				doc.accent_color = accent
 				doc.chrome_color = chrome
+				doc.canvas_color = canvas
 				doc.save(ignore_permissions=True)
 			elif first_run:
 				frappe.get_doc(
@@ -103,6 +109,7 @@ def sync_standard_palettes(create_missing: bool = False):
 						"palette_name": name,
 						"accent_color": accent,
 						"chrome_color": chrome,
+						"canvas_color": canvas,
 						"is_standard": 1,
 					}
 				).insert(ignore_permissions=True)

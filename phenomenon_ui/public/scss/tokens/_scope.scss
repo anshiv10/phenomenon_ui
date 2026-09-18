@@ -16,16 +16,18 @@ $ph: "html[data-ph='on']";
 // VERIFY (Session 0): confirm the attribute name and that "dark" is the value.
 $ph-dark: "html[data-ph='on'][data-theme='dark']";
 
-// Chrome. Dark chrome is the spec and the default; "light" is the one
-// deviation offered in Settings for a client who rejects a dark frame. It is a
-// token swap only (tokens/_colors.scss) — no rule in desk/ knows it exists.
+// Chrome. There is no chrome scope any more, and the reason is worth keeping.
 //
-// SPECIFICITY, deliberately:
-//   $ph               (0,1,1)
-//   $ph-dark          (0,2,1)
-//   $ph-chrome-light  (0,2,1)  — declared AFTER the dark block so it wins the
-//                               chrome tokens in both modes.
-$ph-chrome-light: "html[data-ph='on'][data-ph-chrome='light']";
+// Until v0.5.x a "Chrome: Dark / Light" setting toggled a data-ph-chrome
+// attribute and this file carried a selector that re-pointed the chrome
+// tokens. That worked only while nothing wrote those tokens inline. Once the
+// palette engine started deriving and writing them on <html>, the attribute
+// selector could never win again: an inline style beats every selector in CSS
+// regardless of specificity. The setting was still in the form, still saved,
+// and did nothing at all.
+//
+// Two controls for one property is the defect, not the losing one. Chrome
+// Colour is the control now, and a light frame is simply a light colour there.
 
 // Website / portal scope. Nothing sets this class yet — see the note in
 // phenomenon_web.bundle.scss for why that is deliberate.

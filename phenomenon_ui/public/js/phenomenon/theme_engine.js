@@ -30,8 +30,8 @@ const DEFAULTS = {
 	appearance: "Follow User Preference",
 	accent_color: "",
 	chrome_color: "",
+	canvas_color: "",
 	density: "Comfortable",
-	chrome: "Dark",
 	custom_css: "",
 };
 
@@ -46,13 +46,21 @@ const APPEARANCE = {
 // deviation offered is light chrome, for a client who rejects a dark frame.
 const ALLOWED = {
 	density: ["compact", "comfortable", "spacious"],
-	chrome: ["dark", "light"],
 };
 
 // Every custom property this engine may write. Listed once so that clearing
 // them is exhaustive: a token left behind after a colour is cleared is the
 // kind of residue that makes "reset to default" a lie.
 const DERIVED_VARS = [
+	"--ph-surface-primary",
+	"--ph-surface-secondary",
+	"--ph-surface-raised",
+	"--ph-surface-base",
+	"--ph-text-primary",
+	"--ph-text-secondary",
+	"--ph-text-muted",
+	"--ph-border-subtle",
+	"--ph-border-strong",
 	"--ph-primary",
 	"--ph-primary-hover",
 	"--ph-primary-soft",
@@ -83,6 +91,8 @@ function normalise(raw) {
 	clean.accent_color = HEX_RE.test(accent) ? accent : "";
 	const chromeColor = String(settings.chrome_color || "").trim();
 	clean.chrome_color = HEX_RE.test(chromeColor) ? chromeColor : "";
+	const canvasColor = String(settings.canvas_color || "").trim();
+	clean.canvas_color = HEX_RE.test(canvasColor) ? canvasColor : "";
 	clean.custom_css = typeof settings.custom_css === "string" ? settings.custom_css : "";
 
 	return clean;
@@ -123,7 +133,11 @@ function apply(raw) {
 
 	html.setAttribute(ROOT_FLAG, "on");
 	html.setAttribute("data-ph-density", s.density);
-	html.setAttribute("data-ph-chrome", s.chrome);
+	// data-ph-chrome is deliberately removed rather than set. See the note in
+	// tokens/_scope.scss: a CSS attribute selector cannot beat the inline
+	// custom properties this engine writes, so the old Dark/Light switch did
+	// nothing once a chrome colour existed. Chrome Colour replaced it.
+	html.removeAttribute("data-ph-chrome");
 	html.removeAttribute("data-ph-preset");
 	html.removeAttribute("data-ph-radius");
 	html.removeAttribute("data-ph-sidebar");
@@ -165,12 +179,12 @@ function paintPalette(s) {
 	const html = document.documentElement;
 	LAST_SETTINGS = s;
 
-	if (!s.accent_color && !s.chrome_color) {
+	if (!s.accent_color && !s.chrome_color && !s.canvas_color) {
 		clearDerived();
 		return;
 	}
 
-	const vars = derive(s.accent_color, s.chrome_color, isDarkNow());
+	const vars = derive(s.accent_color, s.chrome_color, s.canvas_color, isDarkNow());
 	clearDerived();
 	Object.keys(vars).forEach((k) => html.style.setProperty(k, vars[k]));
 }

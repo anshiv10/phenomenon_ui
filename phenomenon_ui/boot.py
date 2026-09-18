@@ -5,14 +5,14 @@ DEFAULTS = {
 	"appearance": "Follow User Preference",
 	"accent_color": "",
 	"chrome_color": "",
+	"canvas_color": "",
 	"density": "Comfortable",
-	"chrome": "Dark",
 	"custom_css": "",
 }
 
 # Every free-form colour the Settings form offers. Read into frappe.boot as-is;
 # the client validates the hex before writing it into an inline style.
-COLOUR_FIELDS = ("accent_color", "chrome_color")
+COLOUR_FIELDS = ("accent_color", "chrome_color", "canvas_color")
 
 # Values the client is allowed to write into DOM attributes. Anything outside
 # these sets is dropped rather than passed through, so a bad Settings value can
@@ -20,7 +20,6 @@ COLOUR_FIELDS = ("accent_color", "chrome_color")
 ALLOWED = {
 	"appearance": {"Follow User Preference", "Always Light", "Always Dark"},
 	"density": {"Compact", "Comfortable", "Spacious"},
-	"chrome": {"Dark", "Light"},
 }
 
 
@@ -103,8 +102,11 @@ def apply_user_theme(settings: dict, user: str | None):
 
 	if row.palette:
 		palette = frappe.db.get_value(
-			"Phenomenon UI Palette", row.palette, ["accent_color", "chrome_color"], as_dict=True
+			"Phenomenon UI Palette",
+			row.palette,
+			["accent_color", "chrome_color", "canvas_color"],
+			as_dict=True,
 		)
 		if palette:
-			settings["accent_color"] = (palette.accent_color or "").strip()
-			settings["chrome_color"] = (palette.chrome_color or "").strip()
+			for field in COLOUR_FIELDS:
+				settings[field] = (palette.get(field) or "").strip()
