@@ -111,6 +111,15 @@ def reset_theme(users) -> dict:
 
 
 @frappe.whitelist()
+def list_palettes() -> list[str]:
+	"""Palette names, for the in-place editors in the assignment table."""
+	guard()
+	return frappe.get_all(
+		"Phenomenon UI Palette", pluck="name", order_by="name asc", limit_page_length=0
+	)
+
+
+@frappe.whitelist()
 def get_assignments() -> list[dict]:
 	"""Every user who currently has an assignment, for the dialog's summary."""
 	guard()

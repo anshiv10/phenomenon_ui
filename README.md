@@ -18,7 +18,7 @@ Phenomenon UI implements the **Instrument Panel** design system (Direction B, to
 
 ---
 
-## Status: v0.6.0 — canvas colour, role-gated themes, per-user assignment
+## Status: v0.6.1 — canvas colour, role-gated themes, per-user assignment
 
 v0.3.0 rebuilt the token layer and every component rule to the Instrument Panel specification. v0.3.1 adds the v16 mapping layer and shell rules, written against Frappe `version-16` source rather than guessed. The 34 spec contrast pairs pass in both modes.
 
@@ -114,7 +114,7 @@ Write access to Settings, palettes and assignments belongs to the **Phenomenon U
 
 ### Per-user themes
 
-**Assign to Users** on the Settings form gives named users a different palette or density from the site default. Pick users individually, or narrow by role and select the whole list at once. The dialog also lists who is currently assigned, and **Reset to Site Theme** removes an assignment rather than blanking it.
+**Assign to Users** on the Settings form gives named users a different palette or density from the site default. Pick users individually, or narrow by role and select the whole list at once. The dialog also lists who is currently assigned. Both the palette and the density in that table are editable in place and save immediately, so correcting one user does not mean removing and re-adding them. Each row also has **Remove**, and **Reset to Site Theme** clears a whole selection at once.
 
 Only palette and density are assignable. Light and dark are deliberately not: that is an eyesight and lighting matter, so Frappe's own switcher stays the user's to control.
 

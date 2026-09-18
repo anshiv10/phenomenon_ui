@@ -675,48 +675,94 @@ function show_assign_dialog(frm) {
 		});
 	}
 
-	// What is already assigned. Without this the dialog can only add, and the
-	// only way to find out who has what is to read a doctype list the client
-	// was never told exists.
+	// What is already assigned, and where it is changed.
+	//
+	// The table started as a read-only summary, which meant correcting a
+	// single user's palette required finding them again in a list of everybody
+	// and re-assigning, or removing and re-adding. Both cells are editable
+	// here instead, because the row a person is looking at is the row they
+	// want to change.
+	//
+	// Each editor sends BOTH values back, not just the one that changed.
+	// assign_theme writes both fields, so sending one would silently blank the
+	// other: change a density and lose a palette.
 	function render_current() {
 		frappe.call(API + "get_assignments").then((r) => {
 			const rows = r.message || [];
 			const field = d.get_field("current");
+
 			if (!rows.length) {
 				field.$wrapper.html(
 					`<p class="text-muted small">${__("No users are assigned. Everybody sees the site theme.")}</p>`
 				);
 				return;
 			}
+
+			const options = (values, current, blankLabel) =>
+				[""]
+					.concat(values)
+					.map((v) => {
+						const label = v || blankLabel;
+						const sel = (v || "") === (current || "") ? " selected" : "";
+						return `<option value="${frappe.utils.escape_html(v)}"${sel}>${frappe.utils.escape_html(
+							label
+						)}</option>`;
+					})
+					.join("");
+
 			const body = rows
-				.map(
-					(row) => `<tr>
-						<td>${frappe.utils.escape_html(row.user)}</td>
-						<td>${frappe.utils.escape_html(row.palette || __("Site palette"))}</td>
-						<td>${frappe.utils.escape_html(row.density || __("Site density"))}</td>
+				.map((row) => {
+					const user = frappe.utils.escape_html(row.user);
+					return `<tr data-user="${user}">
+						<td>${user}</td>
+						<td><select class="form-control input-xs ph-edit-palette">
+							${options(d.__palettes || [], row.palette, __("Site palette"))}
+						</select></td>
+						<td><select class="form-control input-xs ph-edit-density">
+							${options(["Compact", "Comfortable", "Spacious"], row.density, __("Site density"))}
+						</select></td>
 						<td style="text-align:right">
-							<button class="btn btn-xs btn-default ph-remove-assignment"
-								data-user="${frappe.utils.escape_html(row.user)}">${__("Remove")}</button>
+							<button class="btn btn-xs btn-default ph-remove-assignment">${__("Remove")}</button>
 						</td>
-					</tr>`
-				)
+					</tr>`;
+				})
 				.join("");
+
 			field.$wrapper.html(`
-				<p class="text-muted small">${__("Currently assigned")}</p>
+				<p class="text-muted small">${__(
+					"Currently assigned. Change a palette or density here and it saves immediately."
+				)}</p>
 				<table class="table table-bordered" style="font-size:12px">
 					<thead><tr>
-						<th>${__("User")}</th><th>${__("Palette")}</th><th>${__("Density")}</th>
-						<th style="width:90px"></th>
+						<th>${__("User")}</th><th style="width:26%">${__("Palette")}</th>
+						<th style="width:22%">${__("Density")}</th><th style="width:90px"></th>
 					</tr></thead>
 					<tbody>${body}</tbody>
 				</table>
 			`);
 
+			field.$wrapper.find(".ph-edit-palette, .ph-edit-density").on("change", function () {
+				const $row = $(this).closest("tr");
+				const user = $row.data("user");
+				frappe
+					.call(API + "assign_theme", {
+						users: [user],
+						palette: $row.find(".ph-edit-palette").val() || "",
+						density: $row.find(".ph-edit-density").val() || "",
+					})
+					.then(() => {
+						frappe.show_alert({
+							message: __("Updated {0}. They see it on their next page load.", [user]),
+							indicator: "green",
+						});
+					});
+			});
+
 			// Remove where the assignment is actually visible. Clearing one
 			// used to mean finding that user again in a list of everybody,
 			// which is the wrong way round when the row is right there.
 			field.$wrapper.find(".ph-remove-assignment").on("click", function () {
-				const user = $(this).data("user");
+				const user = $(this).closest("tr").data("user");
 				frappe.confirm(
 					__("Remove the theme assigned to {0}? They return to the site theme.", [user]),
 					() => {
@@ -734,7 +780,11 @@ function show_assign_dialog(frm) {
 	}
 
 	load_users();
-	render_current();
+	// The palette list is fetched once and reused by every row editor.
+	frappe.call(API + "list_palettes").then((r) => {
+		d.__palettes = r.message || [];
+		render_current();
+	});
 	d.show();
 }
 
