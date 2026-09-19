@@ -3,7 +3,7 @@ name = "phenomenon_ui"
 authors = [
     { name = "TAALPLUS CHC Private Limited", email = "developer@taalhealthcare.com" }
 ]
-description = "A premium, modular and upgrade-safe UI layer for Frappe and ERPNext v15."
+description = "A premium, modular and upgrade-safe UI layer for Frappe and ERPNext."
 requires-python = ">=3.10"
 readme = "README.md"
 dynamic = ["version"]
@@ -12,6 +12,21 @@ dependencies = []
 [build-system]
 requires = ["flit_core >=3.4,<4"]
 build-backend = "flit_core.buildapi"
+
+# Frappe Cloud reads this section to decide whether the app may be added to a
+# bench group, and it is mandatory: without it the dashboard refuses the app
+# with "Could not find a compatible Frappe version in pyproject".
+#
+# It is NOT a Python dependency. Frappe and its apps are installed from git, not
+# from PyPI, so listing frappe under [project] dependencies would send pip
+# looking for a package that does not exist there. It belongs here and only
+# here.
+#
+# The range is the real claim this app makes about itself, and Frappe Cloud
+# rejects a branch whose range does not include the bench version. Keep it
+# honest: widen it only for a version the app has actually been run on.
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0,<17.0.0"
 
 [tool.bench.dev-dependencies]
 

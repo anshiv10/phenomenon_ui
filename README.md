@@ -18,7 +18,7 @@ Phenomenon UI implements the **Instrument Panel** design system (Direction B, to
 
 ---
 
-## Status: v0.6.1 — canvas colour, role-gated themes, per-user assignment
+## Status: v0.6.2 — canvas colour, role-gated themes, per-user assignment
 
 v0.3.0 rebuilt the token layer and every component rule to the Instrument Panel specification. v0.3.1 adds the v16 mapping layer and shell rules, written against Frappe `version-16` source rather than guessed. The 34 spec contrast pairs pass in both modes.
 
@@ -248,6 +248,12 @@ See [`CLAUDE.md`](CLAUDE.md) for the full contribution rules.
 | Frappe | v15 |
 | ERPNext | v15 |
 | Python | ≥ 3.10 |
+
+### Frappe Cloud
+
+`pyproject.toml` must carry a `[tool.bench.frappe-dependencies]` section or the Frappe Cloud dashboard refuses the app with "Could not find a compatible Frappe version in pyproject". The declared range must also *include* the bench group's version, or the branch is rejected. This app declares `frappe = ">=15.0.0,<17.0.0"`.
+
+Note that `frappe` never belongs in `[project] dependencies`: Frappe apps are installed from git, not PyPI, so pip would go looking for a package that does not exist there.
 
 **Both are supported, through two mapping files.** v16 kept the v15 custom properties for its older components and added a second, semantic family borrowed from frappe-ui / espresso (`--surface-*`, `--ink-*`, `--outline-*`). Its new desk shell — the collapsible left sidebar, the sidebar header, the settings dialog, the command palette — paints from that family alone, which is why a v15-era theme renders content correctly and leaves the shell stock.
 
