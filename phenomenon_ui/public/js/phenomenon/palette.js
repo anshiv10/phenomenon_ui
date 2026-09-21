@@ -249,6 +249,49 @@ function deriveCanvas(out, chosen) {
 }
 
 /**
+ * Ground, hover ground and label for accent-tinted buttons.
+ *
+ * Order matters, and each step exists because of a measured failure:
+ *
+ *   1. Decide which way the label will go (dark ink on a light wash, light on
+ *      a dark one).
+ *   2. Settle the ground AWAY from that ink until even pure ink would clear
+ *      7:1. A mid-grey canvas produces a mid-tone wash that no label colour
+ *      can rescue; the ground has to move first.
+ *   3. Deepen toward the accent for hover, then check hover still leaves the
+ *      same headroom, pushing it back if the accent dragged it toward the ink.
+ *      A label that fails under the pointer fails exactly when someone is
+ *      about to click.
+ *   4. Only then fit the label: the accent's own hue, moved toward the ink
+ *      only as far as it takes to clear 4.5:1 on BOTH grounds.
+ */
+function buttonTint(a, soft, isDark) {
+	const inkDir = luminance(soft) > 0.4 ? BLACK : WHITE;
+	const away = inkDir === BLACK ? WHITE : BLACK;
+
+	let ground = soft;
+	for (let i = 0; i < 30 && contrast(ground, inkDir) < 8; i++) {
+		ground = mix(ground, away, 0.06);
+	}
+
+	let hover = mix(ground, a, isDark ? 0.14 : 0.12);
+	for (let i = 0; i < 30 && contrast(hover, inkDir) < 7; i++) {
+		hover = mix(hover, away, 0.06);
+	}
+
+	let ink = a;
+	for (let i = 0; i < 40 && (contrast(ink, ground) < 4.55 || contrast(ink, hover) < 4.55); i++) {
+		ink = mix(ink, inkDir, 0.07);
+	}
+
+	return {
+		"--ph-button-tint": toHex(ground),
+		"--ph-button-tint-hover": toHex(hover),
+		"--ph-button-tint-ink": toHex(ink),
+	};
+}
+
+/**
  * @param {string} accent  hex, or falsy for the specification accent
  * @param {string} chrome  hex, or falsy for the specification chrome
  * @param {string} canvas  hex, or falsy for the specification content plane
@@ -293,6 +336,13 @@ export function derive(accent, chrome, canvas, isDark) {
 			soft = mix(soft, awaySoft, 0.06);
 		}
 		out["--ph-primary-soft"] = toHex(soft);
+
+		// Tinted buttons get their own three tokens rather than reusing the
+		// selected-row wash. The wash was designed for a ROW, where the text on
+		// top is body ink; a toolbar button puts ACCENT-hued text on it, and on
+		// most mid-tone accents that combination was never readable. Keeping
+		// the button ground separate means fixing it cannot disturb the row.
+		Object.assign(out, buttonTint(a, soft, isDark));
 
 		// The label on a solid accent button.
 		out["--ph-primary-contrast"] = toHex(
@@ -361,6 +411,16 @@ export function audit(accent, chrome, canvas, isDark) {
 		rows.push({
 			label: "Accent text on page",
 			ratio: contrast(get("--ph-primary"), page),
+			floor: 4.5,
+		});
+		rows.push({
+			label: "Tinted button label",
+			ratio: contrast(get("--ph-button-tint-ink"), get("--ph-button-tint")),
+			floor: 4.5,
+		});
+		rows.push({
+			label: "Tinted button label on hover",
+			ratio: contrast(get("--ph-button-tint-ink"), get("--ph-button-tint-hover")),
 			floor: 4.5,
 		});
 		rows.push({

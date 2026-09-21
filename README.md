@@ -18,7 +18,7 @@ Phenomenon UI implements the **Instrument Panel** design system (Direction B, to
 
 ---
 
-## Status: v0.6.2 — canvas colour, role-gated themes, per-user assignment
+## Status: v0.7.0 — tinted toolbar buttons, canvas colour, role-gated themes
 
 v0.3.0 rebuilt the token layer and every component rule to the Instrument Panel specification. v0.3.1 adds the v16 mapping layer and shell rules, written against Frappe `version-16` source rather than guessed. The 34 spec contrast pairs pass in both modes.
 
@@ -145,7 +145,9 @@ Every derived text colour is pushed away from its background until it clears the
 - The chrome selected colour is pushed away from the sidebar ink.
 - A canvas too close to mid-tone to host readable text at all is nudged toward the end it is already nearer, keeping its hue. This is the one case the derivation cannot fix from the outside: near the middle of the range, no choice of text colour reaches 4.5:1.
 
-4,608 combinations of accent, chrome, canvas and mode pass the audit, including pure black canvases, mid-grey canvases and white on white. That is what makes "pick any colour" a safe promise rather than a marketing one.
+**Tinted toolbar buttons.** The page-head secondary buttons and the list's filter, sort and page-size controls carry the accent as a pale wash with accent-hued text; the main action stays the only solid button in the toolbar, and the active page size is solid because it is a selected state. They use three dedicated tokens (`--ph-button-tint`, `-hover`, `-ink`) rather than the selected-row wash, because accent text on that wash fails readability for most mid-tone accents: 1,055 of 1,600 combinations when first measured. The ground is settled away from its ink before the label is fitted, and hover may never move toward the ink.
+
+5,120 combinations of accent, chrome, canvas and mode pass the audit, including pure black canvases, mid-grey canvases and white on white. That is what makes "pick any colour" a safe promise rather than a marketing one.
 
 Saving clears the cache. Users pick it up on their next reload.
 

@@ -26,6 +26,13 @@ $primary-hover: #084e56;
 $primary-soft: #dcebed;
 $primary-contrast: #ffffff;
 
+// Tinted buttons (toolbar and page-size). Computed by buttonTint() in
+// public/js/phenomenon/palette.js from the accent and the soft wash above,
+// not chosen by eye: label on ground 6.02:1, label on hover 5.05:1.
+$button-tint: #dcebed;
+$button-tint-hover: #c3dadd;
+$button-tint-ink: #0b5f68;
+
 // -- Surfaces ----------------------------------------------------------------
 // No white ground. All content surfaces sit inside a 4-step band; the only
 // white is the raised card. Chrome is a dark frame that holds the app.
@@ -77,6 +84,11 @@ $primary-dark: #4fc3ce;
 $primary-hover-dark: #6fd3dc;
 $primary-soft-dark: #123840;
 $primary-contrast-dark: #06222a;
+
+// label on ground 6.02:1, label on hover 4.60:1
+$button-tint-dark: #123840;
+$button-tint-hover-dark: #1b4b54;
+$button-tint-ink-dark: #4fc3ce;
 
 $surface-base-dark: #0e141a;
 $surface-primary-dark: #18212b;

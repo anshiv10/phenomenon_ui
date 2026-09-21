@@ -2,8 +2,8 @@
 """WCAG contrast audit for the Phenomenon UI palette.
 
 Reads tokens/_palette.scss and measures every foreground/background pair the
-theme actually renders — the 34 pairs in section 04 of the Instrument Panel
-spec, light and dark — computed by WCAG 2.1 relative luminance.
+theme actually renders — the pairs in section 04 of the Instrument Panel
+spec, plus the tinted-button pairs, light and dark — computed by WCAG 2.1 relative luminance.
 
     python3 scripts/contrast_audit.py
 
@@ -74,6 +74,9 @@ PAIRS = [
 	("warning / warning-soft", "warning", "warning-soft", 4.5),
 	("danger / danger-soft", "danger", "danger-soft", 4.5),
 	("info / info-soft", "info", "info-soft", 4.5),
+	("tinted button label / ground", "button-tint-ink", "button-tint", 4.5),
+	("tinted button label / hover", "button-tint-ink", "button-tint-hover", 4.5),
+	("active page size / accent", "primary-contrast", "primary", 4.5),
 ]
 
 # The dark set uses the same token names with a -dark suffix.

@@ -27,6 +27,9 @@
 	--ph-primary-hover: #{$primary-hover};
 	--ph-primary-soft: #{$primary-soft};
 	--ph-primary-contrast: #{$primary-contrast};
+	--ph-button-tint: #{$button-tint};
+	--ph-button-tint-hover: #{$button-tint-hover};
+	--ph-button-tint-ink: #{$button-tint-ink};
 
 	// -- Surfaces ----------------------------------------------------------
 	--ph-surface-base: #{$surface-base};
@@ -87,6 +90,9 @@
 	--ph-primary-hover: #{$primary-hover-dark};
 	--ph-primary-soft: #{$primary-soft-dark};
 	--ph-primary-contrast: #{$primary-contrast-dark};
+	--ph-button-tint: #{$button-tint-dark};
+	--ph-button-tint-hover: #{$button-tint-hover-dark};
+	--ph-button-tint-ink: #{$button-tint-ink-dark};
 
 	--ph-surface-base: #{$surface-base-dark};
 	--ph-surface-primary: #{$surface-primary-dark};

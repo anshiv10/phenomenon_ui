@@ -93,3 +93,95 @@
 		min-height: var(--ph-touch-target);
 	}
 }
+
+// ===========================================================================
+// TINTED BUTTONS — toolbar and page size
+// ===========================================================================
+//
+// The secondary buttons in the page head and the list's filter, sort and
+// page-size controls carry the accent as a pale wash with accent-hued text, so
+// the whole toolbar belongs to the chosen colour and follows every palette.
+//
+// The main action stays the only SOLID accent button in the toolbar. That is
+// the point of tinting rather than filling: eleven solid buttons would leave
+// nothing for the eye to land on, and "the main action is the loudest thing on
+// the page" is one of the four jobs the accent is allowed.
+//
+// The three tokens are derived, not blended here. --ph-button-tint-ink is
+// fitted to clear 4.5:1 on both the ground and the hover ground, because
+// accent text on the ordinary selected-row wash fails for most mid-tone
+// accents (measured: 1,055 of 1,600 combinations). See buttonTint() in
+// public/js/phenomenon/palette.js.
+//
+// Markup confirmed identical in Frappe version-15 and version-16 source:
+//   page head   .page-actions .btn-default, .icon-btn (refresh, menu, views)
+//   list        .filter-selector .filter-button, .filter-x-button,
+//               .sort-selector .btn-order, .sort-selector-button
+//   paging      .list-paging-area .btn-paging (active one gets .btn-info;
+//               v16 also sets it disabled), .btn-more
+
+#{$ph} .page-head .page-actions .btn-default:not(.btn-secondary):not(.btn-primary),
+#{$ph} .page-head .page-actions .icon-btn:not(.btn-primary),
+#{$ph} .filter-selector .btn,
+#{$ph} .filter-x-button,
+#{$ph} .sort-selector .btn,
+#{$ph} .list-paging-area .btn-paging,
+#{$ph} .list-paging-area .btn-more {
+	background-color: var(--ph-button-tint);
+	border-color: transparent;
+	color: var(--ph-button-tint-ink);
+	--icon-stroke: var(--ph-button-tint-ink);
+	box-shadow: none;
+}
+
+// Hover changes ground AND label in the same rule, never one without the
+// other. That pairing is what stops a label fading under the pointer.
+#{$ph} .page-head .page-actions .btn-default:not(.btn-secondary):not(.btn-primary):hover,
+#{$ph} .page-head .page-actions .btn-default:not(.btn-secondary):not(.btn-primary):focus,
+#{$ph} .page-head .page-actions .icon-btn:not(.btn-primary):hover,
+#{$ph} .filter-selector .btn:hover,
+#{$ph} .filter-x-button:hover,
+#{$ph} .sort-selector .btn:hover,
+#{$ph} .list-paging-area .btn-paging:not(.btn-info):hover,
+#{$ph} .list-paging-area .btn-more:hover {
+	background-color: var(--ph-button-tint-hover);
+	border-color: transparent;
+	color: var(--ph-button-tint-ink);
+}
+
+// The refresh button carries Frappe's .text-muted, which would otherwise win
+// the label colour back to grey.
+#{$ph} .page-head .page-actions .icon-btn.text-muted {
+	color: var(--ph-button-tint-ink);
+}
+
+#{$ph} .page-head .page-actions .icon-btn svg,
+#{$ph} .filter-selector .btn svg,
+#{$ph} .filter-x-button svg,
+#{$ph} .sort-selector .btn svg {
+	stroke: var(--ph-button-tint-ink);
+}
+
+// The active page size is a SELECTED state, so it takes the solid accent, the
+// same way a selected row takes the rail. This also fixes a real gap: before,
+// nothing showed which page size was in use.
+//
+// v16 marks the active size `disabled` as well as `.btn-info`. The general
+// disabled-button rule above would grey it out and make the chosen size look
+// switched off, so this rule names both states explicitly and outranks it.
+#{$ph} .list-paging-area .btn-paging.btn-info,
+#{$ph} .list-paging-area .btn-paging.btn-info:disabled,
+#{$ph} .list-paging-area .btn-paging.btn-info[disabled],
+#{$ph} .list-paging-area .btn-paging.btn-info:hover {
+	background-color: var(--ph-primary);
+	border-color: var(--ph-primary);
+	color: var(--ph-primary-contrast);
+	opacity: 1;
+	cursor: default;
+}
+
+// The form's secondary action (Cancel on a submitted document, Amend, and so
+// on) is deliberately NOT tinted. Tinting it in the brand colour would read as
+// an encouragement; it keeps the neutral fill and the border-strong edge set
+// earlier in this file, so a destructive action never looks like the
+// recommended one.
