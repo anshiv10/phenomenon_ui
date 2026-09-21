@@ -136,3 +136,50 @@
 	background-color: var(--ph-warning-soft);
 	color: var(--ph-text-primary);
 }
+
+// ---------------------------------------------------------------------------
+// FRAPPE v15 — BREADCRUMB SEPARATOR
+// ---------------------------------------------------------------------------
+//
+// v15 draws the arrow between breadcrumbs as an IMAGE:
+//   #navbar-breadcrumbs a:before { content: var(--right-arrow-svg) }
+// and --right-arrow-svg is an inline SVG with a fixed dark grey stroke baked in.
+// CSS colour cannot recolour an image, so the arrow is always dark grey:
+// visible on a light chrome, invisible on a dark one. (v16 replaced it with a
+// text "/" that takes a colour, which is why this never shows on v16.)
+//
+// The fix keeps Frappe's own arrow shape but uses it as a MASK, then paints it
+// with the derived chrome text colour. The stroke colour baked into the SVG no
+// longer matters, only its outline does, and the arrow follows whatever chrome
+// colour is chosen, light or dark, like every other label in the frame.
+//
+// Scoped to .navbar: v16 puts its breadcrumbs in the page head, on content,
+// where its own text separator already works.
+
+#{$ph} .navbar #navbar-breadcrumbs a::before {
+	// Fallback for a browser without CSS masks: a text chevron, which does
+	// take a colour. Every current browser takes the @supports branch below.
+	content: "\203A";
+	color: var(--ph-text-on-chrome-muted);
+	margin-right: 10px;
+}
+
+@supports (mask-image: url("")) or (-webkit-mask-image: url("")) {
+	#{$ph} .navbar #navbar-breadcrumbs a::before {
+		content: "";
+		display: inline-block;
+		width: 6px;
+		height: 8px;
+		margin-right: 10px;
+		vertical-align: middle;
+		background-color: var(--ph-text-on-chrome-muted);
+		-webkit-mask: var(--right-arrow-svg) no-repeat center / contain;
+		mask: var(--right-arrow-svg) no-repeat center / contain;
+	}
+
+	// Right-to-left sites: mirror the same arrow rather than switching to
+	// Frappe's left-arrow SVG, whose path sits partly outside its own viewBox.
+	html[dir="rtl"][data-ph="on"] .navbar #navbar-breadcrumbs a::before {
+		transform: scaleX(-1);
+	}
+}

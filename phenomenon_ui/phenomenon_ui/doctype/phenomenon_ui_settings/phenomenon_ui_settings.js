@@ -238,6 +238,7 @@ const CONTRAST_PROBES = [
 	["Secondary button", ".btn-default", 4.5],
 	["Page title", ".title-text", 4.5],
 	["Breadcrumb", "#navbar-breadcrumbs a", 4.5],
+	["Breadcrumb separator", "#navbar-breadcrumbs li + li a", 3.0],
 	["Grid header", ".grid-heading-row", 4.5],
 	["Grid cell", ".grid-row .grid-static-col", 4.5],
 	["Timeline text", ".timeline-content", 4.5],
